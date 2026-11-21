@@ -1,0 +1,28 @@
+# On every push, comment on the latest commit and @mention the OTHER partner,
+# so GitHub sends them a notification (app + email). Runs on GitHub, free for this repo.
+name: Notify partner
+
+on: push
+
+permissions:
+  contents: write   # needed to post a commit comment
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on the commit and mention the other person
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          N=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
+          if [ "$N" = "0" ]; then echo "No commits (e.g. branch deleted)"; exit 0; fi
+          if [ "$ACTOR" = "DareenJu" ]; then OTHER="nemerdabdoub"; else OTHER="DareenJu"; fi
+          FILES=$(jq -r '[.commits[] | (.added + .modified + .removed)[]] | unique | join(", ")' "$GITHUB_EVENT_PATH")
+          MSG=$(jq -r '.head_commit.message // "" | split("\n")[0]' "$GITHUB_EVENT_PATH")
+          BODY="@$OTHER $ACTOR pushed $N commit(s) to $BRANCH: \"$MSG\". Files: $FILES"
+          gh api "repos/$REPO/commits/$SHA/comments" -f body="$BODY"
