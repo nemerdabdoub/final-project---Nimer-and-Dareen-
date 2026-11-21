@@ -22,7 +22,8 @@ jobs:
           N=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
           if [ "$N" = "0" ]; then echo "No commits (e.g. branch deleted)"; exit 0; fi
           if [ "$ACTOR" = "DareenJu" ]; then OTHER="nemerdabdoub"; else OTHER="DareenJu"; fi
-          FILES=$(jq -r '[.commits[] | (.added + .modified + .removed)[]] | unique | join(", ")' "$GITHUB_EVENT_PATH")
+          FILES=$(jq -r '[.commits[] | ((.added // []) + (.modified // []) + (.removed // []))[]] | unique | join(", ")' "$GITHUB_EVENT_PATH")
+          if [ -z "$FILES" ]; then FILES=$(gh api "repos/$REPO/commits/$SHA" --jq '[.files[].filename] | join(", ")' || echo "?"); fi
           MSG=$(jq -r '.head_commit.message // "" | split("\n")[0]' "$GITHUB_EVENT_PATH")
           BODY="@$OTHER $ACTOR pushed $N commit(s) to $BRANCH: \"$MSG\". Files: $FILES"
           gh api "repos/$REPO/commits/$SHA/comments" -f body="$BODY"
