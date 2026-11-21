@@ -1,0 +1,12 @@
+3_EVIDENCE/
+*.mp4
+*.pt
+__pycache__/
+# lab's third-party files (get them from github.com/Penkov-D/DJI-Neo-to-PC)
+1_CODE/DJIneo.py
+1_CODE/scrcpy.py
+1_CODE/scrcpy_demo.py
+1_CODE/FPVdemo.py
+1_CODE/*.jar
+1_CODE/*.exe
+1_CODE/*.dll
