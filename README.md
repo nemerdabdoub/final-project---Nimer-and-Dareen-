@@ -35,5 +35,8 @@ Nimer Dabdoub & Dareen Jubran · Supervisor: Gabi · Drone: DJI Neo (controlled 
 | `m05_yolo_compare.py` | Earlier M05 version (orange/red marker). Kept for reference; the plan uses `m05.py` |
 | `paths.py` | Saves results to `3_EVIDENCE/<date>/` |
 
+## Notifications
+On every push, the action `.github/workflows/notify-partner.yml` comments on the commit and @mentions the other partner, so GitHub notifies them (app + email). Install the GitHub app and turn on notifications for @mentions.
+
 ## Safety
 Phone in hand, DJI Fly in Manual Control (never press START in Follow mode). Ctrl+C = sticks released, the drone hovers → land by hand. Big open space, battery above 40%.
