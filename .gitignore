@@ -10,3 +10,14 @@ __pycache__/
 1_CODE/*.jar
 1_CODE/*.exe
 1_CODE/*.dll
+
+# stays on each laptop, not in git
+5_LOGS/
+1_CODE/_lab_info/
+1_CODE/README_CODE.txt
+START_HERE.txt
+4_DOCUMENTS/1_current/
+4_DOCUMENTS/2_diagrams/
+4_DOCUMENTS/3_spreadsheets/
+4_DOCUMENTS/README_DOCUMENTS.txt
+2_MILESTONES/*.xlsx
