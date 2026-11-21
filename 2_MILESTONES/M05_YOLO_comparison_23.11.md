@@ -1,15 +1,47 @@
-# M05 - User detection: compare YOLO versions (due Monday 23.11)
+# M05 - User detection (due Monday 23.11)
 
-You do NOT need the drone for most of this: use the flight videos you already have (3_EVIDENCE\2026-10-20).
+Full plan, who does what and when: `4_DOCUMENTS/M05_plan_final.pdf` (Word version to fill in: `.docx`).
+Script: `1_CODE/m05.py` (run from 1_CODE, window from OPEN_TERMINAL_HERE.bat). Install once: `python -m pip install ultralytics` (Python 3.10-3.14).
 
-1. Install Ultralytics:   python -m pip install ultralytics    (and check the versions of YOLO that exist in the OFFICIAL Ultralytics documentation: YOLO11, YOLOv12, YOLO26)
-2. Cut frames out of the flight videos. Label about 200 frames: the user (person). Tools: CVAT or Roboflow.
-3. Run each YOLO version on the same labelled frames. Measure: detection rate (the plan asks for 90% in the lab) and speed (frames per second on your laptop).
-4. One results table + one short video with the detections. Write the winner and why.
-5. Also compare with the colour-marker idea (the plan asks: colour marker vs YOLO).
-6. Save the table, the video and the labelled set in 3_EVIDENCE\<date>\.
-Present it to Gabi on 23.11. Keep the AI log up to date (5_LOGS\Project_logs.xlsx, sheet AI log).
+## Data (no new filming)
+Four clips from `3_EVIDENCE/2026-11-20`, about 1 frame per second, 152 frames:
 
-## Update 21.11
-Use `1_CODE/m05_yolo_compare.py` and follow `4_DOCUMENTS/Project_3493_Plan_until_Gabi_23.11.pdf`.
-Label with two classes in Roboflow: `user` (0) and `other` (1). Design for the system: YOLO finds people, the colour marker picks the user (`hybrid` mode).
+| Clip | Who is in it | Frames |
+|---|---|---|
+| 161951_recording_test60.mp4 | the actor in the purple-red turban + others | 61 |
+| 154848_connection_test_video.mp4 | the actor + others | 40 |
+| 161825_recording_test30.mp4 | the actor + others | 31 |
+| 154124_connection_test_video.mp4 | others only, no actor (false-alarm test) | 20 |
+
+```
+python m05.py extract "..\3_EVIDENCE\2026-11-20\161951_recording_test60.mp4" 25 "..\3_EVIDENCE\2026-11-20\154848_connection_test_video.mp4" 38 "..\3_EVIDENCE\2026-11-20\161825_recording_test30.mp4" 25 "..\3_EVIDENCE\2026-11-20\154124_connection_test_video.mp4" 75
+python m05.py prelabel
+```
+Correct the suggested labels in Roboflow or makesense.ai, two classes: `user` (0, only the man in the turban) and `person` (1, everyone else). Export in YOLO format into `3_EVIDENCE/m05_user_detection/labels/`.
+
+## The checks (normal light 1.0 and darkened copies 0.35)
+**First each method alone:**
+
+| Check | Command | Fills |
+|---|---|---|
+| C1 colour only | `python m05.py run colour` | Table B: colour only |
+| C2 YOLO11n alone | `python m05.py run yolo11n` | Table A + Table B "YOLO11n only" (biggest person = guess) |
+| C3 YOLOv12n alone | `python m05.py run yolo12n` | the same |
+| C4 YOLO26n alone | `python m05.py run yolo26n` | the same |
+
+**Then YOLO + colour (hybrid):** YOLO finds the people, the turban colour on the head picks the user, the same person is kept for up to 1 s if the colour is lost.
+
+| Check | Command |
+|---|---|
+| H1 | `python m05.py run hybrid yolo11n` |
+| H2 | `python m05.py run hybrid yolo12n` |
+| H3 | `python m05.py run hybrid yolo26n` |
+
+Speed (FPS) on one computer only: `python m05.py run` (everything). Demo: `python m05.py video "..\3_EVIDENCE\2026-11-20\161951_recording_test60.mp4" yolo26n.pt`.
+
+## Tables
+- **Table A (finding people):** detection rate = TP / (TP + FN), precision = TP / (TP + FP), a box is correct if IoU >= 0.5; FPS, ms/frame.
+- **Table B (finding THE user):** user found %, wrong person %, false alarm % (frames without the actor), frames correct %.
+- **Winner:** the fastest model with detection rate >= 90% at brightness 1.0; a tie goes to the better result at 0.35.
+
+Formulas with worked examples: part 4 of the plan. Keep the AI log up to date.
