@@ -70,6 +70,7 @@ as a second characteristic that also gives the distance to the user.
 ## 7. Teamwork and tools
 - Shared GitHub repo; a GitHub action @mentions the partner on every push; `UPDATES.md` log; a live "Project updates"
   panel in VS Code (Claude Code plugin); M05 data shared in `M05_data/`; work split equally by method.
+- 22.11 Own labelling tool `1_CODE/label_tool.py`: loads the suggested boxes, saves YOLO labels directly into the repo.
 
 ## 8. Next steps (to the end of the semester)
 - M05: correct labels (both halves) → real tables A and B → winner → demo video → summary for Gabi.

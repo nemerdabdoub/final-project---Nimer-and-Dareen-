@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Nimer: label_tool.py, faster than makesense.ai
+- New `1_CODE/label_tool.py`: `python label_tool.py nimer` / `python label_tool.py dareen` opens each frame with the
+  suggested boxes and saves corrected YOLO labels straight into `M05_data/labels/` (no upload/export). Click = select,
+  drag = new box, right-click = delete, u = user, p = person, n/b = next/back. Continues where you stopped.
+- **Dareen:** optional, makesense.ai still works the same; both write the same files.
+
 ## 22.11.2026, Nimer: it is the MID-PROJECT presentation (not mid-semester)
 - Renamed to `4_DOCUMENTS/mid_project_presentation_log.md`; wording fixed in CLAUDE.md and here.
 
