@@ -87,6 +87,10 @@ as a second characteristic that also gives the distance to the user.
   the framed portrait is no longer detected (was "person 0.64"), same speed — but detection fell 85.4% → 77.1%
   (people > 1/4 height 96.2% → 85.4%) and the hybrid got 1.9% wrong / 10.7% false alarms. Too few people in the
   training data (~366). Kept the original YOLO11n. `M05_data/results/finetune_22.11/`, `1_CODE/m05_finetune.py`.
+- 22.11 **Gentle fine-tuning** (keep the 80-class head, freeze the backbone, small learning rate, 15 epochs): portrait
+  still gone, detection 84.4% (original 85.4%), people > 1/4 height 95.0%, same speed; hybrid 70.2% found, 1.9% wrong,
+  0% false alarm. Lesson: the first run's drop came from rebuilding the class layer (1-class training). Original
+  YOLO11n stays the winner; the gentle model is the promising direction with more training data.
 - 22.11 **Fix B, Table A extra column — people taller than 1/4 of the frame (following distance):** YOLO11n 96.2% /
   95.4% (1.0 / 0.35), YOLOv12n 93.3 / 91.6%, YOLO26n 92.5 / 92.9% → **all three pass 90%** for the people the drone
   follows; the original column (all people incl. far background) stays 82-85%. `M05_data/results/fixes_A_B_22.11/`.

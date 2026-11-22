@@ -8,6 +8,8 @@ Run from 1_CODE:
   python m05_finetune.py label dareen   correct your half in Nimer's label_tool (same keys), saved to M05_data/train/labels
   python m05_finetune.py label nimer
   python m05_finetune.py train          fine-tune yolo11n on the corrected labels -> 1_CODE/yolo11n_drone.pt (not in git)
+  python m05_finetune.py train 15 gentle   keep the 80-class head, freeze the backbone, small learning rate
+                                           -> 1_CODE/yolo11n_drone_gentle.pt
 Labelling rule for training: box EVERY real person (user or person, both fine); NO box on paintings, statues, the mural,
 hands at the lens or app buttons - leaving them empty is exactly what teaches the model they are not people."""
 import shutil, sys
@@ -97,10 +99,14 @@ def label(who):
     label_tool.main()
 
 
-def train(epochs=50):
+def train(epochs=50, gentle=False):
+    """gentle = keep YOLO11n's 80-class head (person stays class 0, nothing re-initialised), freeze the first 10 layers
+    (the backbone that already sees people), small learning rate. The first, plain run (1 class, all layers) forgot
+    part of what it knew about people: detection 85.4% -> 77.1% on the 152 test frames."""
     from ultralytics import YOLO
     import random
     ds = REPO / "3_EVIDENCE" / "m05_user_detection" / "finetune_dataset"
+    run = "yolo11n_drone_gentle" if gentle else "yolo11n_drone"
     if ds.exists():
         shutil.rmtree(ds)
     labels = sorted((TRAIN / "labels").glob("*.txt"))
@@ -115,13 +121,16 @@ def train(epochs=50):
         shutil.copy2(imgs[lab.stem], ds / "images" / part / imgs[lab.stem].name)
         rows = [l.split() for l in lab.read_text().splitlines() if l.strip()]
         (ds / "labels" / part / lab.name).write_text("\n".join("0 " + " ".join(r[1:5]) for r in rows))   # user + person -> person
-    (ds / "data.yaml").write_text(f"path: {ds.as_posix()}\ntrain: images/train\nval: images/val\nnames:\n  0: person\n")
     model = YOLO(str(HERE / "yolo11n.pt"))
+    names = model.names if gentle else {0: "person"}           # gentle: the same 80 COCO classes, person = 0
+    (ds / "data.yaml").write_text(f"path: {ds.as_posix()}\ntrain: images/train\nval: images/val\nnames:\n"
+                                  + "".join(f"  {k}: {v}\n" for k, v in names.items()))
+    extra = dict(freeze=10, optimizer="AdamW", lr0=0.0005, warmup_epochs=1) if gentle else {}
     model.train(data=str(ds / "data.yaml"), epochs=epochs, imgsz=640, batch=16, device="cpu", workers=0,
-                project=str(ds.parent / "finetune_runs"), name="yolo11n_drone", exist_ok=True, plots=False, verbose=False)
-    best = ds.parent / "finetune_runs" / "yolo11n_drone" / "weights" / "best.pt"
-    shutil.copy2(best, HERE / "yolo11n_drone.pt")
-    print(f"Saved {HERE / 'yolo11n_drone.pt'} ({len(labels) - n_val} train / {n_val} val frames)")
+                project=str(ds.parent / "finetune_runs"), name=run, exist_ok=True, plots=False, verbose=False, **extra)
+    best = ds.parent / "finetune_runs" / run / "weights" / "best.pt"
+    shutil.copy2(best, HERE / f"{run}.pt")
+    print(f"Saved {HERE / (run + '.pt')} ({len(labels) - n_val} train / {n_val} val frames)")
 
 
 if __name__ == "__main__":
@@ -133,6 +142,6 @@ if __name__ == "__main__":
     elif cmd == "label" and len(sys.argv) > 2 and sys.argv[2].lower() in HALVES:
         label(sys.argv[2].lower())
     elif cmd == "train":
-        train(int(sys.argv[2]) if len(sys.argv) > 2 else 50)
+        train(int(sys.argv[2]) if len(sys.argv) > 2 else 50, gentle="gentle" in sys.argv[3:])
     else:
         sys.exit(__doc__)

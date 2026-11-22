@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 08:40):** Nimer 08:40 – panel: new "Files Dareen changed" section ·
+**LATEST PUSHES (22.11, 08:50):** Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
+Nimer 08:40 – panel: new "Files Dareen changed" section ·
 Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
 Dareen 07:34 – her 162 training labels DONE → **all 335 training labels in** ·
 Nimer 07:27 – his half of the training labels DONE (173 frames, `M05_data/train/labels`) · Dareen 07:12 – classroom clip added to training (335 frames) · Dareen 07:07 – fine-tuning started (`m05_finetune.py`) ·
@@ -9,6 +10,23 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 ~08:50, Dareen: GENTLE fine-tuning — portrait still gone, detection almost back (84.4%)
+- Found the main cause of the first run's drop: it trained a 1-class model, so YOLO's class layer was rebuilt from
+  scratch. Gentle run (`python m05_finetune.py train 15 gentle`): keeps the 80-class head (person = 0), freezes the first
+  10 layers, AdamW lr 0.0005, 15 epochs (~13 min) → `1_CODE/yolo11n_drone_gentle.pt` (not in git).
+- Same 152 test frames, brightness 1.0 (0.35 in brackets) — `M05_data/results/finetune_22.11/m05_full_comparison_3models.md`:
+
+  | Model | Detection all | People > 1/4 | Precision | Hybrid found / wrong / false alarm | Portrait |
+  |---|---|---|---|---|---|
+  | YOLO11n original | **85.4 (84.8)** | **96.2** | **94.1** | **73.1 / 0 / 0** | person 0.55-0.62 |
+  | fine-tuned (1st) | 77.1 (69.5) | 85.4 | 92.4 | 66.3 / 1.9 / 10.7 | gone |
+  | **fine-tuned gentle** | 84.4 (83.5) | 95.0 | 93.7 | 70.2 / **1.9** / 0 | **gone** |
+
+- Gentle = the portrait false positive removed for only −1 point detection, same speed — but 2 of 104 frames now pick
+  the wrong person (the original had 0), and still below 90% on all people.
+- **Proposal:** Monday winner stays the original YOLO11n (best on every test number); show the gentle model as the
+  promising next step ("removes painting false positives at the same speed; needs more people in the training data").
 
 ## 22.11.2026 ~08:40, Nimer: panel shows the files Dareen changed
 - `tools/project-updates`: new section "Files Dareen changed" = every file in Dareen's pushed commits of the last 2 days,
