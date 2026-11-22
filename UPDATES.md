@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: demo videos now label every box (USER / person + confidence)
+- `m05.py video`: every box gets a tag — green "USER 0.94" (yellow "USER (kept)" for the fallback), blue "person 0.81"
+  = YOLO's class + confidence. Detection and user choice unchanged (same percentages as before).
+- All 4 demo videos re-made on Dareen's laptop (161951 + 154848, at 0.25 and 0.4). Still with labels:
+  `M05_data/results/demo_yolo11n_22.11/demo_with_labels_user_and_person.jpg`. Pull before you make a video.
+
 ## 22.11.2026, Dareen: cleaner demo at confidence 0.4 (statue boxes) + why the demo has mistakes
 - The demo is YOLO11n's raw output; our corrected labels only score it, they do not train it → statues / missed far
   people in the video are the Table A mistakes (17 wrong boxes, 46 missed).

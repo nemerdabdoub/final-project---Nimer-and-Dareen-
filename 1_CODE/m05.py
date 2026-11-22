@@ -28,7 +28,8 @@ Everything is saved in  3_EVIDENCE/m05_user_detection/
              hybrid rtdetr-l = RT-DETR + colour                           -> table B "hybrid rtdetr-l"
  STEP 4  python m05.py video VIDEO [MODEL] [CONF]
          an annotated demo video: green = user (found by the turban colour), yellow = user kept by the
-         fallback (colour lost, same person as the last frame), blue = other people.
+         fallback (colour lost, same person as the last frame), blue = other people; every box is tagged with its
+         class ("USER" / "person") and YOLO's confidence (0-1).
          CONF (optional, default 0.25 like the tables): e.g. 0.4 hides most low-confidence wrong boxes (statues),
          but misses a few more people (on our frames: 17 -> 3 wrong boxes, 46 -> 55 missed people).
 """
@@ -360,6 +361,15 @@ def cmd_run(args):
 
 
 # ---------------------------------------------------------------- step 4
+def label_box(img, text, x, y, colour, scale):
+    """a filled tag with the class name and YOLO's confidence just above a box (inside the frame)"""
+    (tw, th), base = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, scale, 2)
+    x = max(0, min(int(x), img.shape[1] - tw - 4))
+    y = max(th + base + 2, int(y))
+    cv2.rectangle(img, (x, y - th - base - 2), (x + tw + 4, y), colour, -1)
+    cv2.putText(img, text, (x + 2, y - base), cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), 2)
+
+
 def cmd_video(args):
     from ultralytics import YOLO
     if not args:
@@ -385,7 +395,9 @@ def cmd_video(args):
         if not ok:
             break
         if i % step == 0:
-            people = people_of(model, fr)
+            r = model(fr, classes=[0], conf=CONF, verbose=False)[0]          # same as people_of(), plus the scores
+            people = r.boxes.xyxy.cpu().numpy().tolist()
+            scores = r.boxes.conf.cpu().numpy().tolist()
             user = hybrid_user(turban_mask(fr), people)
             kept = False
             if user is None and last is not None and people and run < max_run:
@@ -402,15 +414,19 @@ def cmd_video(args):
             else:
                 by_colour += 1
             last = user if user is not None else None
-            for b in people:
+            user_score = None
+            for b, s in zip(people, scores):
                 b = [int(v) for v in b]
                 if user is None or iou(b, user) < 0.9:
                     cv2.rectangle(fr, b[:2], b[2:], (255, 120, 0), 2)
+                    label_box(fr, f"person {s:.2f}", b[0], b[1], (255, 120, 0), 0.55)
+                else:
+                    user_score = s
             if user is not None:
                 col = (0, 200, 255) if kept else (0, 220, 0)
                 cv2.rectangle(fr, tuple(user[:2]), tuple(user[2:]), col, 3)
-                cv2.putText(fr, "USER (kept)" if kept else "USER", (user[0], max(20, user[1] - 8)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, col, 2)
+                text = ("USER (kept)" if kept else "USER") + (f" {user_score:.2f}" if user_score is not None else "")
+                label_box(fr, text, user[0], user[1], col, 0.75)
             cv2.putText(fr, f"{model_name.replace('.pt', '')} + turban colour (conf {CONF:g})", (10, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
             if writer is None:
