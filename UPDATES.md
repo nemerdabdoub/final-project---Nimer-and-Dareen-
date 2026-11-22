@@ -3,6 +3,11 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Nimer: presentation focus = detecting the SAME person
+- `4_DOCUMENTS/mid_semester_presentation_log.md`: new ★ main-focus section on finding the same person every frame and
+  the characteristics used (turban hue 170-179 on the head only, ≥3% and 2× the background, 1 s IoU fallback),
+  the "wrong person %" metric, where it fails, and M06 ideas (tracking IDs, re-ID, ArUco). Please keep it the lead topic.
+
 ## 22.11.2026, Nimer: mid-semester presentation log
 - New `4_DOCUMENTS/mid_semester_presentation_log.md`, seeded with M02-M05 status, numbers, decisions, demos, problems.
 - New rule in CLAUDE.md: every result, number, decision, demo or problem solved also gets a line there.
