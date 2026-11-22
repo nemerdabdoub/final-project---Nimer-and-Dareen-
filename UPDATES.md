@@ -3,6 +3,16 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: ONE full comparison table (all methods, accuracy + speed + CPU, one laptop)
+- New `1_CODE/m05_full_table.py` → `M05_data/results/full_comparison_22.11/m05_full_comparison.md/.csv`: colour only,
+  YOLO11n / v12n / 26n alone, and hybrid with each, at 1.0 and 0.35, with detection (all / people > 1/4 height),
+  precision, user found, wrong person, false alarm, frames correct, FPS, ms/frame, CPU % and cores used.
+- Dareen's laptop (i7-13650HX, 20 logical cores, CPU only), brightness 1.0:
+  colour only 130 FPS, 4% CPU (1 core) but 37% wrong person; YOLO alone 29-36 FPS, ~40% CPU (8 cores), 36% wrong person;
+  **hybrid YOLO11n 31 FPS, ~40% CPU, 96% detection of big people, 0% wrong person, 0% false alarm, 79% frames correct.**
+  Hybrid costs ~5 ms/frame more than YOLO alone. YOLOv12n is the slowest (24 FPS hybrid).
+- Speeds differ from Nimer's laptop (his YOLO11n 21 FPS); compare models within one laptop only.
+
 ## 22.11.2026, Dareen: fixes A + B done in m05.py (re-run, pushed)
 - **A (hybrid ignores "people" that fill the frame = a hand at the lens):** false alarm 7.1% → **0%**; found unchanged
   73-74%, wrong 0%, frames correct → 79-80%. Safe: the actor is at most 22% wide in our labels, the hand boxes 75-84%.

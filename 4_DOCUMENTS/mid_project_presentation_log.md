@@ -85,6 +85,10 @@ as a second characteristic that also gives the distance to the user.
   follows; the original column (all people incl. far background) stays 82-85%. `M05_data/results/fixes_A_B_22.11/`.
 - 22.11 **Fix A, hybrid ignores "people" that fill the frame (a hand at the lens):** false alarm 7.1% → **0%**, user found
   unchanged (73-74%), wrong person 0%, frames correct 77-78% → 79-80%. Same file.
+- 22.11 **Full comparison table, one laptop (i7-13650HX, CPU only)**, brightness 1.0: colour only 130 FPS / 4% CPU but
+  37% wrong person; YOLO alone 29-36 FPS / ~40% CPU (8 of 20 cores), 36% wrong person; **hybrid YOLO11n 31 FPS / ~40% CPU,
+  96% big-people detection, 0% wrong, 0% false alarm, 79% frames correct** (≈ +5 ms/frame over YOLO alone).
+  `M05_data/results/full_comparison_22.11/` (script `1_CODE/m05_full_table.py`). **Candidate main results slide.**
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
