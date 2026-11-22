@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: her 162 training labels done → all 335 training labels in
+- Dareen's 162 (162603, 160733, 30 classroom): 217 people boxes, 35 empty frames, no bad lines; spot check of 6 frames
+  OK (the portrait on the wall left unboxed, far and edge-cut people boxed). Nimer's 173 checked too: 149 boxes,
+  74 empty, no bad lines.
+- Next: `python m05_finetune.py train` (Dareen's laptop), then the full table + the 154848 demo with the new model.
+
 ## 22.11.2026, Dareen: classroom drone clip added to the training frames (both halves)
 - Added `2026-10-20/1621_drone_view_classroom_flight_REALTIME.mp4` (drone camera, another room, people in ~1/3):
   60 frames, every other second to each of us → **Nimer now 173 frames (30 classroom), Dareen 162 (30 classroom)**,
