@@ -41,12 +41,16 @@ as a second characteristic that also gives the distance to the user.
   (`flight_test.py moves 0.3 0.5`), landed from code about 7 s after the landing started, battery 69% → 66%.
   Proof: `3_EVIDENCE/2026-11-12/190414_flight_test_log.txt` + video.
 - M04 work plan: submitted on Moodle 12.11.
-- M05 user detection: in progress, due 23.11 (see section 4).
+- M05 user detection: in progress, due 23.11 (see section 4). 22.11: Dareen's 81 labels corrected and shared
+  (`M05_data/labels`); Nimer's 71 to follow.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
 - 22.11 M05 test run on Nimer's laptop (CPU, stand-in labels, NOT final): speed YOLO11n 26 FPS (38 ms), YOLO26n 22 FPS
   (46 ms), YOLOv12n 16 FPS (62 ms). Proof: `3_EVIDENCE/m05_user_detection/m05_table_*_PRELIM_suggested_labels.csv`.
+- 22.11 Table B, PRELIMINARY (Dareen's corrected half, 61 frames with the turban, brightness 1.0): colour only finds the
+  user in 41% and picks the WRONG person in 55% (red mural); hybrid (any of the 3 YOLO) finds him in 79% and never picks
+  the wrong person (misses = picks nobody). Same at 0.35. Source: Dareen, `m05_table_B_finding_the_user_*.csv`.
 - 22.11 RT-DETR (non-YOLO) test on stand-in labels: about 0.9 FPS vs about 15 FPS for YOLO26n (15-20x slower). Source: Dareen.
 
 ## 4. Method and decisions (the "why")

@@ -34,6 +34,8 @@ checks, first each method alone, then YOLO + colour:
 - speed for all on one computer: `python m05.py run` · demo: `python m05.py video <clip> <model>.pt`
 - optional non-YOLO comparison: `run rtdetr-l` / `run hybrid rtdetr-l` (slow on CPU; see `2_MILESTONES/M05_engineering_considerations.md`)
 Results go to `3_EVIDENCE/m05_user_detection/` (CSV tables A and B). Brightness 1.0 and 0.35 (low-light stand-in).
+Frame sets (decided 22.11): user = the actor always; Table B on `labels_marker` (all except 154124, where he has no turban),
+extra row on `labels_nomarker` (154124 only), Table A on all `labels`. Details at the end of the M05 note.
 
 ## Working rules for Claude in this repo
 - Explain steps simply, one at a time; say what the user should see at the end of each step.

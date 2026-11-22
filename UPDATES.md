@@ -12,6 +12,27 @@ Claude: read the newest entries at the start of each session and tell the user w
 ## 22.11.2026, Nimer: it is the MID-PROJECT presentation (not mid-semester)
 - Renamed to `4_DOCUMENTS/mid_project_presentation_log.md`; wording fixed in CLAUDE.md and here.
 
+## 22.11.2026, Dareen: C1 + H1-H3 on her half (PRELIMINARY, 61 marker frames of 161951)
+- Folders on her laptop: `labels_marker` (61, all except 154124) and `labels_nomarker` (20, 154124 only).
+- Table B on `labels_marker`, brightness 1.0 / 0.35 (56 frames with the actor):
+  colour only: user found 41.1 / 39.3%, **wrong person 55.4%** (the red mural), frames correct 45.9 / 44.3%.
+  hybrid yolo11n: 78.6 / 80.4%, wrong 0%, correct 80.3 / 82.0%. hybrid yolo12n and yolo26n: 78.6%, wrong 0%, correct 80.3%.
+  The hybrid never picks the wrong person; its misses are frames where it picks nobody (turban not seen on a head).
+- ms/frame here is not the speed result (Nimer's speed run on one computer is).
+- Open: re-run the same commands on the full `labels_marker` when Nimer's 71 labels arrive; extra row on `labels_nomarker`.
+
+## 22.11.2026, Dareen: her 81 corrected labels shared
+- `M05_data/labels/`: 81 corrected files (161951: 61, actor = user in 56, 2 empty frames; 154124: 20, actor = user
+  without the turban in all 20). Checked: only classes 0/1, values 0-1, at most one user per frame.
+- **Nimer:** add your 71 corrected files to the same folder and push. Then both copy `M05_data/labels` into
+  `3_EVIDENCE/m05_user_detection/labels` before running checks.
+
+## 22.11.2026 04:55, Dareen (with Claude in the Claude app)
+- Dareen's 81 labels corrected (makesense.ai): `3_EVIDENCE/m05_user_detection/labels` on her laptop (2 empty files added
+  for frames with nobody). In clip 154124 the actor is there **without the turban**, labelled as user.
+- Decision on frame sets: Table B on `labels_marker` (all except 154124), extra row "without marker" on `labels_nomarker`,
+  Table A on all labels. Written in the M05 note and CLAUDE.md.
+
 ## 22.11.2026, Nimer: presentation focus = detecting the SAME person
 - `4_DOCUMENTS/mid_project_presentation_log.md`: new ★ main-focus section on finding the same person every frame and
   the characteristics used (turban hue 170-179 on the head only, ≥3% and 2× the background, 1 s IoU fallback),
