@@ -1,4 +1,9 @@
 # Updates log (newest first)
+**LATEST PUSHES (22.11, 07:30):** Nimer 07:27 – his half of the training labels DONE (173 frames, `M05_data/train/labels`) ·
+Dareen 07:12 – classroom clip added to training (335 frames) · Dareen 07:07 – fine-tuning started (`m05_finetune.py`) ·
+Nimer 06:47 – one-page summary PDF `4_DOCUMENTS/M05_summary_23.11.pdf` + `.gitattributes` · Dareen 06:28–06:44 – her
+summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** Dareen labels her half → `train` → test on the 152.
+**Two summaries exist** (Dareen's 06:28 and Nimer's PDF): pick one together before Mon 12:00.
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
