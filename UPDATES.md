@@ -3,6 +3,16 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: demo video done + tests toward 90%
+- **Demo (C5), YOLO11n + colour** on 161951: `3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4`
+  on Dareen's laptop (60 s). User by colour 70%, kept by fallback 8%, none 22%. 2 screenshots in
+  `M05_data/results/demo_yolo11n_22.11/`. Nimer: I can send the video file another way for your check (not in git).
+- **Toward 90%** (`python m05_improve.py`): only YOLO11s at 1280 px passes (91.7%, precision 89.8%, ~5 FPS on CPU).
+  YOLO11m/l reach ~88%. YOLO11n at 640 px is already ~95% on the big people. Full table + "what we would do
+  differently" (record from the SD card, film closer, tune/test apart, real low light, more fps, better marker) in
+  `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
+- Open: winner call, Nimer's summary, AI log lines.
+
 ## 22.11.2026, Dareen: diagnosis — why the numbers fall short, and fixes
 - **Nimer: read `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`** (for the summary). Reproduce: `python m05_diagnose.py`.
 - Detection < 90% only because of small / edge-cut people: fully visible people > 1/4 of the frame 0% missed, small ones
