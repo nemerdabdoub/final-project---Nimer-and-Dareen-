@@ -32,7 +32,11 @@ Results go to `3_EVIDENCE/m05_user_detection/` (CSV tables A and B). Brightness 
 ## Working rules for Claude in this repo
 - Explain steps simply, one at a time; say what the user should see at the end of each step.
 - Python 3.14 is installed with ultralytics; the first import of torch can take 20–40 s — don't treat it as a hang.
-- Before pushing: pull/fetch first. Push small commits straight to `main` (agreed workflow); never force-push.
+- **Commit and push automatically**: after each finished change to files in git (code, notes, CLAUDE.md), do
+  `git pull`, then `git add` the changed files, `git commit` with a short clear message, and `git push` to `main`,
+  without waiting to be asked. Tell the user in one line what was pushed. Never force-push. If the pull shows a
+  conflict, stop and explain it simply instead of pushing.
+- At the end of a work session, update the Status section of this file with what was done and push it.
 - Don't edit the same file the partner is editing; a push triggers `.github/workflows/notify-partner.yml`, which
   @mentions the other partner on GitHub.
 - Never commit 3_EVIDENCE, videos, model files (*.pt), lab binaries or 5_LOGS (see .gitignore).
