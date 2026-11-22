@@ -9,6 +9,12 @@ Claude: read the newest entries at the start of each session and tell the user w
   335 in total. Same command: `python m05_finetune.py label nimer` after `git pull`.
 - Older 7.11 phone videos NOT used (phone camera in portrait, not the drone's view); 20.10 flight 3 has nobody.
 
+## 22.11.2026, Nimer: my half of the TRAINING labels is done
+- `M05_data/train/labels/`: all 173 frames of `to_label_Nimer` (152950, 153832, 161703, 161723); checked: classes 0/1 only,
+  values 0-1. 149 boxes (52 user, 97 person) vs 161 suggested; 74 empty frames; 53 frames changed, ~15 wrong boxes
+  removed (portrait / statues), ~3 people added.
+- **Dareen:** when your half is in, `python m05_finetune.py train`, then test `yolo11n_drone.pt` on the 152 test frames.
+
 ## 22.11.2026, Dareen: FINE-TUNING YOLO11n started — training frames ready to label (your half: 143 frames)
 - Why: at the end of the 154848 demo YOLO boxes the framed portrait on the wall as "person" at confidence 0.50-0.69, so a
   higher confidence cannot remove it without losing real people (0.4 → detection 82.5%). Only teaching the model fixes
