@@ -28,7 +28,8 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
     and fastest. 90% target met only for people at following distance.
   - Open before the meeting: Nimer confirms the winner + reads the summary; Nimer's AI log line; the 12.11 moves
     video is not on Dareen's laptop (only the log) — find it (phone / Nimer).
-- M06 user tracking — due 7.12, not started.
+- M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
+  comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 
 ## M05 in short (details in the plan)
 Data: four clips from `3_EVIDENCE/2026-11-20` (161951, 154848, 161825 with the actor in a purple-red turban; 154124 without him),

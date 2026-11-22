@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 10:05):** Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
+**LATEST PUSHES (22.11, 15:15):** Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
+Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
 Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
 Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
 Nimer 08:40 – panel: new "Files Dareen changed" section ·
@@ -12,6 +13,14 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 15:15, Dareen: NEW FILMING outside the Medical Faculty (bikes) + M06 tracking tool started
+- Two new drone clips on Dareen's laptop, `3_EVIDENCE/2026-11-22/`: `143404_recording_session1.mp4` (~5 min, 450 MB),
+  `144943_recording_session2.mp4` (~5 min, 7-8 m high next to trees). Battery 59% → 14% in ~5 min (~9%/min, ~11 min per
+  battery). Lesson: land at 30%. Details + shot log to fill in: `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
+- New `1_CODE/m06_track.py` (M06): YOLO11n + ByteTrack/BoT-SORT keeps the user's ID once the turban identified him;
+  compares with the old M05 method (colour + 1 s fallback) on the same frames, and prints a dry-run distance-controller
+  command (turn / forward / back / hold) on the video. `python m06_track.py <clip> [--tracker botsort]`.
 
 ## 22.11.2026, Dareen: deck for Monday shortened; full deck kept for the semester presentation
 - **For Gabi on 23.11: `4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx` / `.pdf` (11 slides):** title, M03 closed, the M05 question,

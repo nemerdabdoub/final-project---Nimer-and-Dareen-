@@ -163,3 +163,7 @@ as a second characteristic that also gives the distance to the user.
 - Lessons for the next data: record on the drone's built-in storage (not the 1080x608 mirror with app buttons), film at
   following distance, tune and test on different clips, real low-light flight, 5 frames/s, a colour found nowhere else.
 - M06 user tracking by 7.12.
+
+## New filming and M06
+- 22.11: second filming session outside the Medical Faculty (bike racks): 2 drone clips of ~5 min each; battery 59% → 14% in ~5 min at 7-8 m (~11 min per battery, land at 30%). `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
+- 22.11: M06 tracking tool started (`1_CODE/m06_track.py`): YOLO11n + ByteTrack keeps the user's ID between turban sightings; compared with the M05 1-second fallback on the same frames.
