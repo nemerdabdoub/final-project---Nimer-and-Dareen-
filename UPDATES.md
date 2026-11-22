@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: classroom drone clip added to the training frames (both halves)
+- Added `2026-10-20/1621_drone_view_classroom_flight_REALTIME.mp4` (drone camera, another room, people in ~1/3):
+  60 frames, every other second to each of us → **Nimer now 173 frames (30 classroom), Dareen 162 (30 classroom)**,
+  335 in total. Same command: `python m05_finetune.py label nimer` after `git pull`.
+- Older 7.11 phone videos NOT used (phone camera in portrait, not the drone's view); 20.10 flight 3 has nobody.
+
 ## 22.11.2026, Dareen: FINE-TUNING YOLO11n started — training frames ready to label (your half: 143 frames)
 - Why: at the end of the 154848 demo YOLO boxes the framed portrait on the wall as "person" at confidence 0.50-0.69, so a
   higher confidence cannot remove it without losing real people (0.4 → detection 82.5%). Only teaching the model fixes

@@ -1,5 +1,6 @@
 """m05_finetune.py - teach YOLO11n our drone scenes (paintings / statues / mural are NOT people), same speed.
-Training frames come ONLY from the 6 clips of 20.11 that the M05 test never used; the 152 test frames stay test-only.
+Training frames come ONLY from the 6 clips of 20.11 that the M05 test never used, plus the 20.10 classroom drone clip
+(split every other second between the halves); the 152 test frames stay test-only.
 
 Run from 1_CODE:
   python m05_finetune.py extract        ~270 frames (1 per second) from the 6 unused clips
@@ -23,15 +24,29 @@ HALVES = {"dareen": ["162603_recording_test60", "160733_recording_test10"],
           "nimer": ["152950_connection_test_video", "153832_connection_test_video",
                     "161703_connection_test_video", "161723_recording_test30"]}
 TEST_CLIPS = ("161951", "154848", "161825", "154124")                   # never used for training
+# shared clip from another day and room (drone camera, people in ~1/3 of it): every other second to each half
+SHARED = {"1621_drone_view_classroom_flight_REALTIME": REPO / "3_EVIDENCE" / "2026-10-20"}
+
+
+def clip_path(stem):
+    return SHARED.get(stem, CLIPS) / f"{stem}.mp4"
+
+
+def owner(path, who, clips):
+    """does this extracted frame belong to `who`'s half?"""
+    for stem in SHARED:
+        if path.name.startswith(stem):
+            k = sorted(p.name for p in RAW.glob(stem + "_*.jpg")).index(path.name)
+            return k % 2 == (0 if who == "dareen" else 1)
+    return path.name.startswith(tuple(clips))
 
 
 def extract():
     RAW.mkdir(parents=True, exist_ok=True)
     total = 0
-    for clips in HALVES.values():
-        for stem in clips:
+    for stem in [s for clips in HALVES.values() for s in clips] + list(SHARED):
             assert not stem.startswith(TEST_CLIPS), stem
-            cap = cv2.VideoCapture(str(CLIPS / f"{stem}.mp4"))
+            cap = cv2.VideoCapture(str(clip_path(stem)))
             every = max(1, round(cap.get(cv2.CAP_PROP_FPS) or 25))     # 1 frame per second
             i = n = 0
             while True:
@@ -56,7 +71,7 @@ def prelabel():
         img_dir.mkdir(parents=True, exist_ok=True); lab_dir.mkdir(parents=True, exist_ok=True)
         n = 0
         for p in sorted(RAW.glob("*.jpg")):
-            if not p.name.startswith(tuple(clips)):
+            if not owner(p, who, clips):
                 continue
             img = cv2.imread(str(p)); h, w = img.shape[:2]
             people = m05.people_of(model, img)
