@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 09:05):** Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
+**LATEST PUSHES (22.11, 10:05):** Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
+Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
 Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
 Nimer 08:40 – panel: new "Files Dareen changed" section ·
 Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
