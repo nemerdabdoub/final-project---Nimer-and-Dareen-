@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 15:15):** Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
+**LATEST PUSHES (22.11, 15:30):** Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
+Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
 Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
 Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
 Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
