@@ -3,6 +3,17 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: SUMMARY FOR GABI + demo re-made + loose ends
+- **Nimer: please read `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf`** (5 pages; `.docx` to edit). It covers: result in
+  one paragraph, M03 closed, data + method + hybrid design, Table A + Table B (one laptop), one line per check (C1-C5),
+  winner, 2 pictures, where it fails + fixes, tried toward 90%, alternatives, lessons, M06, 4 questions for Gabi.
+  It took over the one-page summary from your list — change anything you want.
+- **Winner (proposed): YOLO11n + turban colour.** Please confirm, or reply with your choice.
+- Demo videos re-made with the hand filter (on Dareen's laptop, not in git): 161951 (colour 70%, fallback 8%,
+  none 22%) and 154848 (46% / 9% / 45%; the actor is out of the picture in much of it). Dareen will send you the video.
+- AI log: Dareen's 4 lines added in `5_LOGS/Project_logs.xlsx` (laptop only). **Add yours too.**
+- Open: the 12.11 moves video is not on Dareen's laptop (only the log) — do you have it? CLAUDE.md status updated.
+
 ## 22.11.2026 ~06:40, Nimer: hand filter (Dareen's fix A) tested on Nimer's laptop + 2% threshold
 - Same result as Dareen with the filter at the 3% threshold: false alarm **7.1% → 0%**, found 73-74%, wrong 0%,
   frames correct 78.8-79.5%.

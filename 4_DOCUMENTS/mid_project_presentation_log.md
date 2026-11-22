@@ -102,6 +102,10 @@ as a second characteristic that also gives the distance to the user.
   wind conditions were also considered when setting up the experiment. Results were reported separately for people
   taller than 1/4 of the frame. Source: `1_CODE/m05.py`, `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
 - 22.11 Winner rule: fastest model with detection rate ≥ 90% at brightness 1.0; a tie goes to the better result at 0.35.
+- 22.11 **Winner (proposed by Dareen, Nimer to confirm): YOLO11n + turban colour** — most accurate (85.4% all people,
+  96.2% at following distance) and fastest; the literal rule picks no model, the 90% is met for following distance only.
+- 22.11 **Summary for Gabi:** `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf` (5 pages: result, M03, method, tables A + B,
+  winner, pictures, failures + fixes, alternatives, lessons, M06, questions).
 - 22.11 Detector choice: YOLO over RT-DETR, MobileNet-SSD, MediaPipe, HOG, Faster R-CNN (best speed/accuracy on a laptop
   without a GPU). Source: `2_MILESTONES/M05_engineering_considerations.md`.
 - 22.11 Platform: Crazyflie considered and not chosen (no camera without the AI-deck, 40 g payload, 320×320 greyscale).

@@ -19,9 +19,15 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
 - **M05 user detection — due Monday 23.11 (meeting with Gabi).** Current plan: `4_DOCUMENTS/M05_plan_revised_22.11.pdf`
   (one plan, Python works on both laptops). Check details, tables and formulas: `4_DOCUMENTS/M05_plan_final.pdf`.
   Script: `1_CODE/m05.py`. Session notes: `2_MILESTONES/M05_session_notes_22.11_Dareen.md`.
-  - Done (22.11 night): install, 152 frames, suggested labels, split folders to_label_Dareen (81) / to_label_Nimer (71).
-  - Next: share data in `M05_data/` (frames, to_label_*, then labels + results) → both correct their half by Sun 14:00 →
-    checks split equally by method (Dareen: C1 colour + H1, H2, H3 YOLO + colour; Nimer: C2, C3, C4 YOLO alone + speed run) → winner together Sun 17:30 → demo → summary Mon 12:00.
+  - **Done (22.11):** 152 frames, all labels corrected (`M05_data/labels`), Table A (C2-C4 + speed, Nimer), Table B
+    (C1 + H1-H3, both laptops identical), no-marker row, fixes A (hand filter) + B (people > 1/4 height column) in `m05.py`,
+    full comparison table (`M05_data/results/full_comparison_22.11/`), diagnosis + improvements
+    (`2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`), demo videos (YOLO11n, on Dareen's laptop), AI log lines (Dareen).
+  - **Summary for Gabi:** `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf` / `.docx` (5 pages).
+  - **Winner (proposed, Nimer to confirm):** YOLO11n + turban colour — most accurate (85.4% all, 96.2% people > 1/4 height)
+    and fastest. 90% target met only for people at following distance.
+  - Open before the meeting: Nimer confirms the winner + reads the summary; Nimer's AI log line; the 12.11 moves
+    video is not on Dareen's laptop (only the log) — find it (phone / Nimer).
 - M06 user tracking — due 7.12, not started.
 
 ## M05 in short (details in the plan)

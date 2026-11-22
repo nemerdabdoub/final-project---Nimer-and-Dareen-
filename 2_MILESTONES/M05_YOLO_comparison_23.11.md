@@ -1,5 +1,8 @@
 # M05 - User detection (due Monday 23.11)
 
+**Status 22.11: done.** Final results and the summary for Gabi: `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf`.
+Full table: `M05_data/results/full_comparison_22.11/`. Why / fixes: `M05_diagnosis_and_improvements_22.11.md`.
+
 Full plan, who does what and when: `4_DOCUMENTS/M05_plan_final.pdf` (Word version to fill in: `.docx`).
 Script: `1_CODE/m05.py` (run from 1_CODE, window from OPEN_TERMINAL_HERE.bat). Install once: `python -m pip install ultralytics` (Python 3.10-3.14).
 
