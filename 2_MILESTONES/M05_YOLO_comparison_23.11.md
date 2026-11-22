@@ -47,3 +47,14 @@ Speed (FPS) on one computer only: `python m05.py run` (everything). Demo: `pytho
 Formulas with worked examples: part 4 of the plan. Keep the AI log up to date.
 
 Alternatives considered (to YOLO, to the colour marker, Crazyflie): `M05_engineering_considerations.md`.
+
+## Which frames go into which table (decided 22.11)
+- **user = the actor, always** (with or without the turban). In clip **154124 he is there without the turban**.
+- **Table B (finding THE user: colour vs YOLO vs hybrid)** uses only frames where he wears the marker:
+  folder `3_EVIDENCE/m05_user_detection/labels_marker` = all corrected labels **except** the 154124 files.
+  Example: `python m05.py run colour ..\3_EVIDENCE\m05_user_detection\labels_marker`
+  (the script skips frames that have no label file).
+- **Extra row "user without marker"**: the same checks on `labels_nomarker` (only the 20 files from 154124).
+- **Table A (finding people)** uses **all** corrected labels: folder `labels` (every person counts, turban or not).
+- False alarms: frames with no actor at all (if Nimer's clips have some). If there are none, say so and drop that column.
+

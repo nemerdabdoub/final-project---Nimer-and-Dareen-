@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026 04:55, Dareen (with Claude in the Claude app)
+- Dareen's 81 labels corrected (makesense.ai): `3_EVIDENCE/m05_user_detection/labels` on her laptop (2 empty files added
+  for frames with nobody). In clip 154124 the actor is there **without the turban**, labelled as user.
+- Decision on frame sets: Table B on `labels_marker` (all except 154124), extra row "without marker" on `labels_nomarker`,
+  Table A on all labels. Written in the M05 note and CLAUDE.md.
+
 ## 22.11.2026, Nimer: presentation focus = detecting the SAME person
 - `4_DOCUMENTS/mid_semester_presentation_log.md`: new ★ main-focus section on finding the same person every frame and
   the characteristics used (turban hue 170-179 on the head only, ≥3% and 2× the background, 1 s IoU fallback),
