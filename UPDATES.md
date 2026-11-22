@@ -3,6 +3,15 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: diagnosis — why the numbers fall short, and fixes
+- **Nimer: read `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`** (for the summary). Reproduce: `python m05_diagnose.py`.
+- Detection < 90% only because of small / edge-cut people: fully visible people > 1/4 of the frame 0% missed, small ones
+  46% missed, 96% without the small ones. Lower conf (86.3%, precision 88%) and 960 px did not help.
+- Hybrid 73%: 27 of 28 misses = turban too weak on the head. Threshold 2% → 78% found / 11% false alarm; 1% → 82% /
+  1% wrong / 14% false alarm. Proposal: keep 3%, M06 tracking bridges the gaps.
+- Proposed winner sentence: YOLO11n (most accurate and fastest); 90% not met, 96% at following distance.
+- Open: winner call, demo video (Dareen), one-page summary (Nimer), AI log lines.
+
 ## 22.11.2026 ~06:15, Nimer: THE COMPARISON (colour only vs YOLO only vs YOLO + colour), real labels
 - Ran C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) as well. **Dareen's run (below) gives
   exactly the same numbers**, so Table B is confirmed on two laptops. CSVs + 2 screenshots in `M05_data/results/nimer_22.11/`.

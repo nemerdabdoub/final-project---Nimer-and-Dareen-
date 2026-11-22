@@ -73,6 +73,11 @@ as a second characteristic that also gives the distance to the user.
   67.9-71.4%, **hybrid 7.1% (2 of 28)**; frames correct — colour 52.3%, YOLO only 55-56%, **hybrid 77-78%**.
   Darkened copies: within about 1 point. **This is the headline slide for "the SAME person".**
 - 22.11 Without the turban (20 frames): hybrid picks nobody (0% wrong) instead of guessing; colour only is 100% wrong.
+- 22.11 **Why detection is below 90% (YOLO11n):** every miss is a small or cut-off person. Fully visible people taller
+  than 1/4 of the frame: 0% missed (196 people); small people (< 1/4 height): 46% missed; without the small ones: 96%.
+  Source: Dareen, `1_CODE/m05_diagnose.py`, `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
+- 22.11 **Why the hybrid finds the user in 73%:** 27 of its 28 misses = YOLO boxed him but too little turban on the head.
+  Lower head-colour threshold: 2% → 78% found / 11% false alarm; 1% → 82% / 1% wrong / 14% false alarm. Kept 3%.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
@@ -95,6 +100,10 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 Colour only gives many false alarms (a red mural in the scene) → hybrid: colour only counts on a person's head.
 - 22.11 The hybrid's only 2 false alarms (154848 frames 00114, 00152): a hand right in front of the lens; YOLO calls it a
   person and the pink-red skin passes as the turban colour. Idea: ignore "people" that fill most of the frame.
+- 22.11 90% detection target not met (82-85%) → cause: small / far and edge-cut people. Fixes: YOLO11s, keep the user
+  large with the M06 distance controller, or a minimum-size target. Lower confidence (86%) and 960 px input did not help.
+- 22.11 Hybrid misses when the turban is not visible → keep the strict 3% rule (never the wrong person) and bridge the
+  gaps with M06 tracking instead of loosening the colour rule (thresholds were set on the test frames themselves).
 
 ## 7. Teamwork and tools
 - Shared GitHub repo; a GitHub action @mentions the partner on every push; `UPDATES.md` log; a live "Project updates"
@@ -103,4 +112,5 @@ as a second characteristic that also gives the distance to the user.
 
 ## 8. Next steps (to the end of the semester)
 - M05: correct labels (both halves) → real tables A and B → winner → demo video → summary for Gabi.
+  22.11: labels, tables A and B done; open: winner sentence (proposal YOLO11n), demo video, summary.
 - M06 user tracking by 7.12.
