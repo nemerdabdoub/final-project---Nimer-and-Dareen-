@@ -1,6 +1,6 @@
-# Mid-semester presentation: running log
+# Mid-project presentation: running log
 
-Everything we may want to show in the mid-semester presentation, collected as it happens.
+Everything we may want to show in the mid-project presentation, collected as it happens.
 **Rule (both of us and both Claudes):** every update that adds a result, a decision, a number, a video or a problem
 gets one line in the right section below, with the date and where the proof is. Newest at the bottom of each section.
 Presentation date: _to fill in_.
