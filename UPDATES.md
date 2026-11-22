@@ -4,8 +4,9 @@ Shared between Nimer and Dareen and both Claude Code sessions. Every change push
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
 ## 22.11.2026 ~06:15, Nimer: THE COMPARISON (colour only vs YOLO only vs YOLO + colour), real labels
-- Ran C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) too, so **Dareen does not need to re-run
-  them** (check the numbers if you like). CSVs + 2 screenshots in `M05_data/results/nimer_22.11/`.
+- Ran C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) as well. **Dareen's run (below) gives
+  exactly the same numbers**, so Table B is confirmed on two laptops. CSVs + 2 screenshots in `M05_data/results/nimer_22.11/`.
+- The hybrid's 2 false alarms (Dareen found them): a hand in front of the lens, 154848 frames 00114 and 00152.
 - **Table B, turban frames (132; 104 with the user, 28 without), brightness 1.0 / 0.35:**
 
   | Method | User found % | Wrong person % | False alarm % | Frames correct % |
@@ -43,7 +44,21 @@ Claude: read the newest entries at the start of each session and tell the user w
   wrong person 35.6-36.5% for all three.
 - **For the 17:30 call:** the winner rule (fastest with ≥ 90%) picks nobody. YOLO11n is both the most accurate and
   the fastest, so it wins on both counts; we report that the 90% target was not met in the lab, and why.
-- **Dareen:** re-run C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) now that all labels are in.
+- (Dareen's C1 + H1-H3 re-run on all labels: done, see her entry below; it matches Nimer's run exactly.)
+
+## 22.11.2026, Dareen: instructions for Nimer
+- **Nimer: read `2_MILESTONES/M05_instructions_for_Nimer_22.11.md`** — your steps now: C2-C4 (Table A on all 152
+  `labels`, "YOLO only" Table B rows on the 132 `labels_marker`), the speed run, push the CSVs; winner call 17:30.
+
+## 22.11.2026, Dareen: FINAL Table B (C1 + H1-H3) on all corrected labels
+- Checked Nimer's 71 labels (valid; 154848: actor = user in 22 of 40, 161825: 26 of 31). All 152 in `M05_data/labels`.
+- `labels_marker` = 132 frames (104 with the actor, 28 without), `labels_nomarker` = 20 (154124).
+- Brightness 1.0 (0.35 almost the same): colour only found 58.7%, wrong 36.5%, false alarm 71.4%, correct 52.3%.
+  Hybrid yolo11n / yolo12n / yolo26n: found 73.1 / 73.1 / 74.0%, wrong 0%, false alarm 7.1%, correct 77.3 / 77.3 / 78.0%.
+- Without the turban (154124): colour picks something else in 100%; the hybrid picks nobody in 100%.
+- The hybrid's 2 false alarms = a hand in front of the lens (154848 frames 00114, 00152).
+- CSVs: `M05_data/results/` (the 4 marker checks + `..._NOMARKER_colour_hybrid.csv`).
+- **Nimer:** your C2-C4 (YOLO alone, Table A on all 152 `labels`) + speed run are next; winner call 17:30.
 
 ## 22.11.2026, Nimer: label_tool.py, faster than makesense.ai
 - New `1_CODE/label_tool.py`: `python label_tool.py nimer` / `python label_tool.py dareen` opens each frame with the
