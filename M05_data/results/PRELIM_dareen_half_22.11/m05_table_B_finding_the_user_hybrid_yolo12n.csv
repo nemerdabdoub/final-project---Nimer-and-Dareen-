@@ -1,0 +1,3 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+hybrid yolo12n,1.0,61,56,78.6,0.0,0.0,80.3,64
+hybrid yolo12n,0.35,61,56,78.6,0.0,0.0,80.3,63
