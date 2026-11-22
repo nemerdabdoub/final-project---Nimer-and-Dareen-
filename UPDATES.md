@@ -3,6 +3,14 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: M05_data shared in git
+- New `M05_data/`: `frames/` (152), `to_label_Dareen/` (81 frames + suggested labels + `labels.txt`),
+  `to_label_Nimer/` (71 frames + suggested labels + `labels.txt`), empty `labels/` and `results/`, and a README
+  with the makesense.ai steps. About 44 MB (the to_label folders repeat the frames so each half uploads on its own).
+- Also on Dareen's laptop: yolo11n / yolo12n / yolo26n downloaded and tested (not in git).
+- **Nimer:** `git pull`, then label `M05_data/to_label_Nimer` and put your corrected `.txt` files in `M05_data/labels/`.
+- Open: both halves of the labels by Sun 14:00.
+
 ## 22.11.2026 03:40, Dareen (with Claude in the Claude app)
 - `4_DOCUMENTS/M05_plan_revised_22.11.pdf/.docx`: the plan from now to Monday. One plan (Python on both laptops),
   data shared in `M05_data/`, model checks split equally by method: Dareen C1 colour + H1, H2, H3 (YOLO + colour);
