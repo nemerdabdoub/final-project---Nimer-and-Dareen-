@@ -1,0 +1,5 @@
+{
+  "name": "nimer-dareen-tools",
+  "owner": { "name": "Nimer Dabdoub" },
+  "plugins": [{ "name": "project-updates", "source": "./tools/project-updates" }]
+}

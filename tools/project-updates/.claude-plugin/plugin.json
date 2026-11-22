@@ -1,0 +1,6 @@
+{
+  "name": "project-updates",
+  "version": "0.1.0",
+  "description": "Live pane: Nimer and Dareen's pushes, files changed on disk, and what's waiting to push; click a file to open it in VS Code.",
+  "types": "./types/index.d.ts"
+}
