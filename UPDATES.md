@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 17:36):** Dareen 17:36 – `record_video.py`: keys T = take off, L = land in the recording window (not flight-tested yet) · Dareen 17:40 – new clips tested (hybrid 83/88 right, 5 wrong = man in red shirt; 0 false alarms over the car park) + YOLO-World / YOLOE work-plan check (not usable as is) + `prepare` done → **Nimer: `python m05_newclips.py label nimer`** · Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
+**LATEST PUSHES (22.11, 17:50):** Nimer 17:50 – `4_DOCUMENTS/Next_three_steps_22.11.pdf` + first M06 run on 161951 (tracker keeps the user in 82% of frames vs 76% old way) ·
+Dareen 17:36 – `record_video.py`: keys T = take off, L = land in the recording window (not flight-tested yet) · Dareen 17:40 – new clips tested (hybrid 83/88 right, 5 wrong = man in red shirt; 0 false alarms over the car park) + YOLO-World / YOLOE work-plan check (not usable as is) + `prepare` done → **Nimer: `python m05_newclips.py label nimer`** · Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
 Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
 Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
 Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
@@ -15,6 +16,13 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 17:50, Nimer: next-steps PDF + first M06 tracking run on Nimer's laptop
+- `4_DOCUMENTS/Next_three_steps_22.11.pdf` (one calm page): Monday prep, label the new footage, start following the user.
+- `python m06_track.py ..\3_EVIDENCE\2026-11-20\161951_recording_test60.mp4 --seconds 60` (YOLO11n + ByteTrack, every 2nd
+  frame): user known in **82%** of frames with the tracker (colour 70% + tracker 13%) vs **76%** the old M05 way
+  (colour + 1 s fallback); 15 re-identifications by colour; 13 gaps, longest 5.4 s. Still to check by eye: no yellow
+  "USER (track)" box on someone else. Video + CSV in `3_EVIDENCE/m06_tracking/` (Nimer's laptop).
 
 ## 22.11.2026 17:36, Dareen: take-off / land keys in record_video.py
 - `1_CODE/record_video.py`: in the recording window **T = take off, L = land** (uses `drone_interface.takeoff()` / `land()`
