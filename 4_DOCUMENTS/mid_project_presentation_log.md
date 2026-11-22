@@ -61,6 +61,12 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 **Same-person evidence, YOLO alone** (turban frames, 104 with the user): picks the wrong person 35.6-36.5% of
   the time; finding *a* person is not finding *the* user. Hybrid numbers on the same frames: Dareen's re-run.
 
+- 22.11 **REAL comparison, Table B** (turban frames: 104 with the user, 28 without, brightness 1.0): wrong person —
+  colour only 36.5%, YOLO only 35.6-36.5%, **hybrid 0% (all three models)**; false alarms — colour 71.4%, YOLO only
+  67.9-71.4%, **hybrid 7.1% (2 of 28)**; frames correct — colour 52.3%, YOLO only 55-56%, **hybrid 77-78%**.
+  Darkened copies: within about 1 point. **This is the headline slide for "the SAME person".**
+- 22.11 Without the turban (20 frames): hybrid picks nobody (0% wrong) instead of guessing; colour only is 100% wrong.
+
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
   1 frame/s, 152 frames, classes `user` and `person`, brightness 1.0 and 0.35 (low-light stand-in).
@@ -74,6 +80,8 @@ as a second characteristic that also gives the distance to the user.
 ## 5. Demos and visuals we can show
 - 12.11 flight video of the six moves (M03).
 - 22.11 `3_EVIDENCE/m05_user_detection/M05_frames.mp4` and `M05_frames_suggested_boxes.mp4` (152 frames, 76 s, boxes drawn).
+- 22.11 Two comparison screenshots: colour only picks a purple-red sofa, YOLO + colour picks the actor.
+  `M05_data/results/nimer_22.11/screenshots/`.
 
 ## 6. Problems we hit and how we solved them
 - 7.11 Small stick pushes (0.1-0.2 for 0.4-0.5 s) moved the Neo only a few cm → raised to 0.3 for 0.5 s (cap 0.4).

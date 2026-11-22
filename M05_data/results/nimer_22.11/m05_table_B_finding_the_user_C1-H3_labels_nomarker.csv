@@ -1,0 +1,9 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+colour only,1.0,20,20,0.0,100.0,-,0.0,11
+colour only,0.35,20,20,0.0,100.0,-,0.0,11
+hybrid yolo11n,1.0,20,20,0.0,0.0,-,0.0,68
+hybrid yolo11n,0.35,20,20,0.0,0.0,-,0.0,61
+hybrid yolo12n,1.0,20,20,0.0,0.0,-,0.0,82
+hybrid yolo12n,0.35,20,20,0.0,0.0,-,0.0,80
+hybrid yolo26n,1.0,20,20,0.0,0.0,-,0.0,74
+hybrid yolo26n,0.35,20,20,0.0,0.0,-,0.0,117

@@ -12,9 +12,20 @@ export type LocalFile = {
   modified: string
 }
 
+export type FalseAlarm = {
+  set: string
+  method: string
+  fa10: string
+  fa035: string
+  wrong10: string
+  noUser: number
+  from: string
+}
+
 export type Snapshot = {
   commits: Commit[]
   local: LocalFile[]
+  falseAlarms: FalseAlarm[]
   ahead: number
   behind: number
   checkedAt: string

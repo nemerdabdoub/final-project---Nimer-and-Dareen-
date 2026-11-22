@@ -3,11 +3,40 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026 ~06:15, Nimer: THE COMPARISON (colour only vs YOLO only vs YOLO + colour), real labels
+- Ran C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) too, so **Dareen does not need to re-run
+  them** (check the numbers if you like). CSVs + 2 screenshots in `M05_data/results/nimer_22.11/`.
+- **Table B, turban frames (132; 104 with the user, 28 without), brightness 1.0 / 0.35:**
+
+  | Method | User found % | Wrong person % | False alarm % | Frames correct % |
+  |---|---|---|---|---|
+  | colour only | 58.7 / 56.7 | 36.5 / 37.5 | 71.4 / 71.4 | 52.3 / 50.8 |
+  | YOLO11n only (biggest person) | 62.5 / 62.5 | 36.5 / 36.5 | 67.9 / 64.3 | 56.1 / 56.8 |
+  | YOLOv12n only | 62.5 / 61.5 | 35.6 / 36.5 | 71.4 / 64.3 | 55.3 / 56.1 |
+  | YOLO26n only | 61.5 / 62.5 | 36.5 / 35.6 | 67.9 / 64.3 | 55.3 / 56.8 |
+  | **hybrid YOLO11n + colour** | **73.1 / 74.0** | **0 / 0** | **7.1 / 7.1** | **77.3 / 78.0** |
+  | hybrid YOLOv12n + colour | 73.1 / 73.1 | 0 / 0 | 7.1 / 7.1 | 77.3 / 77.3 |
+  | hybrid YOLO26n + colour | 74.0 / 73.1 | 0 / 0 | 7.1 / 7.1 | 78.0 / 77.3 |
+
+- **Extra row, actor WITHOUT the turban (154124, 20 frames):** colour only finds him 0% (wrong 100%); hybrid 0% found
+  but 0% wrong (it picks nobody, as it should); YOLO only 90-95% (he is the biggest person there).
+- **Read-out:** alone, each method is wrong about 1 in 3 times; combined, the hybrid **never picks the wrong person**
+  and false alarms drop from ~70% to 7% (2 of 28 frames). Its misses are frames where it picks nobody (turban not seen).
+- Screenshots: colour only picks a purple-red sofa, the hybrid picks the actor (frames 161951 _01000 and _01450).
+- ms/frame in these runs is not the speed result (use the speed run).
+
 ## 22.11.2026 ~05:45, Nimer: 71 labels + C2-C4 + speed run (REAL labels, all 152)
 - `M05_data/labels/`: Nimer's 71 corrected (154848 + 161825; 6 empty files = nobody in frame). Now 152/152.
 - `M05_data/results/nimer_22.11/`: C2-C4 on all labels (Table A), on `labels_marker` (Table B "YOLO only"), speed run.
-- **Table A, all 152 frames, brightness 1.0 / 0.35:** detection rate YOLO11n 85.4 / 84.8%, YOLOv12n 82.9 / 81.9%,
-  YOLO26n 82.5 / 82.9%; precision 94-97%. **No model reaches the 90% target.**
+- **Table A, all 152 corrected frames:**
+
+  | Model | Detection rate at 1.0 | Detection rate at 0.35 | Precision at 1.0 | Precision at 0.35 |
+  |---|---:|---:|---:|---:|
+  | YOLO11n | 85.4% | 84.8% | 94.1% | 95.4% |
+  | YOLOv12n | 82.9% | 81.9% | 94.2% | 97.4% |
+  | YOLO26n | 82.5% | 82.9% | 95.2% | 96.3% |
+
+  **No model reaches the 90% detection-rate target.**
 - **Speed run (Nimer's laptop, CPU, one computer):** YOLO11n 21.0 FPS (48 ms), YOLO26n 19.2 FPS (52 ms),
   YOLOv12n 16.3 FPS (61 ms). Colour only 13 ms/frame.
 - **Table B "YOLO only" on `labels_marker` (132 frames, 104 with the user), 1.0:** user found 61.5-62.5%,

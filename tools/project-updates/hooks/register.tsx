@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Commit, LocalFile, Snapshot } from '../types'
+import type { Commit, FalseAlarm, LocalFile, Snapshot } from '../types'
 
 const PANE = 'project-updates'
 // Found on each laptop at start (see findTools): git, the VS Code launcher, the repo root, its GitHub page.
@@ -17,13 +17,52 @@ const FIND = [
   "if (-not $c) { $c = \"$env:LOCALAPPDATA\\Programs\\Microsoft VS Code\\bin\\code.cmd\" };",
   "\"$g\"; \"$c\"",
 ].join(' ')
-const REFRESH_MS = 15_000
-const FETCH_EVERY = 8 // fetch from GitHub every 8th refresh (2 minutes)
+const REFRESH_MS = 5_000
+const FETCH_EVERY = 24 // fetch from GitHub every 24th refresh (2 minutes)
 
-const empty: Snapshot = { commits: [], local: [], ahead: 0, behind: 0, checkedAt: '' }
+const empty: Snapshot = { commits: [], local: [], ahead: 0, behind: 0, checkedAt: '', falseAlarms: [] }
 const snapshot = atom({ plugin: 'project-updates', key: 'snapshot' } as const, empty, {
-  shape: 'snapshot-1',
+  shape: 'snapshot-2',
 })
+
+const SET_NAME: Record<string, string> = { '152': 'all 152 frames', '132': 'turban frames (132)', '20': 'no turban (20)' }
+
+// Every Table B CSV under M05_data/results (stand-in PRELIM folders skipped): the newest row per set + method.
+async function readFalseAlarms($: any): Promise<FalseAlarm[]> {
+  const root = `${REPO}\\M05_data\\results`
+  const files: { path: string; mtimeMs: number; dir: string }[] = []
+  const walk = async (dir: string, label: string) => {
+    let entries: any[] = []
+    try { entries = await $.fs.list(dir) } catch { return }
+    for (const en of entries) {
+      if (en.kind === 'dir' && !/prelim/i.test(en.name)) await walk(`${dir}\\${en.name}`, en.name)
+      else if (en.kind === 'file' && /^m05_table_B.*\.csv$/i.test(en.name))
+        files.push({ path: `${dir}\\${en.name}`, mtimeMs: en.mtimeMs, dir: label })
+    }
+  }
+  await walk(root, 'results')
+  files.sort((a, b) => a.mtimeMs - b.mtimeMs) // newest last, so it wins
+  const best = new Map<string, FalseAlarm>()
+  for (const f of files) {
+    let text = ''
+    try { text = await $.fs.read(f.path) } catch { continue }
+    for (const line of text.split(/\r?\n/).slice(1)) {
+      const c = line.split(',')
+      if (c.length < 8) continue
+      const [method = '', bright = '', frames = '', withUser = '', , wrong = '', fa = ''] = c
+      if (fa.trim() === '-' || fa.trim() === '') continue
+      const key = `${frames}|${method}`
+      const row = best.get(key) ?? {
+        set: SET_NAME[frames] ?? `${frames} frames`, method, fa10: '', fa035: '', wrong10: '',
+        noUser: Number(frames) - Number(withUser), from: f.dir,
+      }
+      if (bright.startsWith('1')) { row.fa10 = fa; row.wrong10 = wrong } else row.fa035 = fa
+      row.from = f.dir
+      best.set(key, row)
+    }
+  }
+  return [...best.values()]
+}
 
 function who(name: string): string {
   const n = name.toLowerCase()
@@ -104,8 +143,10 @@ async function refresh($: any) {
       }
       local.sort((a, b) => (a.modified < b.modified ? 1 : -1))
 
+      const falseAlarms = await readFalseAlarms($)
+
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -149,7 +190,7 @@ export const register: Register = on => {
       <Box flexDirection="column" gap={1}>
         <Box flexDirection="column">
           <Text dimColor>
-            Checked {s.checkedAt || '…'} · refreshes every 15 s
+            Checked {s.checkedAt || '…'} · refreshes every 5 s
           </Text>
           {s.behind > 0 && <Text color="warning">⬇ {s.behind} new from GitHub, not pulled yet</Text>}
           {s.ahead > 0 && <Text color="warning">⬆ {s.ahead} commit(s) here not pushed yet</Text>}
@@ -164,6 +205,27 @@ export const register: Register = on => {
             <Button key={'local:' + f.path} onPress={() => openFile($, f.path)}>
               {f.path} <Text dimColor>{f.status} {f.modified}</Text>
             </Button>
+          ))}
+        </Box>
+
+        <Box flexDirection="column">
+          <Text bold>False alarms, M05 (frames without the user)</Text>
+          <Text dimColor>method · false alarm % at 1.0 / 0.35 · wrong person % at 1.0</Text>
+          {(s.falseAlarms ?? []).length === 0 && <Text dimColor>No result tables in M05_data/results yet.</Text>}
+          {[...new Set((s.falseAlarms ?? []).map(f => f.set))].map(set => (
+            <Box key={'fa:' + set} flexDirection="column">
+              <Text dimColor>
+                {set} · {(s.falseAlarms ?? []).find(f => f.set === set)?.noUser ?? 0} frames without the user
+              </Text>
+              {(s.falseAlarms ?? []).filter(f => f.set === set).map(f => (
+                <Text key={'fa:' + set + ':' + f.method}>
+                  <Text color={Number(f.fa10) <= 10 ? 'success' : Number(f.fa10) >= 50 ? 'error' : 'warning'}>
+                    {f.fa10 || '?'}% / {f.fa035 || '?'}%
+                  </Text>
+                  {'  '}{f.method}<Text dimColor>  wrong {f.wrong10 || '?'}%</Text>
+                </Text>
+              ))}
+            </Box>
           ))}
         </Box>
 
