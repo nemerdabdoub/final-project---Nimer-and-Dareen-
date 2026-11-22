@@ -1,0 +1,5 @@
+model,ms_per_frame,person_found,bicycle_found,car_found,motorcycle_found,person_extra,bicycle_extra,car_extra,motorcycle_extra,electric scooter_boxes,baby stroller_boxes
+reference yolo11l@1280,,128,102,853,26,,,,,,
+yolo11n (COCO),49,86,32,444,3,8,3,198,7,0,0
+YOLO-World v2 s,131,108,37,174,1,23,0,12,7,0,0
+YOLOE-11s,142,106,30,247,6,31,3,32,12,3,9

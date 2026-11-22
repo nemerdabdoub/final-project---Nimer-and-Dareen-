@@ -21,3 +21,7 @@ START_HERE.txt
 4_DOCUMENTS/3_spreadsheets/
 4_DOCUMENTS/README_DOCUMENTS.txt
 2_MILESTONES/*.xlsx
+
+# text-encoder weights downloaded by YOLOE / YOLO-World (600 MB)
+1_CODE/mobileclip*.ts
+1_CODE/*.ts.*

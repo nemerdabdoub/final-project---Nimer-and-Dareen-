@@ -1,5 +1,5 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 15:45):** Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
+**LATEST PUSHES (22.11, 17:40):** Dareen 17:40 – new clips tested (hybrid 83/88 right, 5 wrong = man in red shirt; 0 false alarms over the car park) + YOLO-World / YOLOE work-plan check (not usable as is) + `prepare` done → **Nimer: `python m05_newclips.py label nimer`** · Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
 Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
 Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
 Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
@@ -15,6 +15,19 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 17:40, Dareen: new 22.11 clips analysed + YOLO-World / YOLOE (work-plan item) + test set prepared
+- `python m05_newclips.py prepare` done (Nimer's script) → `M05_data/test_22.11/` pushed. **Both: label your half** (`label nimer` / `label dareen`).
+- Quick test without labels (`1_CODE/m05_newclips_auto.py`, renamed so it doesn't clash with Nimer's `m05_newclips.py`):
+  hybrid user picks **83 of 88 right** by eye; **5 wrong = a passer-by in a red shirt** (small box, "head" area reaches his shoulders)
+  → new problem to fix; **0 false alarms** in the car-park clip (red cars, red dome) vs ~130 for colour only.
+  People vs YOLO11l reference: big people 100% for YOLO11n/12n, all people ~66% (small, far, 7-8 m). Bikes almost never boxed as people.
+  The gentle fine-tuned model finds **0 bikes** (lost the class) → for obstacles keep the COCO model.
+- **YOLO-World v2 s / YOLOE-11s** (`1_CODE/m05_openvocab.py`), as promised in the work plan for 23.11: asked for e-scooters and strollers →
+  1 real scooter (called "stroller"), 11 wrong (bikes, backpack, planter); no strollers in the clips; ~140 ms/frame (3x YOLO11n).
+  Not usable as is; next semester: film scooters/strollers, tune prompts or fine-tune with extra classes.
+- Note: `2_MILESTONES/M05_newclips_bikes_openvocab_22.11.md`. YOLOE downloads a 600 MB text encoder (`mobileclip_blt.ts`, ignored in git).
+- Open: label the test set (both); fix for red clothes (smaller head area for small boxes) tested on those labels.
 
 ## 22.11.2026 15:45, Nimer: labelling set-up for the new clips (Med Faculty, bikes) — TEST-ONLY
 - New `1_CODE/m05_newclips.py`, same pattern as `m05_finetune.py`. The frames become a **new test set** (never train on
