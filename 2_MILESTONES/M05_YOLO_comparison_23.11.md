@@ -45,3 +45,5 @@ Speed (FPS) on one computer only: `python m05.py run` (everything). Demo: `pytho
 - **Winner:** the fastest model with detection rate >= 90% at brightness 1.0; a tie goes to the better result at 0.35.
 
 Formulas with worked examples: part 4 of the plan. Keep the AI log up to date.
+
+Alternatives considered (to YOLO, to the colour marker, Crazyflie): `M05_engineering_considerations.md`.
