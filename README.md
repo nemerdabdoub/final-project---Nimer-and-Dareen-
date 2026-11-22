@@ -14,7 +14,7 @@ Nimer Dabdoub & Dareen Jubran · Supervisor: Gabi · Drone: DJI Neo (controlled 
 ## Folders
 - `1_CODE/` — our code (see below)
 - `2_MILESTONES/` — one how-to file per milestone
-- `4_DOCUMENTS/` — plans and documents (current: `M05_plan_final.pdf` / `.docx`; older: `Project_3493_Plan_until_Gabi_23.11.pdf`)
+- `4_DOCUMENTS/` — plans and documents (current: `M05_plan_revised_22.11.pdf`; details: `M05_plan_final.pdf` / `.docx`; older: `Project_3493_Plan_until_Gabi_23.11.pdf`)
 - `3_EVIDENCE/` (logs, videos, screenshots) stays on the laptop and is **not** in git (too big)
 
 ## Setup
