@@ -1,13 +1,20 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 08:30):** Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
+**LATEST PUSHES (22.11, 08:40):** Nimer 08:40 – panel: new "Files Dareen changed" section ·
+Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
 Dareen 07:34 – her 162 training labels DONE → **all 335 training labels in** ·
 Nimer 07:27 – his half of the training labels DONE (173 frames, `M05_data/train/labels`) · Dareen 07:12 – classroom clip added to training (335 frames) · Dareen 07:07 – fine-tuning started (`m05_finetune.py`) ·
 Nimer 06:47 – one-page summary PDF `4_DOCUMENTS/M05_summary_23.11.pdf` + `.gitattributes` · Dareen 06:28–06:44 – her
-summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** `python m05_finetune.py train` → test `yolo11n_drone.pt` on the 152.
+summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agree the winner = original YOLO11n (fine-tuning reported as tried) and pick ONE summary before Mon 12:00.
 **Two summaries exist** (Dareen's 06:28 and Nimer's PDF): pick one together before Mon 12:00.
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 ~08:40, Nimer: panel shows the files Dareen changed
+- `tools/project-updates`: new section "Files Dareen changed" = every file in Dareen's pushed commits of the last 2 days,
+  newest first, click to open; frame/label folders under `M05_data/` (and folders with >10 files) are one row each.
+  Only pushed work is visible. (Dareen: the same panel can show Nimer's files; ask your Claude if you want it.)
+- Nimer agrees with keeping the original YOLO11n (his own re-training was stopped at round 6: your result settles it).
 
 ## 22.11.2026 ~08:30, Dareen: FINE-TUNING RESULT — portrait gone, but fewer people found → keep YOLO11n
 - Trained `yolo11n_drone.pt` (30 epochs, 288 train / 47 val frames from the 335, ~40 min on CPU; not in git).

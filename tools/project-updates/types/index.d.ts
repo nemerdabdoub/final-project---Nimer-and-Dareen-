@@ -22,10 +22,17 @@ export type FalseAlarm = {
   from: string
 }
 
+export type PartnerFile = {
+  path: string
+  when: string
+  count?: number
+}
+
 export type Snapshot = {
   commits: Commit[]
   local: LocalFile[]
   falseAlarms: FalseAlarm[]
+  dareenFiles?: PartnerFile[]
   syncNote?: string
   ahead: number
   behind: number

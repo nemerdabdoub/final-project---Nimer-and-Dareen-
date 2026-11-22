@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Commit, FalseAlarm, LocalFile, Snapshot } from '../types'
+import type { Commit, FalseAlarm, LocalFile, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -181,8 +181,36 @@ async function refresh($: any) {
 
       const falseAlarms = await readFalseAlarms($)
 
+      // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
+      // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
+      const dl = await git($, ['log', 'origin/main', '--author=Dareen', '--since=2 days ago', '--name-only',
+        '--format=%x1e%ad', '--date=format:%d.%m %H:%M'])
+      const seen = new Map<string, string>()
+      for (const block of dl.stdout.split('\x1e')) {
+        const [when = '', ...files] = block.split('\n').map((x: string) => x.trim())
+        for (const f of files) if (f && !seen.has(f)) seen.set(f, when)
+      }
+      // A folder with many changed files (frames, labels) becomes one row, so her code and notes stay visible.
+      const byDir = new Map<string, string[]>()
+      for (const path of seen.keys()) {
+        const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/') + 1) : ''
+        byDir.set(dir, [...(byDir.get(dir) ?? []), path])
+      }
+      const dareenFiles: PartnerFile[] = []
+      const grouped = new Set<string>()
+      for (const [path, when] of seen) {
+        const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/') + 1) : ''
+        const inDir = byDir.get(dir) ?? []
+        if (dir && (inDir.length > 10 || (dir.startsWith('M05_data/') && inDir.length > 3))) {
+          if (!grouped.has(dir)) {
+            grouped.add(dir)
+            dareenFiles.push({ path: dir, when, count: inDir.length })
+          }
+        } else dareenFiles.push({ path, when })
+      }
+
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -249,6 +277,29 @@ export const register: Register = (on, options) => {
               {f.path} <Text dimColor>{f.status} {f.modified}</Text>
             </Button>
           ))}
+        </Box>
+
+        <Box flexDirection="column">
+          <Text bold>
+            <Text color="#d0508a">Files Dareen changed</Text> (
+            {(s.dareenFiles ?? []).reduce((n, f) => n + (f.count ?? 1), 0)}, pushed in the last 2 days)
+          </Text>
+          <Text dimColor>newest first · click to open · only what she pushed is visible</Text>
+          {(s.dareenFiles ?? []).length === 0 && <Text dimColor>Nothing pushed by Dareen in the last 2 days.</Text>}
+          {(s.dareenFiles ?? []).slice(0, 25).map(f =>
+            f.count ? (
+              <Text key={'dareen:' + f.path}>
+                {f.path} <Text dimColor>({f.count} files) {f.when}</Text>
+              </Text>
+            ) : (
+              <Button key={'dareen:' + f.path} onPress={() => openFile($, f.path)}>
+                {f.path} <Text dimColor>{f.when}</Text>
+              </Button>
+            ),
+          )}
+          {(s.dareenFiles ?? []).length > 25 && (
+            <Text dimColor>+{(s.dareenFiles ?? []).length - 25} more (older)</Text>
+          )}
         </Box>
 
         <Box flexDirection="column">
