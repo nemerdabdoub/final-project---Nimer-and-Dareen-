@@ -119,6 +119,12 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 **Demo video (C5), YOLO11n + turban colour**, clip 161951, 60 s: user by colour 70%, kept by the 1-s fallback 8%,
   none 22%. Green = user, blue = others; picks the actor in front of the red mural. Video on Dareen's laptop
   (`3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4`); stills in `M05_data/results/demo_yolo11n_22.11/`.
+- 22.11 **Why the demo shows wrong blue boxes (statues) and misses (far woman):** the video is YOLO11n's raw output on the
+  original clip; our corrected labels are only the answer key for scoring, they do not train the model. These mistakes
+  are the ones counted in Table A (17 wrong boxes, 46 missed people in 152 frames). Cleaner demo at confidence 0.4
+  (`python m05.py video <clip> yolo11n.pt 0.4`): 17 → 3 wrong boxes but 46 → 55 missed people (detection 85.4 → 82.5%,
+  precision 94.1 → 98.9%); removes ~3.5-6% of the boxes in the clips, including some real, partly hidden people
+  (`conf_0.25_vs_0.4_what_is_removed.jpg`). Only fine-tuning on our drone frames would teach "statue ≠ person".
 
 ## 6. Problems we hit and how we solved them
 - 7.11 Small stick pushes (0.1-0.2 for 0.4-0.5 s) moved the Neo only a few cm → raised to 0.3 for 0.5 s (cap 0.4).

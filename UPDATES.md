@@ -3,6 +3,16 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: cleaner demo at confidence 0.4 (statue boxes) + why the demo has mistakes
+- The demo is YOLO11n's raw output; our corrected labels only score it, they do not train it → statues / missed far
+  people in the video are the Table A mistakes (17 wrong boxes, 46 missed).
+- `m05.py video VIDEO MODEL [CONF]`: new optional confidence (tables stay at 0.25). At 0.4: 17 → 3 wrong boxes, 46 → 55
+  missed (detection 82.5%, precision 98.9%). Videos `demo_*_yolo11n_conf0.4.mp4` on Dareen's laptop (161951: colour 69%,
+  fallback 7%, none 24%; 154848: 45 / 6 / 49%). Example of what 0.4 removes (a duplicate box, but also a real seated man):
+  `M05_data/results/demo_yolo11n_22.11/conf_0.25_vs_0.4_what_is_removed.jpg`.
+- Proposal for Monday: show the 0.25 demo (same setting as the tables) and say the blue mistakes are counted in Table A;
+  keep the 0.4 version as a backup if Gabi asks about the statue boxes.
+
 ## 22.11.2026, Dareen: SUMMARY FOR GABI + demo re-made + loose ends
 - **Nimer: please read `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf`** (5 pages; `.docx` to edit). It covers: result in
   one paragraph, M03 closed, data + method + hybrid design, Table A + Table B (one laptop), one line per check (C1-C5),

@@ -26,9 +26,11 @@ Everything is saved in  3_EVIDENCE/m05_user_detection/
          Optional, non-YOLO comparison (not part of "run" with no name):
              rtdetr-l        = RT-DETR alone (transformer detector)       -> table A + table B rows
              hybrid rtdetr-l = RT-DETR + colour                           -> table B "hybrid rtdetr-l"
- STEP 4  python m05.py video VIDEO [MODEL]
+ STEP 4  python m05.py video VIDEO [MODEL] [CONF]
          an annotated demo video: green = user (found by the turban colour), yellow = user kept by the
-         fallback (colour lost, same person as the last frame), blue = other people
+         fallback (colour lost, same person as the last frame), blue = other people.
+         CONF (optional, default 0.25 like the tables): e.g. 0.4 hides most low-confidence wrong boxes (statues),
+         but misses a few more people (on our frames: 17 -> 3 wrong boxes, 46 -> 55 missed people).
 """
 import csv
 import os
@@ -361,16 +363,20 @@ def cmd_run(args):
 def cmd_video(args):
     from ultralytics import YOLO
     if not args:
-        sys.exit("Use: python m05.py video VIDEO [MODEL]")
+        sys.exit("Use: python m05.py video VIDEO [MODEL] [CONF]")
+    global CONF
     video = args[0]
     model_name = args[1] if len(args) > 1 else "yolo26n.pt"
+    if len(args) > 2:
+        CONF = float(args[2])                       # people_of() reads CONF; only this demo run changes
     model = load_model(model_name)
     cap = cv2.VideoCapture(video)
     if not cap.isOpened():
         sys.exit(f"Cannot open {video}")
     fps = cap.get(cv2.CAP_PROP_FPS) or 25
     ROOT.mkdir(parents=True, exist_ok=True)
-    out = ROOT / f"demo_{Path(video).stem}_{model_name.replace('.pt', '')}.mp4"
+    tag = f"_conf{CONF:g}" if len(args) > 2 else ""
+    out = ROOT / f"demo_{Path(video).stem}_{model_name.replace('.pt', '')}{tag}.mp4"
     writer, step, i = None, 3, 0
     last, by_colour, by_fallback, none, run = None, 0, 0, 0, 0
     max_run = max(1, round(fps / step))          # the fallback bridges at most about 1 second
@@ -405,7 +411,7 @@ def cmd_video(args):
                 cv2.rectangle(fr, tuple(user[:2]), tuple(user[2:]), col, 3)
                 cv2.putText(fr, "USER (kept)" if kept else "USER", (user[0], max(20, user[1] - 8)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.8, col, 2)
-            cv2.putText(fr, f"{model_name.replace('.pt', '')} + turban colour", (10, 30),
+            cv2.putText(fr, f"{model_name.replace('.pt', '')} + turban colour (conf {CONF:g})", (10, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
             if writer is None:
                 h, w = fr.shape[:2]
