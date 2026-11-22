@@ -8,8 +8,8 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
 - `1_CODE/` our scripts (run them from here; `OPEN_TERMINAL_HERE.bat` opens a terminal inside 1_CODE).
   Lab files (DJIneo.py, scrcpy.py, adb.exe, .dll, .jar) live here too but are NOT in git.
 - `2_MILESTONES/` one how-to/status note per milestone.
-- `3_EVIDENCE/<date>/` logs, videos, screenshots — on each laptop only, NOT in git (too big). Share via Drive.
-- `4_DOCUMENTS/` plans. Current: `M05_plan_final.pdf` / `.docx`.
+- `3_EVIDENCE/<date>/` logs, videos, screenshots — on each laptop only, NOT in git (too big). Share M05 data through `M05_data/`.
+- `4_DOCUMENTS/` plans. Current: `M05_plan_revised_22.11.pdf`; details: `M05_plan_final.pdf`.
 - `5_LOGS/` Project_logs.xlsx (includes the AI log) — laptop only.
 - `M05_data/` M05 frames, labels and result CSVs shared through git (small files only; never videos or *.pt).
 
@@ -21,7 +21,7 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
   Script: `1_CODE/m05.py`. Session notes: `2_MILESTONES/M05_session_notes_22.11_Dareen.md`.
   - Done (22.11 night): install, 152 frames, suggested labels, split folders to_label_Dareen (81) / to_label_Nimer (71).
   - Next: share data in `M05_data/` (frames, to_label_*, then labels + results) → both correct their half by Sun 14:00 →
-    checks (Dareen C1, C4, H3, speed run; Nimer C2, C3, H1, H2) → winner together Sun 17:30 → demo → summary Mon 12:00.
+    checks split equally by method (Dareen: C1 colour + H1, H2, H3 YOLO + colour; Nimer: C2, C3, C4 YOLO alone + speed run) → winner together Sun 17:30 → demo → summary Mon 12:00.
 - M06 user tracking — due 7.12, not started.
 
 ## M05 in short (details in the plan)
