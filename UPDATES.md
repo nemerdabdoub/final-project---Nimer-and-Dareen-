@@ -3,6 +3,10 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: instructions for Nimer
+- **Nimer: read `2_MILESTONES/M05_instructions_for_Nimer_22.11.md`** — your steps now: C2-C4 (Table A on all 152
+  `labels`, "YOLO only" Table B rows on the 132 `labels_marker`), the speed run, push the CSVs; winner call 17:30.
+
 ## 22.11.2026, Dareen: FINAL Table B (C1 + H1-H3) on all corrected labels
 - Checked Nimer's 71 labels (valid; 154848: actor = user in 22 of 40, 161825: 26 of 31). All 152 in `M05_data/labels`.
 - `labels_marker` = 132 frames (104 with the actor, 28 without), `labels_nomarker` = 20 (154124).
