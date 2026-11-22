@@ -1,4 +1,6 @@
 # Updates log (newest first)
+**DAREEN, PLEASE:** upload `3_EVIDENCE/2026-11-22/143404_recording_session1.mp4` (450 MB) to our shared Google Drive folder
+"Final Project Dareen and Nimer" — Nimer needs the video (videos are not in git). Tell him when it is there.
 **LATEST PUSHES (22.11, 17:50):** Nimer 17:50 – `4_DOCUMENTS/Next_three_steps_22.11.pdf` + first M06 run on 161951 (tracker keeps the user in 82% of frames vs 76% old way) ·
 Dareen 17:36 – `record_video.py`: keys T = take off, L = land in the recording window (not flight-tested yet) · Dareen 17:40 – new clips tested (hybrid 83/88 right, 5 wrong = man in red shirt; 0 false alarms over the car park) + YOLO-World / YOLOE work-plan check (not usable as is) + `prepare` done → **Nimer: `python m05_newclips.py label nimer`** · Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
 Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
