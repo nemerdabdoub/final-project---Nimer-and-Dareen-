@@ -43,7 +43,9 @@ extra row on `labels_nomarker` (154124 only), Table A on all `labels`. Details a
 - **Commit and push automatically**: after each finished change to files in git (code, notes, CLAUDE.md), do
   `git pull`, then `git add` the changed files, `git commit` with a short clear message, and `git push` to `main`,
   without waiting to be asked. Tell the user in one line what was pushed. Never force-push. If the pull shows a
-  conflict, stop and explain it simply instead of pushing.
+  conflict, stop and explain it simply instead of pushing. **Never use `git stash`** (Nimer's rule): pull without
+  stashing; if git refuses because a local change would be overwritten, commit that change first or tell the user.
+  The Project updates panel (`tools/project-updates`) also auto-pulls and auto-pushes every 2 min, with the same rules.
 - At the end of a work session, update the Status section of this file with what was done and push it.
 - **Keep the partner and their Claude in sync** through `UPDATES.md` (in git, newest first):
   at the start of every session, `git pull`, read the newest entries in `UPDATES.md` and tell the user in a few lines

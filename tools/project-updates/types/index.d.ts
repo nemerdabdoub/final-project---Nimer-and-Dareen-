@@ -26,6 +26,7 @@ export type Snapshot = {
   commits: Commit[]
   local: LocalFile[]
   falseAlarms: FalseAlarm[]
+  syncNote?: string
   ahead: number
   behind: number
   checkedAt: string

@@ -86,8 +86,43 @@ const statusWord: Record<string, string> = {
 
 let tick = 0
 
+// No prompts or sign-in windows from the background: a push without a saved login just fails and says so.
+const QUIET = { GIT_TERMINAL_PROMPT: '0', GCM_INTERACTIVE: 'never' }
+
 async function git($: any, args: string[]): Promise<ProcessRunResult> {
-  return $.process.run([GIT, ...args], REPO ? { cwd: REPO, timeoutMs: 60_000 } : { timeoutMs: 60_000 })
+  return $.process.run([GIT, ...args], REPO ? { cwd: REPO, timeoutMs: 60_000, env: QUIET } : { timeoutMs: 60_000, env: QUIET })
+}
+
+let syncNote = ''
+
+// Auto pull + push, every 2 minutes. Never stashes, never force-pushes, never commits: it only moves commits that exist.
+async function autoSync($: any) {
+  const inMerge = await git($, ['rev-parse', '-q', '--verify', 'MERGE_HEAD'])
+  if (inMerge.exitCode === 0) { syncNote = 'Auto-sync paused: a merge is in progress. Finish it first.'; return }
+  await git($, ['fetch', '--quiet'])
+  const counts = await git($, ['rev-list', '--left-right', '--count', 'HEAD...origin/main'])
+  const [ahead = 0, behind = 0] = counts.stdout.trim().split(/\s+/).map(Number)
+  if (behind > 0) {
+    const pull = ahead === 0
+      ? await git($, ['merge', '--ff-only', 'origin/main'])            // only new commits from GitHub: fast-forward
+      : await git($, ['merge', '--no-edit', 'origin/main'])            // both sides have commits: a normal merge
+    if (pull.exitCode !== 0) {
+      await git($, ['merge', '--abort'])                              // conflict: undo the attempt, keep everything
+      const why = /overwritten|local changes/i.test(pull.stderr + pull.stdout)
+        ? 'your unsaved changes touch the same files. Commit or finish them first (nothing is stashed).'
+        : 'a conflict needs a person. Ask Claude to merge it.'
+      syncNote = `Auto-pull stopped: ${why}`
+      return
+    }
+    syncNote = `Auto-pulled ${behind} commit(s) at ${stamp(Date.now())}`
+  }
+  const now = await git($, ['rev-list', '--count', 'origin/main..HEAD'])
+  if (Number(now.stdout.trim()) > 0) {
+    const push = await git($, ['push', 'origin', 'HEAD:main'])
+    syncNote = push.exitCode === 0
+      ? `Auto-pushed ${now.stdout.trim()} commit(s) at ${stamp(Date.now())}`
+      : 'Auto-push needs a GitHub login once (token sign-in), or click Push origin in GitHub Desktop.'
+  }
 }
 
 async function findTools($: any) {
@@ -106,7 +141,7 @@ async function refresh($: any) {
     try {
       await findTools($)
       if (!REPO) throw new Error('This folder is not a git repo: open the project folder in VS Code.')
-      if (tick++ % FETCH_EVERY === 0) await git($, ['fetch', '--quiet'])
+      if (tick++ % FETCH_EVERY === 0) await autoSync($)
 
       const log = await git($, [
         'log', 'origin/main', '-20', '--name-only',
@@ -146,7 +181,7 @@ async function refresh($: any) {
       const falseAlarms = await readFalseAlarms($)
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -195,6 +230,10 @@ export const register: Register = on => {
           {s.behind > 0 && <Text color="warning">⬇ {s.behind} new from GitHub, not pulled yet</Text>}
           {s.ahead > 0 && <Text color="warning">⬆ {s.ahead} commit(s) here not pushed yet</Text>}
           {s.ahead === 0 && s.behind === 0 && s.checkedAt !== '' && <Text color="success">In sync with GitHub</Text>}
+          {s.syncNote && (
+            <Text color={/stopped|paused|needs/.test(s.syncNote) ? 'warning' : 'success'}>{s.syncNote}</Text>
+          )}
+          <Text dimColor>Auto pull + push every 2 min · never stashes · never force-pushes</Text>
           {s.error && <Text color="error">{s.error}</Text>}
         </Box>
 
