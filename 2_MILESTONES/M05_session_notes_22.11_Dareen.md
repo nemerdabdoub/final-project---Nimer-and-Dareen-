@@ -59,6 +59,7 @@ Popup: "Couldn't reconnect github: Authorization header is badly formatted".
      name `GITHUB_PERSONAL_ACCESS_TOKEN`, value = the token.
   3. Close the Claude app completely (also from the tray) and open it again. The popup should be gone.
 
-## 6. Open question for Nimer
-`1_CODE/detect_user.py` and `1_CODE/fix_video_speed.py` are staged on Dareen's laptop but **not committed**.
-Are they yours? Tell Dareen whether to push them.
+## 6. Also pushed
+`1_CODE/detect_user.py` (Dareen's earlier colour / YOLO / hybrid test on one video) and
+`1_CODE/fix_video_speed.py` (re-saves an old slow-motion demo.mp4 at the real speed) are Dareen's and are now in git.
+The M05 checks themselves use `m05.py`.
