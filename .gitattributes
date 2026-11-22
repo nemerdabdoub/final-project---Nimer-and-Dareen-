@@ -1,0 +1,11 @@
+# Binary files: never change line endings inside them (a PDF or image would break).
+*.pdf  binary
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.docx binary
+*.xlsx binary
+*.pptx binary
+*.zip  binary
+*.pt   binary
+*.mp4  binary
