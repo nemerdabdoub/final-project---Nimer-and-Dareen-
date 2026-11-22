@@ -12,6 +12,12 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: deck for Monday shortened; full deck kept for the semester presentation
+- **For Gabi on 23.11: `4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx` / `.pdf` (9 slides):** title, M03 closed, the M05 question,
+  three ways compared, key result (wrong person 36.5% → 0%), picture, the three YOLO models vs 90%, final choice, M06 + questions.
+- **Full 15-slide deck saved as material** in `4_DOCUMENTS/presentation_material_end_of_semester_A/` with a README of which
+  slides to reuse (design, all 8 detectors, failures, fine-tuning, earlier projects). Linked from the presentation log.
+
 ## 22.11.2026 ~09:05, Dareen: ONE TABLE OF ALL 8 DETECTORS (same laptop, same run) + final choice
 - `M05_data/results/all_models_22.11/m05_all_models.md` (best per column in bold; script `1_CODE/m05_all_models.py`):
   YOLO11n, YOLOv12n, YOLO26n, both fine-tunes, YOLO11s, YOLO11m, YOLO11s at 1280 px — detection (all / following

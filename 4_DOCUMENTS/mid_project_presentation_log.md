@@ -4,6 +4,7 @@ Everything we may want to show in the mid-project presentation, collected as it 
 **Rule (both of us and both Claudes):** every update that adds a result, a decision, a number, a video or a problem
 gets one line in the right section below, with the date and where the proof is. Newest at the bottom of each section.
 Presentation date: _to fill in_.
+**Finished slides to reuse:** `presentation_material_end_of_semester_A/` (M05 full deck, 15 slides, with a list of which slides to reuse).
 
 ## 1. The project in one slide
 - Goal: an autonomous drone that finds a user and guides them to a target (Project 3760, TAU, supervisor Dr. Gabi Davidov).
