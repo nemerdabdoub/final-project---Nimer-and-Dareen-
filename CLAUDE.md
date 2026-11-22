@@ -42,6 +42,10 @@ Results go to `3_EVIDENCE/m05_user_detection/` (CSV tables A and B). Brightness 
   without waiting to be asked. Tell the user in one line what was pushed. Never force-push. If the pull shows a
   conflict, stop and explain it simply instead of pushing.
 - At the end of a work session, update the Status section of this file with what was done and push it.
+- **Keep the partner and their Claude in sync** through `UPDATES.md` (in git, newest first):
+  at the start of every session, `git pull`, read the newest entries in `UPDATES.md` and tell the user in a few lines
+  what the partner changed; after every finished change, add a short dated entry there (who, what, results, what is
+  open) in the same commit, then push. The push @mentions the partner on GitHub.
 - Don't edit the same file the partner is editing; a push triggers `.github/workflows/notify-partner.yml`, which
   @mentions the other partner on GitHub.
 - Never commit 3_EVIDENCE, videos, model files (*.pt), lab binaries or 5_LOGS (see .gitignore).
