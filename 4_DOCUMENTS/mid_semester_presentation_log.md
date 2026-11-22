@@ -41,7 +41,8 @@ as a second characteristic that also gives the distance to the user.
   (`flight_test.py moves 0.3 0.5`), landed from code about 7 s after the landing started, battery 69% → 66%.
   Proof: `3_EVIDENCE/2026-11-12/190414_flight_test_log.txt` + video.
 - M04 work plan: submitted on Moodle 12.11.
-- M05 user detection: in progress, due 23.11 (see section 4).
+- M05 user detection: in progress, due 23.11 (see section 4). 22.11: Dareen's 81 labels corrected and shared
+  (`M05_data/labels`); Nimer's 71 to follow.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers

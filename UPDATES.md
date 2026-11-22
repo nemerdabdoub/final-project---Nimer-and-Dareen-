@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: her 81 corrected labels shared
+- `M05_data/labels/`: 81 corrected files (161951: 61, actor = user in 56, 2 empty frames; 154124: 20, actor = user
+  without the turban in all 20). Checked: only classes 0/1, values 0-1, at most one user per frame.
+- **Nimer:** add your 71 corrected files to the same folder and push. Then both copy `M05_data/labels` into
+  `3_EVIDENCE/m05_user_detection/labels` before running checks.
+
 ## 22.11.2026 04:55, Dareen (with Claude in the Claude app)
 - Dareen's 81 labels corrected (makesense.ai): `3_EVIDENCE/m05_user_detection/labels` on her laptop (2 empty files added
   for frames with nobody). In clip 154124 the actor is there **without the turban**, labelled as user.
