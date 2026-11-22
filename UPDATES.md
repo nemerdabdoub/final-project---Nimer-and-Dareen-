@@ -3,6 +3,15 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: what to change, ranked from easiest to hardest
+- **Nimer: read the new section "What we would do differently, from easiest to hardest" in
+  `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`** — each item says what exactly to do and what to expect.
+- Very easy (code, ~30 min): A ignore boxes that fill the frame (removes the 2 hand false alarms); B extra Table A row
+  for people > 1/4 of the frame (~95%). Easy (one filming session): C record on the drone (built-in storage, no SD card),
+  D film at 3-6 m, E 5 frames/s, F tune on old clips / test on new. Medium: G unique marker colour, H ArUco, I real low light.
+  Hard: J fine-tune YOLO.
+- Proposal: A + B before the meeting; C-F as one session next week; ask Gabi about G or H. Your opinion?
+
 ## 22.11.2026, Dareen: demo video done + tests toward 90%
 - **Demo (C5), YOLO11n + colour** on 161951: `3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4`
   on Dareen's laptop (60 s). User by colour 70%, kept by fallback 8%, none 22%. 2 screenshots in

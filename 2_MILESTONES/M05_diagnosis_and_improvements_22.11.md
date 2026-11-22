@@ -84,18 +84,57 @@ Lowering the head-colour threshold is a trade-off (same 132 frames):
   demo video was rendering (the ranking holds, exact FPS should be re-measured).
 - **Practical option:** run YOLO11n live, and switch to YOLO11s at 1280 px only when the user is small or lost.
 
-## What we would do differently next time
-1. **Record from the drone itself (its built-in storage), not the phone mirror.** The frames are 1080x608 with the DJI Fly buttons on
-   the left and right edges; many of the edge-cut misses are people partly under those buttons.
-2. **Film at following distance.** Table A counts every far person in the background; the drone only needs to follow one
-   nearby person. Either film closer or set the target for people above a minimum size.
-3. **Keep tuning and testing apart.** Our colour thresholds were set on the frames we test on. Next time: tune on 1-2
-   clips, test on others, about 200+ frames from more than one place and light.
-4. **A real low-light flight** instead of darkened copies.
-5. **More frames per second in the test** (e.g. 5 instead of 1), so the 1-second fallback (and later tracking) is tested.
-6. **A marker with a colour that is nowhere else in the scene** (purple-red is close to skin, the mural and the sofa),
-   or a printed ArUco marker; and a marker visible from behind.
-7. **Fine-tune YOLO on drone-view frames** (needs a separate, larger labelled set, a few hundred frames).
+## What we would do differently, from easiest to hardest (what exactly to do)
+
+### Very easy: code only, no new filming (about 30 min each)
+**A. Ignore "people" that fill the whole frame** (the hand-in-front-of-the-lens false alarms)
+- Do: in `m05.py`, `hybrid_user`, skip person boxes taller than ~90% and wider than ~60% of the frame (about 3 lines).
+- Expect: the hybrid's 2 false alarms disappear (7.1% → about 0%). Then re-run H1-H3 (10 min).
+
+**B. Count only people big enough to follow (extra Table A row)**
+- Do: when scoring detection, add a second number for people taller than 1/4 of the frame. Show it NEXT TO the current
+  number, not instead of it (so it is not "moving the goalposts").
+- Expect: YOLO11n ~95% → the target is met for the people the drone follows; far background people stated as excluded.
+
+### Easy: one short new filming session (1-2 h with the flight)
+**C. Record on the drone, not the phone mirror**
+- Do: in DJI Fly start recording on the drone (the Neo saves to its built-in storage, up to 4K; it has no SD card).
+  After landing: DJI Fly → Album → download to the phone, or connect the Neo to the laptop with USB-C. Then `m05.py extract`.
+- Expect: sharper frames, no DJI Fly buttons over the left/right edges → fewer "cut by the edge" misses.
+
+**D. Film at following distance**
+- Do: in the same flight keep the drone ~3-6 m from the actor so he is at least 1/4 of the frame height; a few other
+  people walk by, closer and farther.
+- Expect: a test set that matches the real task.
+
+**E. More frames per second**
+- Do: extract with a smaller step (e.g. 5 instead of 25 for a 25 fps clip = 5 frames/s). Use a short 20-30 s clip or
+  `label_tool.py` (5x more frames = 5x more labelling).
+- Expect: the 1-second fallback and the M06 tracking can actually be tested.
+
+**F. Keep tuning and testing apart**
+- Do: the 20.11 clips = tuning only; the new clips from C-E = testing only. No setting changed after seeing test results.
+- Expect: numbers Gabi can trust; confirms (or not) the YOLO11s 1280 px 91.7%.
+
+### Medium: needs a decision or something printed/bought (half a day)
+**G. A marker colour found nowhere else**
+- Do: a bright colour not in the lab (neon green / cyan cap or vest, visible from all sides); change `TURBAN_HSV` in `m05.py`.
+- Expect: no confusion with skin, the red mural or the sofa.
+
+**H. A printed ArUco marker**
+- Do: print a large ArUco code (A4, ~20 cm); OpenCV has `cv2.aruco` built in.
+- Expect: identifies the user AND gives distance + angle (useful for the M06 distance controller). Weak: must face the
+  camera, motion blur. Ask Gabi first (question c).
+
+**I. A real low-light flight**
+- Do: the same flight as C-D in the evening or with the lab lights dimmed (keep the safety rules; the Neo struggles in
+  very dark places).
+
+### Hard: not before M06
+**J. Fine-tune YOLO on drone-view frames** — a few hundred new labelled frames kept apart from the test set + training time.
+
+**Proposal:** before the meeting only **A + B** (half an hour, no flying). Propose **C + D + E + F as one filming
+session** next week, and ask Gabi about **G or H**.
 
 ## Demo video (C5) done
 `3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4` (60 s, on Dareen's laptop; video not in git).
