@@ -57,6 +57,8 @@ extra row on `labels_nomarker` (154124 only), Table A on all `labels`. Details a
   at the start of every session, `git pull`, read the newest entries in `UPDATES.md` and tell the user in a few lines
   what the partner changed; after every finished change, add a short dated entry there (who, what, results, what is
   open) in the same commit, then push. The push @mentions the partner on GitHub.
+  Also keep the **"LATEST PUSHES" line at the very top of `UPDATES.md`** current (Nimer's rule): newest push first,
+  "who time – what" for the last few pushes of both, then **Next:**; update it in every commit that adds an entry.
 - **Mid-project presentation log**: every update that adds a result, number, decision, video/demo or problem solved
   also gets one dated line in the right section of `4_DOCUMENTS/mid_project_presentation_log.md` (same commit).
 - Don't edit the same file the partner is editing; a push triggers `.github/workflows/notify-partner.yml`, which
