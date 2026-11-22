@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 15:30):** Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
+**LATEST PUSHES (22.11, 15:45):** Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
+Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
 Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
 Dareen 10:05 – Gabi deck shortened to 11 slides (`4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx`: comparisons + decision, new all-results table slide); full 16-slide deck saved in `4_DOCUMENTS/presentation_material_end_of_semester_A/` ·
 Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
@@ -14,6 +15,17 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 15:45, Nimer: labelling set-up for the new clips (Med Faculty, bikes) — TEST-ONLY
+- New `1_CODE/m05_newclips.py`, same pattern as `m05_finetune.py`. The frames become a **new test set** (never train on
+  them): an honest check of the hand filter, the head-colour threshold and later M06 tracking on unseen footage.
+- **Dareen (you have the clips): `python m05_newclips.py prepare`** → 1 frame every 2 s from both clips (~300 frames),
+  draft labels (YOLO11l + turban colour), every other frame to each half → `M05_data/test_22.11/` → push.
+  Tested end to end on a 20.11 clip on Nimer's laptop.
+- Then both: `python m05_newclips.py label nimer` / `label dareen` (label_tool, same keys) → `M05_data/test_22.11/labels`;
+  `python m05_newclips.py check` shows both halves' progress. **Rules = M05 test labels:** user = the turban man always,
+  person = every other real person (small and far ones too), no box on bikes / posters / hands / app buttons.
+- Please also fill the shot log (who wore the turban, when he is hidden) in `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 
 ## 22.11.2026 15:15, Dareen: NEW FILMING outside the Medical Faculty (bikes) + M06 tracking tool started
 - Two new drone clips on Dareen's laptop, `3_EVIDENCE/2026-11-22/`: `143404_recording_session1.mp4` (~5 min, 450 MB),
