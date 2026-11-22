@@ -10,7 +10,7 @@ Reproduce: `python m05_diagnose.py` (in 1_CODE; prints only).
 | Table A (C2-C4) + speed run | done (Nimer) |
 | Table B (C1 + H1-H3), no-marker row, 2 screenshots | done (both laptops, identical numbers) |
 | Winner | **to write down**: everything points to YOLO11n |
-| Demo video | **not made** (Dareen): `python m05.py video "..\3_EVIDENCE\2026-11-20\161951_recording_test60.mp4" yolo11n.pt` |
+| Demo video | done (Dareen, YOLO11n, see "Demo video" below) |
 | One-page summary, AI log lines | **open** (Nimer by Mon 12:00; both add an AI log line) |
 
 **Winner sentence (proposal):** Winner = YOLO11n, because it is both the most accurate (85.4% detection, 94% precision)
@@ -62,6 +62,45 @@ Lowering the head-colour threshold is a trade-off (same 132 frames):
 ## Problem 4: the hybrid's 2 false alarms = a hand in front of the lens
 154848 frames 00114 and 00152: YOLO calls the hand a person and the pink skin passes as the turban colour.
 - **Fix:** ignore "people" boxes that fill almost the whole frame (one line in `hybrid_user`).
+
+## Can we reach 90%? Tested on the same 152 frames (`python m05_improve.py`)
+| Setting | Detection | Precision | Big people (> 1/4 height) | Speed (Dareen's laptop) |
+|---|---:|---:|---:|---:|
+| YOLO11n, 640 px (today) | 85.4% | 94.1% | 95.4% | 37 FPS |
+| YOLO11n, 1280 px | 82.2% | 93.2% | 90.0% | 13 FPS |
+| YOLO11n, 640 px + 2 tiles | 85.7% | 85.4% | 95.4% | 10 FPS |
+| YOLO11s, 640 px | 84.8% | 93.0% | 93.3% | 18 FPS |
+| **YOLO11s, 1280 px** | **91.7%** | 89.8% | 92.9% | 5 FPS |
+| YOLO11s, 640 px + 2 tiles | 89.8% | 82.5% | 93.3% | 5 FPS |
+| YOLO11m, 640 px | 87.9% | 94.2% | 96.2% | 7 FPS |
+| YOLO11m, 1280 px | 88.6% | 90.0% | 93.3% | 2 FPS |
+| YOLO11l, 640 px (biased: it made the suggested labels) | 88.3% | 97.5% | 95.4% | 5 FPS |
+
+- **Only YOLO11s at 1280 px passes 90%** (91.7%), at the cost of precision (89.8%) and speed (about 5 FPS on a laptop
+  CPU, too slow for live control). Bigger models alone (11m, 11l) reach about 88%.
+- The gain is on the small, far people. For the people that matter for following (big in the picture), YOLO11n at 640 px
+  is already about as good as anything here (95%).
+- Caveats: picked after seeing these same frames, so it must be confirmed on new clips; speeds partly measured while the
+  demo video was rendering (the ranking holds, exact FPS should be re-measured).
+- **Practical option:** run YOLO11n live, and switch to YOLO11s at 1280 px only when the user is small or lost.
+
+## What we would do differently next time
+1. **Record from the drone itself (SD card), not the phone mirror.** The frames are 1080x608 with the DJI Fly buttons on
+   the left and right edges; many of the edge-cut misses are people partly under those buttons.
+2. **Film at following distance.** Table A counts every far person in the background; the drone only needs to follow one
+   nearby person. Either film closer or set the target for people above a minimum size.
+3. **Keep tuning and testing apart.** Our colour thresholds were set on the frames we test on. Next time: tune on 1-2
+   clips, test on others, about 200+ frames from more than one place and light.
+4. **A real low-light flight** instead of darkened copies.
+5. **More frames per second in the test** (e.g. 5 instead of 1), so the 1-second fallback (and later tracking) is tested.
+6. **A marker with a colour that is nowhere else in the scene** (purple-red is close to skin, the mural and the sofa),
+   or a printed ArUco marker; and a marker visible from behind.
+7. **Fine-tune YOLO on drone-view frames** (needs a separate, larger labelled set, a few hundred frames).
+
+## Demo video (C5) done
+`3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4` (60 s, on Dareen's laptop; video not in git).
+User picked by the turban colour in 70% of frames, kept by the 1-second fallback in 8%, no user in 22%.
+Screenshots: `M05_data/results/demo_yolo11n_22.11/` (user in front of the red mural; user among other people).
 
 ## Problem 5: limits of the test
 One place, one day, 152 frames; the dark test is darkened copies, not a real low-light flight; frames are 1 s apart,

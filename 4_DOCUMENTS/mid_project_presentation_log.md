@@ -78,6 +78,8 @@ as a second characteristic that also gives the distance to the user.
   Source: Dareen, `1_CODE/m05_diagnose.py`, `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
 - 22.11 **Why the hybrid finds the user in 73%:** 27 of its 28 misses = YOLO boxed him but too little turban on the head.
   Lower head-colour threshold: 2% → 78% found / 11% false alarm; 1% → 82% / 1% wrong / 14% false alarm. Kept 3%.
+- 22.11 **Toward 90% detection:** only YOLO11s at 1280 px passes (91.7%, precision 89.8%, ~5 FPS on a laptop CPU);
+  YOLO11m / 11l ~88%; YOLO11n 640 px 85.4% but ~95% on big people. Source: Dareen, `1_CODE/m05_improve.py`.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
@@ -94,6 +96,9 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 `3_EVIDENCE/m05_user_detection/M05_frames.mp4` and `M05_frames_suggested_boxes.mp4` (152 frames, 76 s, boxes drawn).
 - 22.11 Two comparison screenshots: colour only picks a purple-red sofa, YOLO + colour picks the actor.
   `M05_data/results/nimer_22.11/screenshots/`.
+- 22.11 **Demo video (C5), YOLO11n + turban colour**, clip 161951, 60 s: user by colour 70%, kept by the 1-s fallback 8%,
+  none 22%. Green = user, blue = others; picks the actor in front of the red mural. Video on Dareen's laptop
+  (`3_EVIDENCE/m05_user_detection/demo_161951_recording_test60_yolo11n.mp4`); stills in `M05_data/results/demo_yolo11n_22.11/`.
 
 ## 6. Problems we hit and how we solved them
 - 7.11 Small stick pushes (0.1-0.2 for 0.4-0.5 s) moved the Neo only a few cm → raised to 0.3 for 0.5 s (cap 0.4).
@@ -112,5 +117,7 @@ as a second characteristic that also gives the distance to the user.
 
 ## 8. Next steps (to the end of the semester)
 - M05: correct labels (both halves) → real tables A and B → winner → demo video → summary for Gabi.
-  22.11: labels, tables A and B done; open: winner sentence (proposal YOLO11n), demo video, summary.
+  22.11: labels, tables A and B, demo video done; open: winner sentence (proposal YOLO11n), summary.
+- Lessons for the next data: record from the drone's SD card (not the 1080x608 mirror with app buttons), film at
+  following distance, tune and test on different clips, real low-light flight, 5 frames/s, a colour found nowhere else.
 - M06 user tracking by 7.12.
