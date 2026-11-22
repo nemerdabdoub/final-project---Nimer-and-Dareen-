@@ -53,6 +53,14 @@ as a second characteristic that also gives the distance to the user.
   the wrong person (misses = picks nobody). Same at 0.35. Source: Dareen, `m05_table_B_finding_the_user_*.csv`.
 - 22.11 RT-DETR (non-YOLO) test on stand-in labels: about 0.9 FPS vs about 15 FPS for YOLO26n (15-20x slower). Source: Dareen.
 
+- 22.11 **REAL M05 Table A** (152 hand-corrected frames, Nimer's laptop CPU): detection rate at 1.0 / 0.35 —
+  YOLO11n 85.4 / 84.8%, YOLOv12n 82.9 / 81.9%, YOLO26n 82.5 / 82.9%; precision 94-97%. 90% target not met by any model.
+  Proof: `M05_data/results/nimer_22.11/`.
+- 22.11 **REAL speed run** (one computer): YOLO11n 21.0 FPS (48 ms), YOLO26n 19.2 FPS (52 ms), YOLOv12n 16.3 FPS
+  (61 ms); colour only 13 ms/frame. Darkened copies (0.35) change detection by about 1 point at most.
+- 22.11 **Same-person evidence, YOLO alone** (turban frames, 104 with the user): picks the wrong person 35.6-36.5% of
+  the time; finding *a* person is not finding *the* user. Hybrid numbers on the same frames: Dareen's re-run.
+
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
   1 frame/s, 152 frames, classes `user` and `person`, brightness 1.0 and 0.35 (low-light stand-in).

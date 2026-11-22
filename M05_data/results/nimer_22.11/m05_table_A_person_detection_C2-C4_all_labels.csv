@@ -1,0 +1,7 @@
+model,brightness,frames,person detection rate %,precision %,FPS,ms/frame
+yolo11n,1.0,152,85.4,94.1,20.6,49
+yolo11n,0.35,152,84.8,95.4,23.0,43
+yolo12n,1.0,152,82.9,94.2,12.2,82
+yolo12n,0.35,152,81.9,97.4,12.8,78
+yolo26n,1.0,152,82.5,95.2,21.9,46
+yolo26n,0.35,152,82.9,96.3,22.7,44

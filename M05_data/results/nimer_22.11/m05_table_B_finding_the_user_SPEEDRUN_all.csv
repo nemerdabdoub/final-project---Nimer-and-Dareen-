@@ -1,0 +1,15 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+colour only,1.0,152,124,49.2,46.8,71.4,45.4,13
+colour only,0.35,152,124,47.6,47.6,71.4,44.1,9
+yolo11n only (biggest person),1.0,152,124,67.7,31.5,67.9,61.2,48
+hybrid yolo11n,1.0,152,124,61.3,0.0,7.1,67.1,48
+yolo11n only (biggest person),0.35,152,124,66.9,32.3,64.3,61.2,48
+hybrid yolo11n,0.35,152,124,62.1,0.0,7.1,67.8,48
+yolo12n only (biggest person),1.0,152,124,66.9,31.5,71.4,59.9,61
+hybrid yolo12n,1.0,152,124,61.3,0.0,7.1,67.1,61
+yolo12n only (biggest person),0.35,152,124,66.1,32.3,64.3,60.5,64
+hybrid yolo12n,0.35,152,124,61.3,0.0,7.1,67.1,64
+yolo26n only (biggest person),1.0,152,124,66.1,32.3,67.9,59.9,52
+hybrid yolo26n,1.0,152,124,62.1,0.0,7.1,67.8,52
+yolo26n only (biggest person),0.35,152,124,66.9,31.5,64.3,61.2,51
+hybrid yolo26n,0.35,152,124,61.3,0.0,7.1,67.1,51

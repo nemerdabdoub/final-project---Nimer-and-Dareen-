@@ -3,6 +3,19 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026 ~05:45, Nimer: 71 labels + C2-C4 + speed run (REAL labels, all 152)
+- `M05_data/labels/`: Nimer's 71 corrected (154848 + 161825; 6 empty files = nobody in frame). Now 152/152.
+- `M05_data/results/nimer_22.11/`: C2-C4 on all labels (Table A), on `labels_marker` (Table B "YOLO only"), speed run.
+- **Table A, all 152 frames, brightness 1.0 / 0.35:** detection rate YOLO11n 85.4 / 84.8%, YOLOv12n 82.9 / 81.9%,
+  YOLO26n 82.5 / 82.9%; precision 94-97%. **No model reaches the 90% target.**
+- **Speed run (Nimer's laptop, CPU, one computer):** YOLO11n 21.0 FPS (48 ms), YOLO26n 19.2 FPS (52 ms),
+  YOLOv12n 16.3 FPS (61 ms). Colour only 13 ms/frame.
+- **Table B "YOLO only" on `labels_marker` (132 frames, 104 with the user), 1.0:** user found 61.5-62.5%,
+  wrong person 35.6-36.5% for all three.
+- **For the 17:30 call:** the winner rule (fastest with ≥ 90%) picks nobody. YOLO11n is both the most accurate and
+  the fastest, so it wins on both counts; we report that the 90% target was not met in the lab, and why.
+- **Dareen:** re-run C1 + H1-H3 on the full `labels_marker` (132) and `labels_nomarker` (20) now that all labels are in.
+
 ## 22.11.2026, Nimer: label_tool.py, faster than makesense.ai
 - New `1_CODE/label_tool.py`: `python label_tool.py nimer` / `python label_tool.py dareen` opens each frame with the
   suggested boxes and saves corrected YOLO labels straight into `M05_data/labels/` (no upload/export). Click = select,

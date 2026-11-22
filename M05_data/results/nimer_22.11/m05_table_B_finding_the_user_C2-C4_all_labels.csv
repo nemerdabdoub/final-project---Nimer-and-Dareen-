@@ -1,0 +1,7 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+yolo11n only (biggest person),1.0,152,124,67.7,31.5,67.9,61.2,49
+yolo11n only (biggest person),0.35,152,124,66.9,32.3,64.3,61.2,43
+yolo12n only (biggest person),1.0,152,124,66.9,31.5,71.4,59.9,82
+yolo12n only (biggest person),0.35,152,124,66.1,32.3,64.3,60.5,78
+yolo26n only (biggest person),1.0,152,124,66.1,32.3,67.9,59.9,46
+yolo26n only (biggest person),0.35,152,124,66.9,31.5,64.3,61.2,44
