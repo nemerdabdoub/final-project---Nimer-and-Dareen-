@@ -23,6 +23,9 @@ Everything is saved in  3_EVIDENCE/m05_user_detection/
                                biggest person box                         -> table B "yolo11n only"
              hybrid yolo11n  = YOLO11n + colour: the turban on a head picks the user
                                                                           -> table B "hybrid yolo11n"
+         Optional, non-YOLO comparison (not part of "run" with no name):
+             rtdetr-l        = RT-DETR alone (transformer detector)       -> table A + table B rows
+             hybrid rtdetr-l = RT-DETR + colour                           -> table B "hybrid rtdetr-l"
  STEP 4  python m05.py video VIDEO [MODEL]
          an annotated demo video: green = user (found by the turban colour), yellow = user kept by the
          fallback (colour lost, same person as the last frame), blue = other people
@@ -37,6 +40,13 @@ import cv2
 import numpy as np
 
 MODELS = ["yolo11n.pt", "yolo12n.pt", "yolo26n.pt"]
+EXTRA_MODELS = ["rtdetr-l.pt"]       # optional non-YOLO comparison, only when named: run rtdetr-l
+
+
+def load_model(name):
+    """YOLO models and RT-DETR load with different classes in ultralytics."""
+    from ultralytics import RTDETR, YOLO
+    return RTDETR(name) if name.lower().startswith("rtdetr") else YOLO(name)
 PRELABEL_MODEL = "yolo11l.pt"        # bigger than the tested ones, so the suggestions do not favour one of them
 BRIGHTNESS = [1.0, 0.35]
 CONF, IOU_MATCH = 0.25, 0.5
@@ -206,14 +216,15 @@ def cmd_prelabel(args):
 # ---------------------------------------------------------------- step 3
 def cmd_run(args):
     from ultralytics import YOLO
-    names = ["colour", "hybrid"] + [m.replace(".pt", "") for m in MODELS]
+    names = ["colour", "hybrid"] + [m.replace(".pt", "") for m in MODELS + EXTRA_MODELS]
     chosen = [a.lower() for a in args if a.lower() in names]
     rest = [a for a in args if a.lower() not in names]
     labels = Path(rest[0]) if rest else LABELS
     want_hybrid = "hybrid" in chosen
     picked = [c for c in chosen if c not in ("colour", "hybrid")]
     do_colour = not chosen or "colour" in chosen
-    models = [m for m in MODELS if (not picked and (not chosen or want_hybrid)) or m.replace(".pt", "") in picked]
+    models = [m for m in MODELS + EXTRA_MODELS
+              if (m in MODELS and not picked and (not chosen or want_hybrid)) or m.replace(".pt", "") in picked]
     do_alone = not chosen or (bool(picked) and not want_hybrid)     # "run yolo11n"
     do_hybrid = not chosen or want_hybrid                            # "run hybrid yolo11n"
     suffix = ("_" + "_".join(chosen)) if chosen else ""
@@ -282,7 +293,7 @@ def cmd_run(args):
 
     # the YOLO models: person detection, and the hybrid with each of them
     for m in models:
-        model = YOLO(m)
+        model = load_model(m)
         model(cv2.imread(str(imgs[0])), verbose=False)          # warm-up, not timed
         name = m.replace(".pt", "")
         for k in BRIGHTNESS:
@@ -342,7 +353,7 @@ def cmd_video(args):
         sys.exit("Use: python m05.py video VIDEO [MODEL]")
     video = args[0]
     model_name = args[1] if len(args) > 1 else "yolo26n.pt"
-    model = YOLO(model_name)
+    model = load_model(model_name)
     cap = cv2.VideoCapture(video)
     if not cap.isOpened():
         sys.exit(f"Cannot open {video}")

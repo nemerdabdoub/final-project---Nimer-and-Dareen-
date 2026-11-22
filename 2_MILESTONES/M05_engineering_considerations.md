@@ -12,7 +12,15 @@ Short notes for the report and for the meeting with Gabi. Our baseline: **YOLO f
 | HOG + SVM (classic OpenCV) | Pre-deep-learning person detector | Misses people who are not upright and facing the camera |
 | Faster R-CNN | Two-stage detector | Accurate, but too slow for live drone control on a laptop |
 
-**Decision:** YOLO, because it gives the best balance of speed and accuracy on a laptop without a GPU, and the drone needs real-time reactions. Possible later check: add RT-DETR to `m05.py` as one non-YOLO comparison.
+**Decision:** YOLO, because it gives the best balance of speed and accuracy on a laptop without a GPU, and the drone needs real-time reactions.
+
+**Optional check in the code (RT-DETR, one non-YOLO detector):** same frames and labels, no extra labelling.
+```
+python m05.py run rtdetr-l            (RT-DETR alone: table A + "rtdetr-l only" rows in table B)
+python m05.py run hybrid rtdetr-l     (RT-DETR + colour)
+```
+Downloads rtdetr-l.pt (about 65 MB) the first time; about 5-15 min per run on a laptop CPU. Not included in `python m05.py run` with no name, so the speed run stays the same.
+Test run on stand-in labels (not real results): about 0.9 FPS vs about 15 FPS for YOLO26n, so roughly 15-20x slower.
 
 ## 2. Alternatives to the colour marker for knowing WHICH person is the user
 

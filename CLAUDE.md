@@ -32,6 +32,7 @@ checks, first each method alone, then YOLO + colour:
 - C1 `python m05.py run colour` · C2–C4 `run yolo11n` / `run yolo12n` / `run yolo26n` (YOLO alone)
 - H1–H3 `run hybrid yolo11n` / `yolo12n` / `yolo26n` (YOLO finds people, turban colour on the head picks the user)
 - speed for all on one computer: `python m05.py run` · demo: `python m05.py video <clip> <model>.pt`
+- optional non-YOLO comparison: `run rtdetr-l` / `run hybrid rtdetr-l` (slow on CPU; see `2_MILESTONES/M05_engineering_considerations.md`)
 Results go to `3_EVIDENCE/m05_user_detection/` (CSV tables A and B). Brightness 1.0 and 0.35 (low-light stand-in).
 
 ## Working rules for Claude in this repo
