@@ -3,6 +3,21 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: FINE-TUNING YOLO11n started — training frames ready to label (your half: 143 frames)
+- Why: at the end of the 154848 demo YOLO boxes the framed portrait on the wall as "person" at confidence 0.50-0.69, so a
+  higher confidence cannot remove it without losing real people (0.4 → detection 82.5%). Only teaching the model fixes
+  it, and the same YOLO11n keeps the same FPS while (hopefully) also finding more small people → aim: 90%+ at full speed.
+- Training data ONLY from the 6 unused 20.11 clips (152950, 153832, 160733, 161703, 161723, 162603): 275 frames,
+  1 per second. The 152 test frames stay test-only, so the comparison stays fair.
+- New `1_CODE/m05_finetune.py`: `extract` / `prelabel` (done) / `label dareen|nimer` (your label_tool, pointed at
+  `M05_data/train/`, file not changed) / `train` (→ `1_CODE/yolo11n_drone.pt`, not in git).
+- **Nimer: `git pull`, then `python m05_finetune.py label nimer`** (143 frames: 152950, 153832, 161703, 161723).
+  Dareen: `label dareen` (132 frames: 162603, 160733). Saved to `M05_data/train/labels/` → push.
+- **Rule for training:** box EVERY real person (user/person both fine); NO box on the portrait, statues, mural, hands,
+  app buttons — empty is what teaches "not a person". Many frames have nobody: just press n.
+- Only 140 suggested people boxes in 275 frames → few people to learn from; older videos mostly do not help (see below).
+  The real fix for more data is the new filming session (many people, following distance).
+
 ## 22.11.2026, Dareen: demo videos now label every box (USER / person + confidence)
 - `m05.py video`: every box gets a tag — green "USER 0.94" (yellow "USER (kept)" for the fallback), blue "person 0.81"
   = YOLO's class + confidence. Detection and user choice unchanged (same percentages as before).
