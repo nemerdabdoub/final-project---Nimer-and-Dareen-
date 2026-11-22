@@ -48,6 +48,9 @@ as a second characteristic that also gives the distance to the user.
 ## 3. Results and numbers
 - 22.11 M05 test run on Nimer's laptop (CPU, stand-in labels, NOT final): speed YOLO11n 26 FPS (38 ms), YOLO26n 22 FPS
   (46 ms), YOLOv12n 16 FPS (62 ms). Proof: `3_EVIDENCE/m05_user_detection/m05_table_*_PRELIM_suggested_labels.csv`.
+- 22.11 Table B, PRELIMINARY (Dareen's corrected half, 61 frames with the turban, brightness 1.0): colour only finds the
+  user in 41% and picks the WRONG person in 55% (red mural); hybrid (any of the 3 YOLO) finds him in 79% and never picks
+  the wrong person (misses = picks nobody). Same at 0.35. Source: Dareen, `m05_table_B_finding_the_user_*.csv`.
 - 22.11 RT-DETR (non-YOLO) test on stand-in labels: about 0.9 FPS vs about 15 FPS for YOLO26n (15-20x slower). Source: Dareen.
 
 ## 4. Method and decisions (the "why")

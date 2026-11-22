@@ -3,6 +3,15 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: C1 + H1-H3 on her half (PRELIMINARY, 61 marker frames of 161951)
+- Folders on her laptop: `labels_marker` (61, all except 154124) and `labels_nomarker` (20, 154124 only).
+- Table B on `labels_marker`, brightness 1.0 / 0.35 (56 frames with the actor):
+  colour only: user found 41.1 / 39.3%, **wrong person 55.4%** (the red mural), frames correct 45.9 / 44.3%.
+  hybrid yolo11n: 78.6 / 80.4%, wrong 0%, correct 80.3 / 82.0%. hybrid yolo12n and yolo26n: 78.6%, wrong 0%, correct 80.3%.
+  The hybrid never picks the wrong person; its misses are frames where it picks nobody (turban not seen on a head).
+- ms/frame here is not the speed result (Nimer's speed run on one computer is).
+- Open: re-run the same commands on the full `labels_marker` when Nimer's 71 labels arrive; extra row on `labels_nomarker`.
+
 ## 22.11.2026, Dareen: her 81 corrected labels shared
 - `M05_data/labels/`: 81 corrected files (161951: 61, actor = user in 56, 2 empty frames; 154124: 20, actor = user
   without the turban in all 20). Checked: only classes 0/1, values 0-1, at most one user per frame.
