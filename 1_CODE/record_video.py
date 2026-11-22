@@ -10,9 +10,17 @@ Made for the detection data shoot: aim with the live window, record the user and
 
 The video is written in REAL TIME (correct speed) whatever the screen-mirror rate.
 Phone in DJI Fly showing the camera. Press Esc in the window, or Ctrl+C here, to stop and save.
+
+Keys in the window (click the window first so it gets the keys):
+  T = TAKE OFF   (DJI Fly must show the Take Off circle)
+  L = LAND       (two-step landing of DJI Fly, checked on the screen)
+  Esc = stop recording and save (does NOT land - if the drone is up, press L first, or land by hand)
+Take-off and landing run in the background, so the video keeps recording while they happen.
+SAFETY: phone in hand, DJI Fly in Manual Control, open space, battery > 40%. If anything looks wrong, land by hand.
 """
 import os
 import sys
+import threading
 import time
 
 import cv2
@@ -29,6 +37,36 @@ except ImportError:                       # running outside the organised folder
 VIDEO_FPS = 25                            # the saved video plays at this rate
 
 
+class Commands:
+    """Runs take-off / landing in a background thread so the recording loop never stops."""
+
+    def __init__(self, drone):
+        self.drone = drone
+        self.busy = None                  # "TAKING OFF" / "LANDING" while running
+        self.status = "T = take off   L = land   Esc = stop rec"
+
+    def start(self, name):
+        if self.busy:
+            print(f"Ignored: still {self.busy.lower()} ...")
+            return
+        self.busy = "TAKING OFF" if name == "takeoff" else "LANDING"
+        self.status = self.busy + " ..."
+        print(f"\n[{time.strftime('%H:%M:%S')}] {self.busy} ...")
+        threading.Thread(target=self._run, args=(name,), daemon=True).start()
+
+    def _run(self, name):
+        try:
+            if name == "takeoff":
+                result = self.drone.takeoff(log=print)
+            else:
+                result = self.drone.land()
+        except Exception as e:            # never kill the recording because of a command
+            result = f"ERROR: {e} - use the phone by hand"
+        print(f"[{time.strftime('%H:%M:%S')}] {name}: {result}")
+        self.status = f"{name}: {result}"[:70]
+        self.busy = None
+
+
 def main():
     minutes, label = 0.0, ""
     if len(sys.argv) > 1:
@@ -42,6 +80,7 @@ def main():
     path = os.path.join(evidence_dir(), f"{stamp()}_recording{suffix}.mp4")
 
     with Drone() as d:
+        cmd = Commands(d)
         writer, written, start, seen = None, 0, None, 0
         print("Starting the camera ...")
         try:
@@ -56,7 +95,7 @@ def main():
                     h, w = frame.shape[:2]
                     writer = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*"mp4v"), VIDEO_FPS, (w, h))
                     print(f"Recording to: {path}")
-                    print("Aim with the window. Press Esc (or Ctrl+C here) to stop and save.")
+                    print("Aim with the window. Keys in the window: T = take off, L = land, Esc = stop and save.")
                 seen += 1
                 target = int((now - start) * VIDEO_FPS) + 1     # keep frames written == seconds * fps (real time)
                 while written < target:
@@ -65,9 +104,16 @@ def main():
                 disp = frame.copy()
                 cv2.putText(disp, f"REC {now - start:5.1f}s", (12, 34),
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
-                cv2.imshow("drone recording (Esc = stop)", disp)
-                if cv2.waitKey(1) & 0xFF == 27:                 # Esc
+                cv2.putText(disp, cmd.status, (12, 70),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+                cv2.imshow("drone recording (T = take off, L = land, Esc = stop)", disp)
+                key = cv2.waitKey(1) & 0xFF
+                if key == 27:                                   # Esc
                     break
+                if key in (ord("t"), ord("T")):
+                    cmd.start("takeoff")
+                elif key in (ord("l"), ord("L")):
+                    cmd.start("land")
                 if minutes > 0 and now - start >= minutes * 60:
                     break
         except KeyboardInterrupt:
