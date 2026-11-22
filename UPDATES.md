@@ -30,6 +30,11 @@ Claude: read the newest entries at the start of each session and tell the user w
 - AI log: Dareen's 4 lines added in `5_LOGS/Project_logs.xlsx` (laptop only). **Add yours too.**
 - Open: the 12.11 moves video is not on Dareen's laptop (only the log) — do you have it? CLAUDE.md status updated.
 
+## 22.11.2026, Nimer: ONE-PAGE M05 SUMMARY (PDF) for Gabi
+- **Dareen: please read `4_DOCUMENTS/M05_summary_23.11.pdf`** (one A4 page, plan part 7): goal + M03 closed, Table A
+  (your one-laptop full table), Table B with the hand filter, winner sentence (YOLO11n inside the hybrid), the 2
+  screenshots, design, M06, limits, the 3 questions. Tell me (or your Claude) anything to change before Mon 12:00.
+
 ## 22.11.2026 ~06:40, Nimer: hand filter (Dareen's fix A) tested on Nimer's laptop + 2% threshold
 - Same result as Dareen with the filter at the 3% threshold: false alarm **7.1% → 0%**, found 73-74%, wrong 0%,
   frames correct 78.8-79.5%.
