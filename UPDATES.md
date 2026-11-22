@@ -13,8 +13,9 @@ Shared between Nimer and Dareen and both Claude Code sessions. Every change push
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
 ## 22.11.2026, Dareen: deck for Monday shortened; full deck kept for the semester presentation
-- **For Gabi on 23.11: `4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx` / `.pdf` (9 slides):** title, M03 closed, the M05 question,
-  three ways compared, key result (wrong person 36.5% → 0%), picture, the three YOLO models vs 90%, final choice, M06 + questions.
+- **For Gabi on 23.11: `4_DOCUMENTS/M05_for_Gabi_23.11_short.pptx` / `.pdf` (10 slides):** title, M03 closed, the M05 question,
+  three ways compared, key result (wrong person 36.5% → 0%), picture, the three YOLO models vs 90%, **all 8 detectors
+  (accuracy vs speed chart)**, final choice, M06 + questions. Focus: comparing and deciding.
 - **Full 15-slide deck saved as material** in `4_DOCUMENTS/presentation_material_end_of_semester_A/` with a README of which
   slides to reuse (design, all 8 detectors, failures, fine-tuning, earlier projects). Linked from the presentation log.
 

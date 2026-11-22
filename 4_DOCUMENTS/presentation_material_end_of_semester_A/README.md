@@ -3,7 +3,7 @@
 Collected here so the presentation can reuse finished slides. Running log of results: `../mid_project_presentation_log.md`.
 
 ## M05 user detection (22.11): `M05_User_Detection_full_deck_22.11.pptx` / `.pdf` (15 slides)
-The full deck. For the meeting on 23.11 a short version was used: `../M05_for_Gabi_23.11_short.pptx` (slides 1, 2, 3, 5, 7, 8, 9, 11, 15).
+The full deck. For the meeting on 23.11 a short version was used: `../M05_for_Gabi_23.11_short.pptx` (slides 1, 2, 3, 5, 7, 8, 9, 10, 11, 15).
 
 | # | Slide | Reuse in the semester presentation |
 |---|---|---|
