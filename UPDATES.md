@@ -3,6 +3,12 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Nimer: mid-semester presentation log
+- New `4_DOCUMENTS/mid_semester_presentation_log.md`, seeded with M02-M05 status, numbers, decisions, demos, problems.
+- New rule in CLAUDE.md: every result, number, decision, demo or problem solved also gets a line there.
+- M05 frame videos made (on Nimer's laptop, not in git): `3_EVIDENCE/m05_user_detection/M05_frames.mp4` and
+  `M05_frames_suggested_boxes.mp4`.
+
 ## 22.11.2026, Dareen: M05_data shared in git
 - New `M05_data/`: `frames/` (152), `to_label_Dareen/` (81 frames + suggested labels + `labels.txt`),
   `to_label_Nimer/` (71 frames + suggested labels + `labels.txt`), empty `labels/` and `results/`, and a README

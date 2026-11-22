@@ -47,6 +47,8 @@ Results go to `3_EVIDENCE/m05_user_detection/` (CSV tables A and B). Brightness 
   at the start of every session, `git pull`, read the newest entries in `UPDATES.md` and tell the user in a few lines
   what the partner changed; after every finished change, add a short dated entry there (who, what, results, what is
   open) in the same commit, then push. The push @mentions the partner on GitHub.
+- **Mid-semester presentation log**: every update that adds a result, number, decision, video/demo or problem solved
+  also gets one dated line in the right section of `4_DOCUMENTS/mid_semester_presentation_log.md` (same commit).
 - Don't edit the same file the partner is editing; a push triggers `.github/workflows/notify-partner.yml`, which
   @mentions the other partner on GitHub.
 - Never commit 3_EVIDENCE, videos, model files (*.pt), lab binaries or 5_LOGS (see .gitignore).
