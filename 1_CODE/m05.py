@@ -58,6 +58,9 @@ MIN_BLOB_AREA = 60                    # colour only: ignore specks smaller than 
 HEAD_PART = 0.35                      # hybrid: look in the top 35% of each person box
 MIN_HEAD_FRACTION = 0.03              # hybrid: at least 3% of the head area turban-coloured ...
 CONTRAST = 2.0                        # ... and at least 2x more than the background just beside it
+MAX_USER_W, MAX_USER_H = 0.6, 0.9     # hybrid: a "person" wider than 60% AND taller than 90% of the frame is a hand
+                                      # in front of the lens, not the user (the actor is at most 22% wide in our labels)
+BIG_PERSON = 0.25                     # table A extra column: people taller than 1/4 of the frame (following distance)
 
 ROOT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m05_user_detection"
 FRAMES, SUGGESTED, LABELS = ROOT / "frames", ROOT / "labels_suggested", ROOT / "labels"
@@ -141,9 +144,11 @@ def colour_only_user(mask):
 def hybrid_user(mask, people):
     """the person box whose head is most turban-coloured (and clearly more than the background beside it)"""
     best, best_frac = None, 0.0
-    W = mask.shape[1]
+    H, W = mask.shape[:2]
     for (x1, y1, x2, y2) in people:
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+        if x2 - x1 > MAX_USER_W * W and y2 - y1 > MAX_USER_H * H:
+            continue                                     # fills the frame: a hand at the lens, not the user
         hy2 = y1 + max(1, int((y2 - y1) * HEAD_PART))
         head = mask[max(0, y1):hy2, max(0, x1):x2]
         if not head.size:
@@ -298,6 +303,7 @@ def cmd_run(args):
         name = m.replace(".pt", "")
         for k in BRIGHTNESS:
             tp = fp = fn = 0
+            big_tp = big_n = 0                                  # people taller than BIG_PERSON of the frame
             outcomes, alone, t, hits, picks = [], [], 0.0, 0, 0
             for p in imgs:
                 img = darken(cv2.imread(str(p)), k)
@@ -311,6 +317,9 @@ def cmd_run(args):
                 if g is not None:
                     a, b, c = match(people, g[0] + g[1])
                     tp, fp, fn = tp + a, fp + b, fn + c
+                    big_gt = [q for q in g[0] + g[1] if (q[3] - q[1]) >= BIG_PERSON * img.shape[0]]
+                    big_tp += match(people, big_gt)[0]
+                    big_n += len(big_gt)
                     outcomes.append(judge(g, pred_box=user))
                     big = max(people, key=lambda b: (b[2] - b[0]) * (b[3] - b[1])) if people else None
                     alone.append(judge(g, pred_box=big))
@@ -318,7 +327,8 @@ def cmd_run(args):
             if has_gt:
                 if do_alone:
                     det_rows.append([name, k, len(outcomes), f"{100 * tp / max(1, tp + fn):.1f}",
-                                     f"{100 * tp / max(1, tp + fp):.1f}", f"{fps:.1f}", f"{1000 / fps:.0f}"])
+                                     f"{100 * tp / max(1, tp + fp):.1f}", f"{fps:.1f}", f"{1000 / fps:.0f}",
+                                     f"{100 * big_tp / max(1, big_n):.1f}"])
                     user_score(f"{name} only (biggest person)", k, alone, 1000 / fps)
                 if do_hybrid:
                     user_score(f"hybrid {name}", k, outcomes, 1000 / fps)
@@ -329,7 +339,8 @@ def cmd_run(args):
         return
 
     ROOT.mkdir(parents=True, exist_ok=True)
-    head_a = ["model", "brightness", "frames", "person detection rate %", "precision %", "FPS", "ms/frame"]
+    head_a = ["model", "brightness", "frames", "person detection rate %", "precision %", "FPS", "ms/frame",
+              "detection rate % (people > 1/4 of the frame height)"]
     head_b = ["method", "brightness", "frames", "frames with the user", "user found %", "wrong person %",
               "false alarm % (frames without the user)", "frames correct %", "ms/frame"]
     for fname, head, rows in ((f"m05_table_A_person_detection{suffix}.csv", head_a, det_rows),

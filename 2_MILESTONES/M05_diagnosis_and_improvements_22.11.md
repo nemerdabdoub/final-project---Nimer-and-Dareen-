@@ -90,11 +90,16 @@ Lowering the head-colour threshold is a trade-off (same 132 frames):
 **A. Ignore "people" that fill the whole frame** (the hand-in-front-of-the-lens false alarms)
 - Do: in `m05.py`, `hybrid_user`, skip person boxes taller than ~90% and wider than ~60% of the frame (about 3 lines).
 - Expect: the hybrid's 2 false alarms disappear (7.1% → about 0%). Then re-run H1-H3 (10 min).
+- **DONE 22.11** (`MAX_USER_W, MAX_USER_H` in `m05.py`): hybrid on the 132 marker frames, 1.0 / 0.35 — false alarm
+  **0%** (was 7.1%), found 73.1-74.0% (unchanged), wrong 0%, frames correct 78.8-79.5% (was 77.3-78.0%).
 
 **B. Count only people big enough to follow (extra Table A row)**
 - Do: when scoring detection, add a second number for people taller than 1/4 of the frame. Show it NEXT TO the current
   number, not instead of it (so it is not "moving the goalposts").
 - Expect: YOLO11n ~95% → the target is met for the people the drone follows; far background people stated as excluded.
+- **DONE 22.11** (`BIG_PERSON = 0.25`, new last column of Table A), all 152 frames, 1.0 / 0.35:
+  YOLO11n **96.2 / 95.4%**, YOLOv12n 93.3 / 91.6%, YOLO26n 92.5 / 92.9% → all pass 90%; the all-people column is unchanged
+  (85.4 / 82.9 / 82.5%). CSVs: `M05_data/results/fixes_A_B_22.11/`.
 
 ### Easy: one short new filming session (1-2 h with the flight)
 **C. Record on the drone, not the phone mirror**

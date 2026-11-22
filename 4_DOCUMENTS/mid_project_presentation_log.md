@@ -80,6 +80,11 @@ as a second characteristic that also gives the distance to the user.
   Lower head-colour threshold: 2% → 78% found / 11% false alarm; 1% → 82% / 1% wrong / 14% false alarm. Kept 3%.
 - 22.11 **Toward 90% detection:** only YOLO11s at 1280 px passes (91.7%, precision 89.8%, ~5 FPS on a laptop CPU);
   YOLO11m / 11l ~88%; YOLO11n 640 px 85.4% but ~95% on big people. Source: Dareen, `1_CODE/m05_improve.py`.
+- 22.11 **Fix B, Table A extra column — people taller than 1/4 of the frame (following distance):** YOLO11n 96.2% /
+  95.4% (1.0 / 0.35), YOLOv12n 93.3 / 91.6%, YOLO26n 92.5 / 92.9% → **all three pass 90%** for the people the drone
+  follows; the original column (all people incl. far background) stays 82-85%. `M05_data/results/fixes_A_B_22.11/`.
+- 22.11 **Fix A, hybrid ignores "people" that fill the frame (a hand at the lens):** false alarm 7.1% → **0%**, user found
+  unchanged (73-74%), wrong person 0%, frames correct 77-78% → 79-80%. Same file.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
@@ -104,7 +109,8 @@ as a second characteristic that also gives the distance to the user.
 - 7.11 Small stick pushes (0.1-0.2 for 0.4-0.5 s) moved the Neo only a few cm → raised to 0.3 for 0.5 s (cap 0.4).
 - 22.11 Colour only gives many false alarms (a red mural in the scene) → hybrid: colour only counts on a person's head.
 - 22.11 The hybrid's only 2 false alarms (154848 frames 00114, 00152): a hand right in front of the lens; YOLO calls it a
-  person and the pink-red skin passes as the turban colour. Idea: ignore "people" that fill most of the frame.
+  person and the pink-red skin passes as the turban colour. **Solved 22.11:** the hybrid skips boxes wider than 60% and
+  taller than 90% of the frame (the actor is at most 22% wide) → 0 false alarms.
 - 22.11 90% detection target not met (82-85%) → cause: small / far and edge-cut people. Fixes: YOLO11s, keep the user
   large with the M06 distance controller, or a minimum-size target. Lower confidence (86%) and 960 px input did not help.
 - 22.11 Hybrid misses when the turban is not visible → keep the strict 3% rule (never the wrong person) and bridge the

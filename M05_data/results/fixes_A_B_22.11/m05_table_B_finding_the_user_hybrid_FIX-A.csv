@@ -1,0 +1,7 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+hybrid yolo11n,1.0,132,104,73.1,0.0,0.0,78.8,28
+hybrid yolo11n,0.35,132,104,74.0,0.0,0.0,79.5,29
+hybrid yolo12n,1.0,132,104,73.1,0.0,0.0,78.8,37
+hybrid yolo12n,0.35,132,104,73.1,0.0,0.0,78.8,36
+hybrid yolo26n,1.0,132,104,74.0,0.0,0.0,79.5,29
+hybrid yolo26n,0.35,132,104,73.1,0.0,0.0,78.8,29

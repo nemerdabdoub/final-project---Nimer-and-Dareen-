@@ -3,6 +3,15 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: fixes A + B done in m05.py (re-run, pushed)
+- **A (hybrid ignores "people" that fill the frame = a hand at the lens):** false alarm 7.1% → **0%**; found unchanged
+  73-74%, wrong 0%, frames correct → 79-80%. Safe: the actor is at most 22% wide in our labels, the hand boxes 75-84%.
+- **B (Table A: new last column, people taller than 1/4 of the frame):** YOLO11n **96.2%**, YOLOv12n 93.3%, YOLO26n 92.5%
+  at 1.0 → all pass 90% for following distance. Old column unchanged (85.4 / 82.9 / 82.5%), matches your run.
+- CSVs: `M05_data/results/fixes_A_B_22.11/`. `m05.py` changed (new constants `MAX_USER_W/H`, `BIG_PERSON`): **pull before
+  you run it.** The demo video was made before fix A (only hand frames would differ).
+- Winner proposal stays YOLO11n (best on all columns and fastest).
+
 ## 22.11.2026, Dareen: what to change, ranked from easiest to hardest
 - **Nimer: read the new section "What we would do differently, from easiest to hardest" in
   `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`** — each item says what exactly to do and what to expect.
