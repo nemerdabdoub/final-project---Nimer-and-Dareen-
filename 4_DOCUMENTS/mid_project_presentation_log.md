@@ -42,7 +42,7 @@ as a second characteristic that also gives the distance to the user.
   Proof: `3_EVIDENCE/2026-11-12/190414_flight_test_log.txt` + video.
 - M04 work plan: submitted on Moodle 12.11.
 - M05 user detection: in progress, due 23.11 (see section 4). 22.11: Dareen's 81 labels corrected and shared
-  (`M05_data/labels`); Nimer's 71 to follow.
+  (`M05_data/labels`); Nimer's 71 also in → all 152 labels done. Final Table B (Dareen's checks) done.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
@@ -51,6 +51,13 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 Table B, PRELIMINARY (Dareen's corrected half, 61 frames with the turban, brightness 1.0): colour only finds the
   user in 41% and picks the WRONG person in 55% (red mural); hybrid (any of the 3 YOLO) finds him in 79% and never picks
   the wrong person (misses = picks nobody). Same at 0.35. Source: Dareen, `m05_table_B_finding_the_user_*.csv`.
+- 22.11 **Table B FINAL (all corrected labels, 132 frames with the turban marker: 104 with the actor, 28 without him),
+  brightness 1.0:** colour only: user found 58.7%, WRONG person 36.5%, false alarm 71.4%, frames correct 52.3%.
+  Hybrid YOLO11n / v12n / 26n: user found 73.1 / 73.1 / 74.0%, wrong person **0%**, false alarm 7.1% (2 of 28 frames),
+  frames correct 77.3 / 77.3 / 78.0%. At 0.35 almost the same (colour 56.7%, hybrids 73-74%).
+  The hybrid never follows the wrong person; when it misses it picks nobody. Source: `M05_data/results/`.
+- 22.11 **Extra row, actor WITHOUT the turban (154124, 20 frames):** colour only picks something else in 100% of frames;
+  hybrid picks nobody in 100% (0% found, 0% wrong). Shows the identity depends on the marker → M06 tracking / re-ID.
 - 22.11 RT-DETR (non-YOLO) test on stand-in labels: about 0.9 FPS vs about 15 FPS for YOLO26n (15-20x slower). Source: Dareen.
 
 ## 4. Method and decisions (the "why")
@@ -70,6 +77,8 @@ as a second characteristic that also gives the distance to the user.
 ## 6. Problems we hit and how we solved them
 - 7.11 Small stick pushes (0.1-0.2 for 0.4-0.5 s) moved the Neo only a few cm → raised to 0.3 for 0.5 s (cap 0.4).
 - 22.11 Colour only gives many false alarms (a red mural in the scene) → hybrid: colour only counts on a person's head.
+- 22.11 The hybrid's only 2 false alarms (154848 frames 00114, 00152): a hand right in front of the lens; YOLO calls it a
+  person and the pink-red skin passes as the turban colour. Idea: ignore "people" that fill most of the frame.
 
 ## 7. Teamwork and tools
 - Shared GitHub repo; a GitHub action @mentions the partner on every push; `UPDATES.md` log; a live "Project updates"

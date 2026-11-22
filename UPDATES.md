@@ -3,6 +3,16 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026, Dareen: FINAL Table B (C1 + H1-H3) on all corrected labels
+- Checked Nimer's 71 labels (valid; 154848: actor = user in 22 of 40, 161825: 26 of 31). All 152 in `M05_data/labels`.
+- `labels_marker` = 132 frames (104 with the actor, 28 without), `labels_nomarker` = 20 (154124).
+- Brightness 1.0 (0.35 almost the same): colour only found 58.7%, wrong 36.5%, false alarm 71.4%, correct 52.3%.
+  Hybrid yolo11n / yolo12n / yolo26n: found 73.1 / 73.1 / 74.0%, wrong 0%, false alarm 7.1%, correct 77.3 / 77.3 / 78.0%.
+- Without the turban (154124): colour picks something else in 100%; the hybrid picks nobody in 100%.
+- The hybrid's 2 false alarms = a hand in front of the lens (154848 frames 00114, 00152).
+- CSVs: `M05_data/results/` (the 4 marker checks + `..._NOMARKER_colour_hybrid.csv`).
+- **Nimer:** your C2-C4 (YOLO alone, Table A on all 152 `labels`) + speed run are next; winner call 17:30.
+
 ## 22.11.2026, Nimer: label_tool.py, faster than makesense.ai
 - New `1_CODE/label_tool.py`: `python label_tool.py nimer` / `python label_tool.py dareen` opens each frame with the
   suggested boxes and saves corrected YOLO labels straight into `M05_data/labels/` (no upload/export). Click = select,

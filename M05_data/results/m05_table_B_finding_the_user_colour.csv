@@ -1,0 +1,3 @@
+method,brightness,frames,frames with the user,user found %,wrong person %,false alarm % (frames without the user),frames correct %,ms/frame
+colour only,1.0,132,104,58.7,36.5,71.4,52.3,7
+colour only,0.35,132,104,56.7,37.5,71.4,50.8,7
