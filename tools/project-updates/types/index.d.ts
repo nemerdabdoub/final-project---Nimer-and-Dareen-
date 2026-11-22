@@ -35,6 +35,6 @@ export type Snapshot = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'project-updates': { snapshot: Shaped<Snapshot> }
+    'project-updates': { snapshot: Shaped<Snapshot>; improveDone: Shaped<string[]> }
   }
 }

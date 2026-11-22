@@ -2,6 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
 import type { Commit, FalseAlarm, LocalFile, Snapshot } from '../types'
+import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
 // Found on each laptop at start (see findTools): git, the VS Code launcher, the repo root, its GitHub page.
@@ -195,7 +196,9 @@ function openFile($: any, path: string) {
   })
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  registerImprove(on, options)
+
   on('session.start', async ($, e, next) => {
     const started = await next(e)
     await $.command.register({
@@ -205,6 +208,7 @@ export const register: Register = on => {
     void refresh($)
     $.clock.every(REFRESH_MS, () => refresh($))
     void $.ui.open({ id: PANE, title: 'Project updates' })
+    await startImprove($)
 
     return started
   })
