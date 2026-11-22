@@ -118,6 +118,6 @@ as a second characteristic that also gives the distance to the user.
 ## 8. Next steps (to the end of the semester)
 - M05: correct labels (both halves) → real tables A and B → winner → demo video → summary for Gabi.
   22.11: labels, tables A and B, demo video done; open: winner sentence (proposal YOLO11n), summary.
-- Lessons for the next data: record from the drone's SD card (not the 1080x608 mirror with app buttons), film at
+- Lessons for the next data: record on the drone's built-in storage (not the 1080x608 mirror with app buttons), film at
   following distance, tune and test on different clips, real low-light flight, 5 frames/s, a colour found nowhere else.
 - M06 user tracking by 7.12.

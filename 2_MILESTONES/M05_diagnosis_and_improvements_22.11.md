@@ -85,7 +85,7 @@ Lowering the head-colour threshold is a trade-off (same 132 frames):
 - **Practical option:** run YOLO11n live, and switch to YOLO11s at 1280 px only when the user is small or lost.
 
 ## What we would do differently next time
-1. **Record from the drone itself (SD card), not the phone mirror.** The frames are 1080x608 with the DJI Fly buttons on
+1. **Record from the drone itself (its built-in storage), not the phone mirror.** The frames are 1080x608 with the DJI Fly buttons on
    the left and right edges; many of the edge-cut misses are people partly under those buttons.
 2. **Film at following distance.** Table A counts every far person in the background; the drone only needs to follow one
    nearby person. Either film closer or set the target for people above a minimum size.
