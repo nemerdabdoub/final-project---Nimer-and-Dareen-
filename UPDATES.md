@@ -3,6 +3,14 @@
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 22.11.2026 ~06:40, Nimer: hand filter (Dareen's fix A) tested on Nimer's laptop + 2% threshold
+- Same result as Dareen with the filter at the 3% threshold: false alarm **7.1% → 0%**, found 73-74%, wrong 0%,
+  frames correct 78.8-79.5%.
+- **Filter + head threshold 2%** (turban frames, 132): found **76-78%** (was 73-74%), wrong **0%**, false alarm **0%**
+  (without the filter, 2% gave 10.7% false alarms), frames correct 81-83%. No turban (20): finds him in 1 frame (5%), 0% wrong.
+- So the filter makes the 2% threshold safe on our frames. **Not changed in m05.py** (still 3%): the threshold was
+  picked on the same frames we test on, so 2% = "promising, confirm on new clips". CSVs: `M05_data/results/nimer_22.11/*HANDFILTER*`.
+
 ## 22.11.2026, Dareen: fixes A + B done in m05.py (re-run, pushed)
 - **A (hybrid ignores "people" that fill the frame = a hand at the lens):** false alarm 7.1% → **0%**; found unchanged
   73-74%, wrong 0%, frames correct → 79-80%. Safe: the actor is at most 22% wide in our labels, the hand boxes 75-84%.

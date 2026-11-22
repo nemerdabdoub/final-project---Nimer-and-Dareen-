@@ -73,6 +73,9 @@ as a second characteristic that also gives the distance to the user.
   67.9-71.4%, **hybrid 7.1% (2 of 28)**; frames correct — colour 52.3%, YOLO only 55-56%, **hybrid 77-78%**.
   Darkened copies: within about 1 point. **This is the headline slide for "the SAME person".**
 - 22.11 Without the turban (20 frames): hybrid picks nobody (0% wrong) instead of guessing; colour only is 100% wrong.
+- 22.11 **Hand filter** (ignore "people" wider than 60% and taller than 90% of the frame): hybrid false alarms
+  **7.1% → 0%**, nothing else lost (tested on both laptops). With the filter, a 2% head threshold finds the user in
+  76-78% (was 73-74%) still with 0% wrong / 0% false alarms: promising, to confirm on new clips (picked on the test frames).
 - 22.11 **Why detection is below 90% (YOLO11n):** every miss is a small or cut-off person. Fully visible people taller
   than 1/4 of the frame: 0% missed (196 people); small people (< 1/4 height): 46% missed; without the small ones: 96%.
   Source: Dareen, `1_CODE/m05_diagnose.py`, `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
@@ -90,6 +93,10 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
   1 frame/s, 152 frames, classes `user` and `person`, brightness 1.0 and 0.35 (low-light stand-in).
 - 22.11 Compared: colour only, YOLO11n / YOLOv12n / YOLO26n alone, and hybrid (YOLO finds people, turban colour picks the user).
+- 22.11 **Experiment settings were chosen based on colour, height, and wind:** the actor's purple-red turban colour was
+  used to identify the user, person height in the frame to assess detection at the intended following distance, and
+  wind conditions were also considered when setting up the experiment. Results were reported separately for people
+  taller than 1/4 of the frame. Source: `1_CODE/m05.py`, `2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`.
 - 22.11 Winner rule: fastest model with detection rate ≥ 90% at brightness 1.0; a tie goes to the better result at 0.35.
 - 22.11 Detector choice: YOLO over RT-DETR, MobileNet-SSD, MediaPipe, HOG, Faster R-CNN (best speed/accuracy on a laptop
   without a GPU). Source: `2_MILESTONES/M05_engineering_considerations.md`.
