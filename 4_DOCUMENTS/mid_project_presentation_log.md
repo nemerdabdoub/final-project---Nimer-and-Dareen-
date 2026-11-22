@@ -91,6 +91,12 @@ as a second characteristic that also gives the distance to the user.
   still gone, detection 84.4% (original 85.4%), people > 1/4 height 95.0%, same speed; hybrid 70.2% found, 1.9% wrong,
   0% false alarm. Lesson: the first run's drop came from rebuilding the class layer (1-class training). Original
   YOLO11n stays the winner; the gentle model is the promising direction with more training data.
+- 22.11 **All 8 detectors in one table, measured the same way** (`M05_data/results/all_models_22.11/m05_all_models.md`,
+  script `1_CODE/m05_all_models.py`): best per column — all people YOLO11s-1280 91.7%, following distance YOLO11m 97.1%,
+  precision YOLO26n 95.2%, user found / frames correct YOLO11m 76.0% / 81.1%, no portrait = the fine-tuned models.
+  Requirements (≥90%, ≥15 FPS, 0% wrong person, 0% false alarm) met by YOLO11n, YOLOv12n, YOLO26n → **YOLO11n best
+  trade-off** (85.4% all, 96.2% following distance, nano speed). YOLO11m = best quality at 6.5 FPS; YOLO11s-1280 = only
+  ≥90% on all people at 5 FPS. **Candidate final slide.**
 - 22.11 **Fix B, Table A extra column — people taller than 1/4 of the frame (following distance):** YOLO11n 96.2% /
   95.4% (1.0 / 0.35), YOLOv12n 93.3 / 91.6%, YOLO26n 92.5 / 92.9% → **all three pass 90%** for the people the drone
   follows; the original column (all people incl. far background) stays 82-85%. `M05_data/results/fixes_A_B_22.11/`.

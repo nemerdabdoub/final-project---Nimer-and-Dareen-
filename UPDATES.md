@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 08:50):** Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
+**LATEST PUSHES (22.11, 09:05):** Dareen 09:05 – ONE table of all 8 detectors (`M05_data/results/all_models_22.11/`), final choice YOLO11n ·
+Dareen 08:50 – GENTLE fine-tuning: portrait gone, detection 84.4% (orig. 85.4%), 1.9% wrong person → keep YOLO11n, gentle = next step ·
 Nimer 08:40 – panel: new "Files Dareen changed" section ·
 Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
 Dareen 07:34 – her 162 training labels DONE → **all 335 training labels in** ·
@@ -10,6 +11,15 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 ~09:05, Dareen: ONE TABLE OF ALL 8 DETECTORS (same laptop, same run) + final choice
+- `M05_data/results/all_models_22.11/m05_all_models.md` (best per column in bold; script `1_CODE/m05_all_models.py`):
+  YOLO11n, YOLOv12n, YOLO26n, both fine-tunes, YOLO11s, YOLO11m, YOLO11s at 1280 px — detection (all / following
+  distance / dark), precision, hybrid found / wrong / false alarm / frames correct, FPS, portrait yes/no.
+- New numbers: YOLO11s hybrid 75.0% found, 1.0% wrong, 14 FPS; YOLO11m hybrid 76.0% found, 0% wrong, 97.1% at following
+  distance but 6.5 FPS; YOLO11s-1280 hybrid 0% wrong but 3.6% false alarms, 5 FPS.
+- Requirements ≥90% (following distance) + ≥15 FPS + 0% wrong + 0% false alarm → met by the three nano models;
+  **final choice YOLO11n + turban colour** (best of the three on detection). Nimer: agree?
 
 ## 22.11.2026 ~08:50, Dareen: GENTLE fine-tuning — portrait still gone, detection almost back (84.4%)
 - Found the main cause of the first run's drop: it trained a 1-class model, so YOLO's class layer was rebuilt from
