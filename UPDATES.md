@@ -1,5 +1,6 @@
 # Updates log (newest first)
-**LATEST PUSHES (22.11, 07:35):** Dareen 07:34 – her 162 training labels DONE → **all 335 training labels in** ·
+**LATEST PUSHES (22.11, 08:30):** Dareen 08:30 – fine-tuning tested: portrait gone but detection 85.4% → 77.1%, keep original YOLO11n ·
+Dareen 07:34 – her 162 training labels DONE → **all 335 training labels in** ·
 Nimer 07:27 – his half of the training labels DONE (173 frames, `M05_data/train/labels`) · Dareen 07:12 – classroom clip added to training (335 frames) · Dareen 07:07 – fine-tuning started (`m05_finetune.py`) ·
 Nimer 06:47 – one-page summary PDF `4_DOCUMENTS/M05_summary_23.11.pdf` + `.gitattributes` · Dareen 06:28–06:44 – her
 summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** `python m05_finetune.py train` → test `yolo11n_drone.pt` on the 152.
@@ -7,6 +8,22 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** `py
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 22.11.2026 ~08:30, Dareen: FINE-TUNING RESULT — portrait gone, but fewer people found → keep YOLO11n
+- Trained `yolo11n_drone.pt` (30 epochs, 288 train / 47 val frames from the 335, ~40 min on CPU; not in git).
+  Tested on the SAME 152 test frames (`M05_data/results/finetune_22.11/`):
+
+  | Model | Detection all (1.0 / 0.35) | Detection people > 1/4 | Precision | Hybrid: found / wrong / false alarm | FPS |
+  |---|---|---|---|---|---|
+  | YOLO11n (original) | **85.4 / 84.8%** | **96.2%** | 94.1% | **73.1 / 0 / 0%** | 28 |
+  | YOLO11n_drone (fine-tuned) | 77.1 / 69.5% | 85.4% | 92.4% | 66.3 / 1.9 / 10.7% | 32 |
+
+- **Good:** the framed portrait in 154848 is no longer detected at all (was "person 0.63-0.64"); same speed.
+  Picture: `portrait_before_after_yolo11n_vs_drone.jpg`.
+- **Bad:** it finds 8 points fewer people (worse in the dark) at every confidence (0.1: 79.0% vs 86.7%). Likely reason:
+  335 frames with only ~366 people (109 empty) is too little — the model "forgets" part of what it knew about people.
+- **Decision proposal: keep the original YOLO11n** as the winner; report fine-tuning as tried. Next try needs more
+  people (new filming) and gentler training (freeze the backbone, lower learning rate, mix in general person images).
 
 ## 22.11.2026, Dareen: her 162 training labels done → all 335 training labels in
 - Dareen's 162 (162603, 160733, 30 classroom): 217 people boxes, 35 empty frames, no bad lines; spot check of 6 frames

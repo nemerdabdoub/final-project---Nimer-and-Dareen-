@@ -1,0 +1,22 @@
+Full comparison on one laptop (13th Gen Intel(R) Core(TM) i7-13650HX, 20 logical cores, CPU only). Table A metrics on 152 frames, table B on 132 turban frames.
+
+| method | brightness | detection % (all people) | detection % (people > 1/4 height) | precision % | user found % | wrong person % | false alarm % | frames correct % | FPS | ms/frame | CPU % of laptop | cores used |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| colour only | 1.0 | - | - | - | 58.7 | 36.5 | 71.4 | 52.3 | 139.8 | 7.2 | 4.9 | 1.0 |
+| yolo11n only (biggest person) | 1.0 | 85.4 | 96.2 | 94.1 | 62.5 | 36.5 | 67.9 | 56.1 | 28.3 | 35.3 | 38.9 | 7.8 |
+| yolo11n_drone only (biggest person) | 1.0 | 77.1 | 85.4 | 92.4 | 62.5 | 34.6 | 71.4 | 55.3 | 32.0 | 31.3 | 39.3 | 7.9 |
+| yolo12n only (biggest person) | 1.0 | 82.9 | 93.3 | 94.2 | 62.5 | 35.6 | 71.4 | 55.3 | 24.3 | 41.2 | 39.5 | 7.9 |
+| yolo26n only (biggest person) | 1.0 | 82.5 | 92.5 | 95.2 | 61.5 | 36.5 | 67.9 | 55.3 | 32.0 | 31.3 | 39.5 | 7.9 |
+| hybrid yolo11n + colour | 1.0 | 85.4 | 96.2 | 94.1 | 73.1 | 0.0 | 0.0 | 78.8 | 25.8 | 38.8 | 39.5 | 7.9 |
+| hybrid yolo11n_drone + colour | 1.0 | 77.1 | 85.4 | 92.4 | 66.3 | 1.9 | 10.7 | 71.2 | 26.5 | 37.8 | 39.6 | 7.9 |
+| hybrid yolo12n + colour | 1.0 | 82.9 | 93.3 | 94.2 | 73.1 | 0.0 | 0.0 | 78.8 | 21.8 | 45.8 | 39.1 | 7.8 |
+| hybrid yolo26n + colour | 1.0 | 82.5 | 92.5 | 95.2 | 74.0 | 0.0 | 0.0 | 79.5 | 26.4 | 37.9 | 39.4 | 7.9 |
+| colour only | 0.35 | - | - | - | 56.7 | 37.5 | 71.4 | 50.8 | 141.3 | 7.1 | 4.9 | 1.0 |
+| yolo11n only (biggest person) | 0.35 | 84.8 | 95.4 | 95.4 | 62.5 | 36.5 | 64.3 | 56.8 | 29.8 | 33.6 | 39.4 | 7.9 |
+| yolo11n_drone only (biggest person) | 0.35 | 69.5 | 79.9 | 96.5 | 58.7 | 38.5 | 71.4 | 52.3 | 32.8 | 30.4 | 39.5 | 7.9 |
+| yolo12n only (biggest person) | 0.35 | 81.9 | 91.6 | 97.4 | 61.5 | 36.5 | 64.3 | 56.1 | 25.5 | 39.1 | 38.9 | 7.8 |
+| yolo26n only (biggest person) | 0.35 | 82.9 | 92.9 | 96.3 | 62.5 | 35.6 | 64.3 | 56.8 | 30.1 | 33.2 | 39.4 | 7.9 |
+| hybrid yolo11n + colour | 0.35 | 84.8 | 95.4 | 95.4 | 74.0 | 0.0 | 0.0 | 79.5 | 26.4 | 37.9 | 39.5 | 7.9 |
+| hybrid yolo11n_drone + colour | 0.35 | 69.5 | 79.9 | 96.5 | 67.3 | 1.0 | 3.6 | 73.5 | 31.1 | 32.2 | 39.6 | 7.9 |
+| hybrid yolo12n + colour | 0.35 | 81.9 | 91.6 | 97.4 | 73.1 | 0.0 | 0.0 | 78.8 | 22.0 | 45.4 | 39.2 | 7.8 |
+| hybrid yolo26n + colour | 0.35 | 82.9 | 92.9 | 96.3 | 73.1 | 0.0 | 0.0 | 78.8 | 25.0 | 40.0 | 39.2 | 7.8 |

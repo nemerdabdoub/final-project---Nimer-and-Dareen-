@@ -83,6 +83,10 @@ as a second characteristic that also gives the distance to the user.
   Lower head-colour threshold: 2% → 78% found / 11% false alarm; 1% → 82% / 1% wrong / 14% false alarm. Kept 3%.
 - 22.11 **Toward 90% detection:** only YOLO11s at 1280 px passes (91.7%, precision 89.8%, ~5 FPS on a laptop CPU);
   YOLO11m / 11l ~88%; YOLO11n 640 px 85.4% but ~95% on big people. Source: Dareen, `1_CODE/m05_improve.py`.
+- 22.11 **Fine-tuning YOLO11n on 335 own drone frames** (6 unused 20.11 clips + 20.10 classroom; tested on the same 152):
+  the framed portrait is no longer detected (was "person 0.64"), same speed — but detection fell 85.4% → 77.1%
+  (people > 1/4 height 96.2% → 85.4%) and the hybrid got 1.9% wrong / 10.7% false alarms. Too few people in the
+  training data (~366). Kept the original YOLO11n. `M05_data/results/finetune_22.11/`, `1_CODE/m05_finetune.py`.
 - 22.11 **Fix B, Table A extra column — people taller than 1/4 of the frame (following distance):** YOLO11n 96.2% /
   95.4% (1.0 / 0.35), YOLOv12n 93.3 / 91.6%, YOLO26n 92.5 / 92.9% → **all three pass 90%** for the people the drone
   follows; the original column (all people incl. far background) stays 82-85%. `M05_data/results/fixes_A_B_22.11/`.

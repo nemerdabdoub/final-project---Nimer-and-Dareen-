@@ -1,6 +1,7 @@
 """m05_full_table.py - ONE table for every method on ONE computer: accuracy (tables A and B), speed and CPU load.
 Methods: colour only, YOLO11n / YOLOv12n / YOLO26n alone, and the hybrid (YOLO + turban colour) with each.
-Run from 1_CODE (close other programs, charger in):   python m05_full_table.py
+Run from 1_CODE (close other programs, charger in):   python m05_full_table.py [EXTRA_MODEL.pt ...]
+(extra models, e.g. the fine-tuned yolo11n_drone.pt, are added as more rows; output then ends in _with_extra)
 Needs 3_EVIDENCE/m05_user_detection/frames and labels (all 152 corrected). Saves m05_full_comparison.csv/.md there.
 
 Frame sets (as decided 22.11): finding people (table A) on all labelled frames; finding THE user (table B) on the
@@ -8,6 +9,8 @@ frames where the actor wears the turban (all except clip 154124). Speed and CPU 
 CPU % = share of the WHOLE processor used while the method runs (100% = every core busy); cores = how many cores'
 worth of work it used on average. The whole Python process uses about 0.7-1.0 GB of RAM."""
 import csv, os, platform, sys, time
+EXTRA = [a for a in sys.argv[1:] if a.endswith(".pt")]
+OUTTAG = "_with_extra" if EXTRA else ""
 sys.argv = ["m05"]
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cv2, psutil
@@ -77,7 +80,7 @@ for k in m05.BRIGHTNESS:
     rows.append({"method": "colour only", "brightness": k,
                  **run(lambda im: (None, None, m05.colour_only_user(m05.turban_mask(im))), k)})
     print(f"  colour only  {k}  done")
-for m in m05.MODELS:
+for m in m05.MODELS + EXTRA:
     model = YOLO(m)
     model(imgs[frames[0]], verbose=False)                      # warm-up, not timed
     name = m[:-3]
@@ -101,7 +104,7 @@ cols = ["method", "brightness", "detection % (all people)", "detection % (people
 fmt = lambda v: "-" if v is None else (f"{v:.1f}" if isinstance(v, float) and v not in m05.BRIGHTNESS else str(v))
 order = sorted(rows, key=lambda r: (r["brightness"] != 1.0, r["method"].startswith("hybrid"),
                                     not r["method"].startswith("colour"), r["method"]))
-with open(E / "m05_full_comparison.csv", "w", newline="") as f:
+with open(E / f"m05_full_comparison{OUTTAG}.csv", "w", newline="") as f:
     w = csv.writer(f); w.writerow(cols)
     for r in order:
         w.writerow([fmt(r.get(c)) for c in cols])
@@ -111,10 +114,10 @@ try:
                               capture_output=True, text=True, timeout=60).stdout.strip() or platform.processor()
 except Exception:
     cpu_name = platform.processor()
-with open(E / "m05_full_comparison.md", "w", encoding="utf-8") as f:
+with open(E / f"m05_full_comparison{OUTTAG}.md", "w", encoding="utf-8") as f:
     f.write(f"Full comparison on one laptop ({cpu_name}, {ncpu} logical cores, CPU only). "
             f"Table A metrics on {len(frames)} frames, table B on {len(marker)} turban frames.\n\n")
     f.write("| " + " | ".join(cols) + " |\n|" + "---|" * len(cols) + "\n")
     for r in order:
         f.write("| " + " | ".join(fmt(r.get(c)) for c in cols) + " |\n")
-print(open(E / "m05_full_comparison.md", encoding="utf-8").read())
+print(open(E / f"m05_full_comparison{OUTTAG}.md", encoding="utf-8").read())
