@@ -224,7 +224,7 @@ Traps:
 Done when: you know the cause, the fix is tested twice, and one line in the note explains it.
 
 ## pair | Working as a pair (git, sync, roles)
-When: git push, git pull, merge, conflict, UPDATES.md, partner, nimer, dareen, push now
+When: git push, git pull, merge, conflict, UPDATES.md, partner, push now, who does what
 Why: Two people can do twice the work or half, depending on how you sync.
 Steps:
 1. Pull and read UPDATES.md before you start.

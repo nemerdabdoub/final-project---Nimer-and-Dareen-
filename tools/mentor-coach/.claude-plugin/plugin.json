@@ -1,0 +1,6 @@
+{
+  "name": "mentor-coach",
+  "version": "0.1.0",
+  "description": "Mentor coach pane: guesses which process you are in (flight, experiment, labelling, meeting...) and shows what a supervisor would say: steps, Gabi's questions, traps, done-when.",
+  "types": "./types/index.d.ts"
+}
