@@ -1,4 +1,19 @@
 # Updates log (newest first)
+**>>> NIMER + NIMER'S CLAUDE: READ FIRST - MEETING BRIEF (23.11, 1 hour before Gabi) <<<**
+- **Decision: YOLO11n + turban colour (hybrid).** Final test on ALL our videos, hand-labelled by Dareen (403 frames: 20.11 lab + both
+  22.11 campus clips): user found 70.1% of her frames, **wrong person 1.8% (3/164), false alarms 0/239**, frames correct 87.8%,
+  29.9 FPS. Colour only / YOLO alone pick the wrong person ~25% of frames. Bigger models (11s/11m) +2-4 points but 16 / 6 FPS.
+- **Work plan check (approved plan):** req. 1 = user in >= 90% of frames in lab → user **detected 99%** (103/104), **identified 73%**
+  (76/104, never wrong) = half met, **M06 tracking closes the gap** (your first run 76% → 82%). Req. 3 >= 10 FPS ✓ (29.9).
+  YOLO comparison table ✓, demo video ✓, YOLOE/YOLO-World on strollers/scooters ✓ (checked: not reliable, ~7 FPS → plan for semester B).
+- People detection (all videos): 96.2% at following distance, 59.4% all people (tiny far people from 7-8 m). Precision 94.7%.
+- Tried and rejected with numbers: lower confidence (adds golf carts), 800/960 px input (+1-2 points, slower; re-test in M06),
+  fine-tune (removes the portrait but forgot bikes).
+- **Deck (20 slides, infographics):** claude.ai artifact, private to Dareen - she shares it / downloads the .pptx. Slides 13-14 = work-plan
+  check + final choice; slide 20 = questions for Gabi (req. 1 via tracking OK? labelled frames enough? real low-light flight? marker OK?).
+- One-page story: `2_MILESTONES/M05_engineering_journey_23.11.md` · all numbers: `2_MILESTONES/M05_newclips_bikes_openvocab_22.11.md` §7-8.
+- Pipeline facts to quote: video delay 256 ms (mirror 60 ms of it) + detection 34 ms ≈ 290 ms; command delay not measured yet (M06).
+
 **DAREEN, PLEASE:** upload `3_EVIDENCE/2026-11-22/143404_recording_session1.mp4` (450 MB) to our shared Google Drive folder
 "Final Project Dareen and Nimer" — Nimer needs the video (videos are not in git). Tell him when it is there.
 **LATEST PUSHES (23.11):** Dareen 23.11 – CORRECTION vs approved work plan: req. 1 = user in ≥90% of frames (lab) → detected 99%, identified 73% (M06 tracking closes it); notes, CLAUDE.md and deck fixed · Dareen 23.11 – simple YOLO11n tweaks tested (lower cut-off no; 800 px +2.5 points at 23 FPS → keep 640 for M05, re-test in M06, note §8); Gabi deck updated to 18 slides (all methods, new footage, strollers/scooters) · Nimer 23.11 – panel: new "Claude right now" section (live: what Claude is doing, last 8 actions with times; works for Dareen's Claude too) · Dareen 23.11 – one-page M05 story: problems → actions → evidence → choice (`2_MILESTONES/M05_engineering_journey_23.11.md`); demos of the new clips in `3_EVIDENCE/2026-11-23_M05_final/` (laptop) · Nimer 23.11 – panel: optional "Lab reports" section (Nimer's personal course labs; reads a file outside the repo, so it never shows on Dareen's laptop — no change for her) · Dareen 23.11 – FINAL table on hand labels (all 299 new frames labelled by Dareen): hybrid YOLO11n 1.8% wrong, 0 false alarms, 87.8% correct; 96.2% detection at following distance → YOLO11n confirmed (note §7) · Dareen 23.11 – her 149 test labels done (user agrees with Claude's by-eye marks in 126/129) and **she is labelling Nimer's half too → Nimer: do NOT run `label nimer`** · Dareen 23.11 – hybrid VERIFIED on all videos (392 frames: wrong person 1.3% vs 26-29%, 0 false alarms, 90.3% correct; nano hybrids tie → keep YOLO11n) + which YOLO for M06 / obstacles (note §5-6) · Nimer 17:50 – `4_DOCUMENTS/Next_three_steps_22.11.pdf` + first M06 run on 161951 (tracker keeps the user in 82% of frames vs 76% old way) ·
