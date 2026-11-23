@@ -24,7 +24,11 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
     full comparison table (`M05_data/results/full_comparison_22.11/`), diagnosis + improvements
     (`2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`), demo videos (YOLO11n, on Dareen's laptop), AI log lines (Dareen).
   - **Summary for Gabi:** `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf` / `.docx` (5 pages).
-  - **Winner (proposed, Nimer to confirm):** YOLO11n + turban colour — most accurate (85.4% all, 96.2% people > 1/4 height)
+  - **24.11 GPU re-selection (Nimer to confirm): switch to hybrid YOLO11m** — Dareen's (drone) laptop has an RTX 5050 that
+    PyTorch was not using; GPU env `C:\Users\LOREN\venvs\gpu`. 12 detectors (YOLO, RT-DETR, RF-DETR) on 403 frames: YOLO11m
+    89.6% frames correct, 1 wrong / 164, 0 false alarms; ~45 FPS on GPU. YOLO11n stays the CPU-only fallback.
+    `2_MILESTONES/M05_reselection_GPU_12_detectors_24.11.md`. Trackers: BoT-SORT leads of 6 (`M06_tracker_grid_23.11.md`).
+  - **Winner until 23.11:** YOLO11n + turban colour — most accurate (85.4% all, 96.2% people > 1/4 height)
     and fastest. Work-plan req. 1 (user in >= 90% of frames, lab): user detected 99%, identified by the turban 73% → M06 tracking closes the gap.
   - Open before the meeting: Nimer confirms the winner + reads the summary; Nimer's AI log line; the 12.11 moves
     video is not on Dareen's laptop (only the log) — find it (phone / Nimer).

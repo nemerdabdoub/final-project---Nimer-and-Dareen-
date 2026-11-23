@@ -33,7 +33,62 @@ OUT = HERE.parent / "M05_data" / "results" / "userpick_allvideos_22.11"
 GT_NEW = OUT / "user_gt_22.11.json"
 TEST_LABELS = HERE.parent / "M05_data" / "test_22.11" / "labels"
 BYEYE = "byeye" in sys.argv
-DETECTORS = ["yolo11n.pt", "yolo12n.pt", "yolo26n.pt", "yolo11s.pt", "yolo11m.pt", "yolo11n_drone_gentle.pt"]
+DETECTORS = ["yolo11n.pt", "yolo12n.pt", "yolo26n.pt", "yolo11s.pt", "yolo11m.pt", "yolo11n_drone_gentle.pt",
+             "yolo26s.pt", "yolo26m.pt"]   # 26s/26m added 24.11
+
+# 24.11: on Dareen's GPU environment (C:\Users\LOREN\venvs\gpu, RTX 5050 = the drone laptop) the results go to a
+# separate folder, so the CPU table of 23.11 stays as it is. The answer key (GT_NEW) is still read from the 22.11 folder.
+import torch
+if torch.cuda.is_available():
+    OUT_GT = OUT
+    OUT = HERE.parent / "M05_data" / "results" / "userpick_allvideos_gpu_24.11"
+    GT_NEW = OUT_GT / "user_gt_22.11.json"
+    print("running on GPU:", torch.cuda.get_device_name(0), "->", OUT)
+    # Non-YOLO detectors (need the GPU): RT-DETR (Baidu, inside Ultralytics) and RF-DETR (Roboflow, pip install rfdetr)
+    DETECTORS += ["rtdetr-l.pt", "rfdetr-nano", "rfdetr-small", "rfdetr-medium"]
+
+
+class _Boxes:                                   # looks like Ultralytics' result.boxes for m05.people_of()
+    def __init__(self, xyxy):
+        self._a = xyxy
+        self.xyxy = self
+
+    def cpu(self):
+        return self
+
+    def numpy(self):
+        return self._a
+
+
+class RFDETRDetector:
+    """RF-DETR wrapped so m05.people_of(model, img) works unchanged: people only (COCO id 1), same confidence CONF."""
+
+    def __init__(self, size):
+        import rfdetr
+        cls = {"nano": rfdetr.RFDETRNano, "small": rfdetr.RFDETRSmall, "medium": rfdetr.RFDETRMedium}[size]
+        self.m = cls()
+        try:
+            self.m.optimize_for_inference()     # Roboflow's recommended speed-up; skipped if this version lacks it
+        except Exception as e:
+            print("RF-DETR not optimised:", e)
+
+    def __call__(self, img, classes=None, conf=0.25, verbose=False):
+        import numpy as np
+        d = self.m.predict(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), threshold=conf)
+        keep = d.class_id == 1                  # COCO "person"
+        r = type("R", (), {})()
+        r.boxes = _Boxes(np.asarray(d.xyxy[keep], dtype=float))
+        return [r]
+
+
+def load_detector(det):
+    if det.startswith("rfdetr-"):
+        return RFDETRDetector(det.split("-", 1)[1])
+    if det.startswith("rtdetr"):
+        from ultralytics import RTDETR
+        return RTDETR(det)                      # downloads rtdetr-l.pt on first use
+    from ultralytics import YOLO
+    return YOLO(str(HERE / det))
 
 
 def framesets():
@@ -108,7 +163,7 @@ def main():
         add("colour only", s, judge(u, point=pt))
     speed["colour only"] = 1000 * t / len(cache)
     for det in DETECTORS:
-        model = YOLO(str(HERE / det))
+        model = load_detector(det)
         name = det.replace(".pt", "")
         model(next(iter(cache.values()))[0], verbose=False)
         t = 0.0

@@ -1,0 +1,12 @@
+method,hardware,detector median ms,hybrid median ms,hybrid p90 ms,hybrid FPS
+colour only (CPU check),CPU,,22.0,23.0,45.5
+yolo11n,GPU NVIDIA GeForce RTX 5050 Laptop GPU,66.5,89.0,104.9,11.2
+yolo11s,GPU NVIDIA GeForce RTX 5050 Laptop GPU,68.1,91.0,105.0,11.0
+yolo11m,GPU NVIDIA GeForce RTX 5050 Laptop GPU,84.4,107.1,125.6,9.3
+yolo26n,GPU NVIDIA GeForce RTX 5050 Laptop GPU,74.6,97.6,112.8,10.2
+yolo26s,GPU NVIDIA GeForce RTX 5050 Laptop GPU,76.7,99.8,114.5,10.0
+yolo26m,GPU NVIDIA GeForce RTX 5050 Laptop GPU,81.6,104.3,118.4,9.6
+rtdetr-l,GPU NVIDIA GeForce RTX 5050 Laptop GPU,144.8,167.6,189.4,6.0
+rfdetr-nano,GPU NVIDIA GeForce RTX 5050 Laptop GPU,108.0,133.1,140.0,7.5
+rfdetr-small,GPU NVIDIA GeForce RTX 5050 Laptop GPU,114.1,139.0,146.2,7.2
+rfdetr-medium,GPU NVIDIA GeForce RTX 5050 Laptop GPU,129.5,154.3,164.8,6.5

@@ -1,0 +1,9 @@
+M06 tracking: 161951_recording_test60.mp4, yolo11n.pt + ocsort, every 2. frame (12.5/s), 751 frames, 60 s
+
+NEW (M06, colour + tracker): user known in 83% of frames (colour 69%, kept by the tracker 13%, none 17%)
+OLD (M05, colour + 1 s fallback): user known in 76% of frames (colour 69%, fallback 7%, none 24%)
+re-identifications by colour (tracker had lost or swapped him): 9
+gaps without a user: 11, longest 5.1 s
+
+Check by eye in the video: every yellow 'USER (track)' box must be the actor. A yellow box on someone else = a
+tracker swap (write down the time). That count is the M06 'wrong person' number.

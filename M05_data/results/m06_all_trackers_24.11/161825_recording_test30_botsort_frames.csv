@@ -1,0 +1,377 @@
+frame,time_s,new_source,user_id,x1,y1,x2,y2,old_source,command
+0,0.0,none,,,,,,none,hover (no user)
+2,0.08,none,,,,,,none,hover (no user)
+4,0.16,none,,,,,,none,hover (no user)
+6,0.24,none,,,,,,none,hover (no user)
+8,0.32,none,,,,,,none,hover (no user)
+10,0.4,none,,,,,,none,hover (no user)
+12,0.48,none,,,,,,none,hover (no user)
+14,0.56,none,,,,,,none,hover (no user)
+16,0.64,none,,,,,,none,hover (no user)
+18,0.72,none,,,,,,none,hover (no user)
+20,0.8,none,,,,,,none,hover (no user)
+22,0.88,none,,,,,,none,hover (no user)
+24,0.96,none,,,,,,none,hover (no user)
+26,1.04,none,,,,,,none,hover (no user)
+28,1.12,none,,,,,,none,hover (no user)
+30,1.2,none,,,,,,none,hover (no user)
+32,1.28,none,,,,,,none,hover (no user)
+34,1.36,none,,,,,,none,hover (no user)
+36,1.44,none,,,,,,none,hover (no user)
+38,1.52,none,,,,,,none,hover (no user)
+40,1.6,none,,,,,,none,hover (no user)
+42,1.68,none,,,,,,none,hover (no user)
+44,1.76,none,,,,,,none,hover (no user)
+46,1.84,none,,,,,,none,hover (no user)
+48,1.92,none,,,,,,none,hover (no user)
+50,2.0,none,,,,,,none,hover (no user)
+52,2.08,none,,,,,,none,hover (no user)
+54,2.16,none,,,,,,none,hover (no user)
+56,2.24,none,,,,,,none,hover (no user)
+58,2.32,none,,,,,,none,hover (no user)
+60,2.4,none,,,,,,none,hover (no user)
+62,2.48,none,,,,,,none,hover (no user)
+64,2.56,none,,,,,,none,hover (no user)
+66,2.64,none,,,,,,none,hover (no user)
+68,2.72,none,,,,,,none,hover (no user)
+70,2.8,none,,,,,,none,hover (no user)
+72,2.88,none,,,,,,none,hover (no user)
+74,2.96,none,,,,,,none,hover (no user)
+76,3.04,none,,,,,,none,hover (no user)
+78,3.12,none,,,,,,none,hover (no user)
+80,3.2,none,,,,,,none,hover (no user)
+82,3.28,none,,,,,,none,hover (no user)
+84,3.36,none,,,,,,none,hover (no user)
+86,3.44,none,,,,,,none,hover (no user)
+88,3.52,none,,,,,,none,hover (no user)
+90,3.6,none,,,,,,none,hover (no user)
+92,3.68,none,,,,,,none,hover (no user)
+94,3.76,none,,,,,,none,hover (no user)
+96,3.84,none,,,,,,none,hover (no user)
+98,3.92,none,,,,,,none,hover (no user)
+100,4.0,none,,,,,,none,hover (no user)
+102,4.08,none,,,,,,none,hover (no user)
+104,4.16,none,,,,,,none,hover (no user)
+106,4.24,none,,,,,,none,hover (no user)
+108,4.32,none,,,,,,none,hover (no user)
+110,4.4,none,,,,,,none,hover (no user)
+112,4.48,none,,,,,,none,hover (no user)
+114,4.56,none,,,,,,none,hover (no user)
+116,4.64,none,,,,,,none,hover (no user)
+118,4.72,none,,,,,,none,hover (no user)
+120,4.8,none,,,,,,none,hover (no user)
+122,4.88,none,,,,,,none,hover (no user)
+124,4.96,none,,,,,,none,hover (no user)
+126,5.04,none,,,,,,none,hover (no user)
+128,5.12,none,,,,,,none,hover (no user)
+130,5.2,none,,,,,,none,hover (no user)
+132,5.28,none,,,,,,none,hover (no user)
+134,5.36,none,,,,,,none,hover (no user)
+136,5.44,none,,,,,,none,hover (no user)
+138,5.52,none,,,,,,none,hover (no user)
+140,5.6,none,,,,,,none,hover (no user)
+142,5.68,none,,,,,,none,hover (no user)
+144,5.76,none,,,,,,none,hover (no user)
+146,5.84,none,,,,,,none,hover (no user)
+148,5.92,none,,,,,,none,hover (no user)
+150,6.0,none,,,,,,none,hover (no user)
+152,6.08,none,,,,,,none,hover (no user)
+154,6.16,none,,,,,,none,hover (no user)
+156,6.24,none,,,,,,none,hover (no user)
+158,6.32,none,,,,,,none,hover (no user)
+160,6.4,none,,,,,,none,hover (no user)
+162,6.48,none,,,,,,none,hover (no user)
+164,6.56,none,,,,,,none,hover (no user)
+166,6.64,none,,,,,,none,hover (no user)
+168,6.72,none,,,,,,none,hover (no user)
+170,6.8,none,,,,,,none,hover (no user)
+172,6.88,none,,,,,,none,hover (no user)
+174,6.96,none,,,,,,none,hover (no user)
+176,7.04,none,,,,,,none,hover (no user)
+178,7.12,none,,,,,,none,hover (no user)
+180,7.2,none,,,,,,none,hover (no user)
+182,7.28,none,,,,,,none,hover (no user)
+184,7.36,none,,,,,,none,hover (no user)
+186,7.44,none,,,,,,none,hover (no user)
+188,7.52,none,,,,,,none,hover (no user)
+190,7.6,none,,,,,,none,hover (no user)
+192,7.68,none,,,,,,none,hover (no user)
+194,7.76,none,,,,,,none,hover (no user)
+196,7.84,none,,,,,,none,hover (no user)
+198,7.92,none,,,,,,none,hover (no user)
+200,8.0,none,,,,,,none,hover (no user)
+202,8.08,none,,,,,,none,hover (no user)
+204,8.16,none,,,,,,none,hover (no user)
+206,8.24,none,,,,,,none,hover (no user)
+208,8.32,none,,,,,,none,hover (no user)
+210,8.4,none,,,,,,none,hover (no user)
+212,8.48,none,,,,,,none,hover (no user)
+214,8.56,none,,,,,,none,hover (no user)
+216,8.64,none,,,,,,none,hover (no user)
+218,8.72,none,,,,,,none,hover (no user)
+220,8.8,none,,,,,,none,hover (no user)
+222,8.88,none,,,,,,none,hover (no user)
+224,8.96,none,,,,,,none,hover (no user)
+226,9.04,none,,,,,,none,hover (no user)
+228,9.12,none,,,,,,none,hover (no user)
+230,9.2,none,,,,,,none,hover (no user)
+232,9.28,none,,,,,,none,hover (no user)
+234,9.36,none,,,,,,none,hover (no user)
+236,9.44,none,,,,,,none,hover (no user)
+238,9.52,none,,,,,,none,hover (no user)
+240,9.6,none,,,,,,none,hover (no user)
+242,9.68,none,,,,,,none,hover (no user)
+244,9.76,none,,,,,,none,hover (no user)
+246,9.84,none,,,,,,none,hover (no user)
+248,9.92,none,,,,,,none,hover (no user)
+250,10.0,none,,,,,,none,hover (no user)
+252,10.08,none,,,,,,none,hover (no user)
+254,10.16,none,,,,,,none,hover (no user)
+256,10.24,none,,,,,,none,hover (no user)
+258,10.32,none,,,,,,none,hover (no user)
+260,10.4,none,,,,,,none,hover (no user)
+262,10.48,none,,,,,,none,hover (no user)
+264,10.56,none,,,,,,none,hover (no user)
+266,10.64,none,,,,,,none,hover (no user)
+268,10.72,none,,,,,,none,hover (no user)
+270,10.8,none,,,,,,none,hover (no user)
+272,10.88,none,,,,,,none,hover (no user)
+274,10.96,none,,,,,,none,hover (no user)
+276,11.04,none,,,,,,none,hover (no user)
+278,11.12,none,,,,,,none,hover (no user)
+280,11.2,none,,,,,,none,hover (no user)
+282,11.28,none,,,,,,none,hover (no user)
+284,11.36,none,,,,,,none,hover (no user)
+286,11.44,none,,,,,,none,hover (no user)
+288,11.52,none,,,,,,none,hover (no user)
+290,11.6,colour,2,55,110,162,414,colour,turn left
+292,11.68,colour,2,59,114,163,413,colour,turn left
+294,11.76,track,2,52,117,171,411,fallback,turn left
+296,11.84,colour,2,68,119,188,410,colour,turn left
+298,11.92,colour,2,90,123,213,409,colour,turn left
+300,12.0,colour,2,101,127,235,409,colour,turn left
+302,12.08,colour,2,99,131,248,409,colour,turn left
+304,12.16,colour,2,111,136,253,408,colour,turn left
+306,12.24,colour,2,117,137,250,407,colour,turn left
+308,12.32,colour,2,129,139,247,405,colour,turn left
+310,12.4,colour,2,140,142,239,400,colour,turn left
+312,12.48,colour,2,142,142,239,399,colour,turn left
+314,12.56,colour,2,152,142,258,398,colour,turn left
+316,12.64,colour,2,158,144,271,398,colour,turn left
+318,12.72,colour,2,166,145,278,397,colour,turn left
+320,12.8,colour,2,174,148,276,398,colour,turn left
+322,12.88,colour,2,179,151,274,397,colour,turn left
+324,12.96,colour,2,183,152,276,394,colour,turn left
+326,13.04,colour,2,191,154,281,391,colour,turn left
+328,13.12,colour,2,202,155,290,391,colour,turn left
+330,13.2,colour,2,203,154,298,390,colour,turn left
+332,13.28,colour,2,201,155,305,388,colour,turn left
+334,13.36,colour,2,203,157,310,387,colour,turn left
+336,13.44,colour,2,214,159,316,386,colour,turn left
+338,13.52,colour,2,223,159,320,386,colour,turn left
+340,13.6,colour,2,238,161,323,385,colour,turn left + forward
+342,13.68,colour,2,248,163,328,385,colour,turn left + forward
+344,13.76,colour,2,253,163,332,384,colour,turn left + forward
+346,13.84,colour,2,260,164,342,384,colour,turn left + forward
+348,13.92,colour,2,265,164,349,384,colour,turn left + forward
+350,14.0,colour,2,271,165,353,385,colour,turn left + forward
+352,14.08,colour,2,275,165,356,385,colour,turn left + forward
+354,14.16,colour,2,273,165,362,385,colour,turn left + forward
+356,14.24,colour,2,273,165,366,384,colour,turn left + forward
+358,14.32,colour,2,277,165,369,384,colour,turn left + forward
+360,14.4,colour,2,280,166,371,384,colour,turn left + forward
+362,14.48,colour,2,281,167,372,384,colour,turn left + forward
+364,14.56,colour,2,281,166,371,384,colour,turn left + forward
+366,14.64,colour,2,282,166,370,383,colour,turn left + forward
+368,14.72,colour,2,286,165,370,384,colour,turn left + forward
+370,14.8,colour,2,289,164,370,385,colour,turn left + forward
+372,14.88,colour,2,283,163,370,385,colour,turn left + forward
+374,14.96,colour,2,279,163,371,386,colour,turn left + forward
+376,15.04,colour,2,276,161,371,385,colour,turn left + forward
+378,15.12,colour,2,274,160,371,384,colour,turn left + forward
+380,15.2,colour,2,274,159,374,386,colour,turn left
+382,15.28,colour,2,276,158,379,386,colour,turn left
+384,15.36,colour,2,279,157,383,386,colour,turn left
+386,15.44,colour,2,282,156,384,386,colour,turn left
+388,15.52,colour,2,285,155,383,387,colour,turn left
+390,15.6,colour,2,286,154,380,388,colour,turn left
+392,15.68,colour,2,283,154,378,389,colour,turn left
+394,15.76,colour,2,287,153,378,391,colour,turn left
+396,15.84,colour,2,293,153,379,391,colour,turn left
+398,15.92,colour,2,300,152,384,392,colour,turn left
+400,16.0,colour,2,305,150,388,392,colour,turn left
+402,16.08,colour,2,310,147,391,395,colour,turn left
+404,16.16,colour,2,313,146,394,395,colour,turn left
+406,16.24,colour,2,317,145,397,396,colour,turn left
+408,16.32,colour,2,320,144,400,397,colour,turn left
+410,16.4,colour,2,322,143,412,399,colour,turn left
+412,16.48,colour,2,323,141,417,400,colour,turn left
+414,16.56,colour,2,324,140,419,401,colour,turn left
+416,16.64,colour,2,325,139,420,402,colour,turn left
+418,16.72,colour,2,326,137,420,402,colour,turn left
+420,16.8,colour,2,327,136,420,402,colour,turn left
+422,16.88,colour,2,326,135,420,406,colour,turn left
+424,16.96,colour,2,324,131,423,406,colour,turn left
+426,17.04,colour,2,322,128,426,406,colour,turn left
+428,17.12,colour,2,325,127,427,408,colour,turn left
+430,17.2,colour,2,331,127,431,408,colour,turn left
+432,17.28,colour,2,333,125,434,409,colour,turn left
+434,17.36,colour,2,333,121,437,409,colour,turn left
+436,17.44,colour,2,332,118,440,411,colour,turn left
+438,17.52,colour,2,328,113,440,413,colour,turn left
+440,17.6,colour,2,324,109,438,416,colour,turn left
+442,17.68,colour,2,321,109,438,416,colour,turn left
+444,17.76,colour,2,316,107,438,419,colour,turn left
+446,17.84,track,2,309,103,437,422,fallback,turn left
+448,17.92,track,2,304,101,434,425,fallback,turn left + back
+450,18.0,track,2,298,93,425,427,fallback,turn left + back
+452,18.08,track,2,292,88,414,428,fallback,turn left + back
+454,18.16,track,2,277,83,402,430,fallback,turn left + back
+456,18.24,colour,2,264,78,395,432,colour,turn left + back
+458,18.32,track,2,250,70,376,436,fallback,turn left + back
+460,18.4,track,2,238,65,361,439,fallback,turn left + back
+462,18.48,track,2,227,59,346,441,fallback,turn left + back
+464,18.56,colour,2,218,56,335,443,colour,turn left + back
+466,18.64,colour,2,204,52,324,444,colour,turn left + back
+468,18.72,track,2,177,46,314,448,fallback,turn left + back
+470,18.8,track,2,160,41,308,452,fallback,turn left + back
+472,18.88,track,2,147,36,306,456,fallback,turn left + back
+474,18.96,track,2,138,29,303,458,fallback,turn left + back
+476,19.04,track,2,131,26,299,462,fallback,turn left + back
+478,19.12,track,2,103,23,283,466,fallback,turn left + back
+480,19.2,track,2,77,13,247,469,fallback,turn left + back
+482,19.28,track,2,53,5,227,473,fallback,turn left + back
+484,19.36,track,2,25,0,213,477,fallback,turn left + back
+486,19.44,track,2,12,0,204,478,fallback,turn left + back
+488,19.52,track,2,9,0,196,481,fallback,turn left + back
+490,19.6,track,2,2,1,197,483,fallback,turn left + back
+492,19.68,track,2,0,1,196,487,none,turn left + back
+494,19.76,track,2,0,1,185,489,none,turn left + back
+496,19.84,track,2,0,1,163,493,none,turn left + back
+498,19.92,track,2,0,2,143,495,none,turn left + back
+500,20.0,track,2,0,1,136,498,none,turn left + back
+502,20.08,track,2,0,2,131,503,none,turn left + back
+504,20.16,track,2,0,3,136,506,none,turn left + back
+506,20.24,track,2,0,2,139,509,none,turn left + back
+508,20.32,track,2,0,2,136,511,none,turn left + back
+510,20.4,track,2,0,1,142,514,none,turn left + back
+512,20.48,track,2,0,2,141,515,none,turn left + back
+514,20.56,track,2,0,2,129,514,none,turn left + back
+516,20.64,track,2,0,3,124,506,none,turn left + back
+518,20.72,track,2,0,2,126,513,none,turn left + back
+520,20.8,track,2,0,1,134,514,none,turn left + back
+522,20.88,track,2,0,2,136,520,none,turn left + back
+524,20.96,track,2,0,4,140,528,none,turn left + back
+526,21.04,track,2,0,4,144,530,none,turn left + back
+528,21.12,track,2,1,4,159,528,none,turn left + back
+530,21.2,track,2,3,4,171,524,none,turn left + back
+532,21.28,track,2,1,3,179,523,none,turn left + back
+534,21.36,track,2,2,3,195,524,none,turn left + back
+536,21.44,track,2,4,3,224,530,none,turn left + back
+538,21.52,track,2,3,2,247,533,none,turn left + back
+540,21.6,track,2,6,1,261,537,none,turn left + back
+542,21.68,track,2,26,1,270,536,none,turn left + back
+544,21.76,track,2,65,2,290,538,none,turn left + back
+546,21.84,track,2,95,2,305,527,none,turn left + back
+548,21.92,track,2,126,3,325,518,none,turn left + back
+550,22.0,track,2,145,2,341,512,none,turn left + back
+552,22.08,track,2,167,4,367,506,none,turn left + back
+554,22.16,track,2,166,1,385,508,none,turn left + back
+556,22.24,track,2,210,1,403,508,none,turn left + back
+558,22.32,colour,2,241,0,424,512,colour,turn left + back
+560,22.4,colour,2,264,3,440,510,colour,turn left + back
+562,22.48,colour,2,291,11,464,505,colour,turn left + back
+564,22.56,colour,2,319,18,485,498,colour,turn left + back
+566,22.64,colour,2,341,24,510,497,colour,turn left + back
+568,22.72,colour,2,366,34,529,498,colour,turn left + back
+570,22.8,colour,2,398,49,554,505,colour,back
+572,22.88,colour,2,423,62,575,512,colour,back
+574,22.96,colour,2,452,78,593,526,colour,back
+576,23.04,colour,2,475,86,608,538,colour,back
+578,23.12,colour,2,492,96,623,548,colour,back
+580,23.2,colour,2,513,113,650,551,colour,back
+582,23.28,colour,2,531,127,671,545,colour,back
+584,23.36,colour,2,559,136,694,549,colour,turn right + back
+586,23.44,colour,2,572,142,706,551,colour,turn right + back
+588,23.52,colour,2,580,144,716,553,colour,turn right + back
+590,23.6,colour,2,591,151,727,555,colour,turn right + back
+592,23.68,colour,2,600,153,732,557,colour,turn right + back
+594,23.76,colour,2,616,156,738,559,colour,turn right + back
+596,23.84,colour,2,624,158,741,552,colour,turn right + back
+598,23.92,colour,2,631,161,746,548,colour,turn right + back
+600,24.0,colour,2,640,163,759,545,colour,turn right + back
+602,24.08,colour,2,645,164,767,541,colour,turn right + back
+604,24.16,colour,2,651,165,777,535,colour,turn right + back
+606,24.24,colour,2,653,168,786,530,colour,turn right + back
+608,24.32,colour,2,653,171,788,530,colour,turn right + back
+610,24.4,colour,2,648,172,783,531,colour,turn right + back
+612,24.48,colour,2,647,173,780,531,colour,turn right + back
+614,24.56,colour,2,648,174,777,526,colour,turn right + back
+616,24.64,colour,2,654,174,782,524,colour,turn right + back
+618,24.72,colour,2,672,173,793,525,colour,turn right + back
+620,24.8,colour,2,680,173,800,526,colour,turn right + back
+622,24.88,colour,2,683,174,807,526,colour,turn right + back
+624,24.96,colour,2,684,176,812,526,colour,turn right + back
+626,25.04,colour,2,682,177,812,528,colour,turn right + back
+628,25.12,colour,2,677,176,810,528,colour,turn right + back
+630,25.2,colour,2,677,175,803,528,colour,turn right + back
+632,25.28,colour,2,685,175,795,527,colour,turn right + back
+634,25.36,colour,2,687,174,789,527,colour,turn right + back
+636,25.44,colour,2,684,174,792,529,colour,turn right + back
+638,25.52,colour,2,683,174,808,527,colour,turn right + back
+640,25.6,colour,2,682,173,818,524,colour,turn right + back
+642,25.68,colour,2,678,171,812,524,colour,turn right + back
+644,25.76,colour,2,675,170,807,524,colour,turn right + back
+646,25.84,colour,2,667,169,801,524,colour,turn right + back
+648,25.92,colour,2,659,167,798,525,colour,turn right + back
+650,26.0,colour,2,653,165,797,525,colour,turn right + back
+652,26.08,colour,2,644,164,794,525,colour,turn right + back
+654,26.16,colour,2,637,163,787,529,colour,turn right + back
+656,26.24,colour,2,636,163,781,531,colour,turn right + back
+658,26.32,colour,2,635,163,773,531,colour,turn right + back
+660,26.4,colour,2,634,160,765,534,colour,turn right + back
+662,26.48,colour,2,630,158,756,536,colour,turn right + back
+664,26.56,colour,2,621,157,745,542,colour,turn right + back
+666,26.64,colour,2,611,155,735,553,colour,turn right + back
+668,26.72,colour,2,590,151,720,562,colour,turn right + back
+670,26.8,colour,2,579,149,709,565,colour,turn right + back
+672,26.88,colour,2,569,148,697,566,colour,turn right + back
+674,26.96,colour,2,557,146,684,568,colour,back
+676,27.04,colour,2,542,140,670,568,colour,back
+678,27.12,colour,2,531,138,657,567,colour,back
+680,27.2,colour,2,524,135,647,567,colour,back
+682,27.28,colour,2,511,134,628,567,colour,back
+684,27.36,colour,2,487,131,614,566,colour,back
+686,27.44,colour,2,463,130,603,566,colour,back
+688,27.52,colour,2,433,132,591,568,colour,back
+690,27.6,colour,2,413,127,583,570,colour,back
+692,27.68,colour,2,402,128,576,574,colour,back
+694,27.76,colour,2,395,126,572,578,colour,back
+696,27.84,colour,2,390,123,568,579,colour,back
+698,27.92,colour,2,387,119,565,579,colour,back
+700,28.0,track,2,386,117,562,579,fallback,back
+702,28.08,track,2,383,115,555,580,fallback,back
+704,28.16,track,2,372,114,543,582,fallback,turn left + back
+706,28.24,track,2,355,111,521,592,fallback,turn left + back
+708,28.32,track,2,340,109,511,601,fallback,turn left + back
+710,28.4,track,2,326,106,508,593,fallback,turn left + back
+712,28.48,track,2,315,104,511,600,fallback,turn left + back
+714,28.56,track,2,311,103,519,603,fallback,turn left + back
+716,28.64,track,2,314,99,522,604,fallback,turn left + back
+718,28.72,track,2,315,95,523,603,fallback,turn left + back
+720,28.8,track,2,316,89,516,603,fallback,turn left + back
+722,28.88,track,2,314,85,515,603,fallback,turn left + back
+724,28.96,track,2,312,81,514,604,none,turn left + back
+726,29.04,colour,2,304,77,515,605,colour,turn left + back
+728,29.12,track,2,304,76,519,604,fallback,turn left + back
+730,29.2,colour,2,304,73,524,603,colour,turn left + back
+732,29.28,colour,2,314,68,527,603,colour,turn left + back
+734,29.36,colour,2,326,60,535,602,colour,turn left + back
+736,29.44,colour,2,337,54,555,602,colour,turn left + back
+738,29.52,colour,2,346,50,564,603,colour,turn left + back
+740,29.6,colour,2,358,46,561,603,colour,back
+742,29.68,colour,2,372,45,559,603,colour,back
+744,29.76,colour,2,387,48,564,605,colour,back
+746,29.84,colour,2,404,49,579,605,colour,back
+748,29.92,colour,2,415,46,595,604,colour,back
+750,30.0,colour,2,417,46,613,604,colour,back

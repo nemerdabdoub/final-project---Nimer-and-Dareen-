@@ -25,14 +25,23 @@ for t in (56.5, 57.5, 58.5, 59.5):
 
 TESTS = [("YOLO11n (original)", "yolo11n.pt", 640), ("YOLOv12n", "yolo12n.pt", 640), ("YOLO26n", "yolo26n.pt", 640),
          ("YOLO11n fine-tuned (1st)", "yolo11n_drone.pt", 640), ("YOLO11n fine-tuned (gentle)", "yolo11n_drone_gentle.pt", 640),
-         ("YOLO11s", "yolo11s.pt", 640), ("YOLO11m", "yolo11m.pt", 640), ("YOLO11s at 1280 px", "yolo11s.pt", 1280)]
+         ("YOLO11s", "yolo11s.pt", 640), ("YOLO11m", "yolo11m.pt", 640), ("YOLO11s at 1280 px", "yolo11s.pt", 1280),
+         ("YOLO26s", "yolo26s.pt", 640), ("YOLO26m", "yolo26m.pt", 640)]   # 26s/26m added 24.11 (downloaded on first use)
+
+# Which hardware runs the model: Ultralytics uses the NVIDIA GPU automatically when PyTorch has CUDA
+# (Dareen's GPU environment C:\Users\LOREN\venvs\gpu, RTX 5050); the normal Python is CPU-only.
+# The hardware is written in every row and in the file name, so CPU and GPU numbers are never mixed.
+import torch
+DEVICE = f"GPU {torch.cuda.get_device_name(0)}" if torch.cuda.is_available() else "CPU only"
+OUT_NAME = "m05_all_models_gpu.csv" if torch.cuda.is_available() else "m05_all_models.csv"
+print("running on:", DEVICE)
 rows = []
 for label, w, sz in TESTS:
     model = YOLO(w)
     det = lambda im, k=1.0: model(m05.darken(im, k) if k != 1.0 else im, classes=[0], conf=m05.CONF, imgsz=sz,
                                   verbose=False)[0].boxes.xyxy.cpu().numpy().tolist()
     det(imgs[frames[0]])                                                     # warm-up
-    r = {"method": label}
+    r = {"method": label, "hardware": DEVICE}
     for k in (1.0, 0.35):
         tp = fp = fn = btp = bn = 0
         found = wrong = alarm = nonepick = nu = nw = 0
@@ -67,8 +76,8 @@ for label, w, sz in TESTS:
     rows.append(r); print(label, {k: (round(v, 1) if isinstance(v, float) else v) for k, v in r.items() if k != "method"})
 
 cols = list(rows[0].keys())
-with open(E / "m05_all_models.csv", "w", newline="") as f:
+with open(E / OUT_NAME, "w", newline="") as f:
     w = csv.writer(f); w.writerow(cols)
     for r in rows:
         w.writerow([f"{r[c]:.1f}" if isinstance(r[c], float) else r[c] for c in cols])
-print("saved", E / "m05_all_models.csv")
+print("saved", E / OUT_NAME)
