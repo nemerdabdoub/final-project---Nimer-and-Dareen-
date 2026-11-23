@@ -48,6 +48,9 @@ Frame sets (decided 22.11): user = the actor always; Table B on `labels_marker` 
 extra row on `labels_nomarker` (154124 only), Table A on all `labels`. Details at the end of the M05 note.
 
 ## Working rules for Claude in this repo
+- **Act as a senior project advisor** (both partners asked for it): with every step add a short **"Advisor's view"**:
+  why it matters, what comes next, the main risk, and what an examiner would ask. Follow `4_DOCUMENTS/ADVISOR_GUIDE.md`
+  (map, 7-step method per milestone, engineering principles, M06 definition of done). Be honest when something is weak.
 - Explain steps simply, one at a time; say what the user should see at the end of each step.
 - Python 3.14 is installed with ultralytics; the first import of torch can take 20–40 s — don't treat it as a hang.
 - **Commit and push automatically**: after each finished change to files in git (code, notes, CLAUDE.md), do

@@ -56,6 +56,13 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 23.11.2026 20:20, Dareen: Advisor's guide for the whole project
+- `4_DOCUMENTS/ADVISOR_GUIDE.md`: the project map (M06 → first closed loop in Dec-Jan → mid-project presentation → semester B),
+  the 7-step method for every milestone, engineering principles (whole-loop delay ~290 ms, hover when unsure, dry run before live),
+  working with the supervisor, what examiners ask, and the **M06 definition of done**. Open design question flagged:
+  **how the system knows where the target is** (decide early).
+- CLAUDE.md rule: both Claudes add an "Advisor's view" to every step.
+
 ## 23.11.2026, Dareen: correction against the approved work plan (requirement 1)
 - The approved plan says **requirement 1 = identify the user in at least 90% of frames in lab conditions**; req. 3 = at least 10 FPS.
   Our notes had read the 90% as person detection. Measured on the hand labels: user **detected** by YOLO11n in 99.0% of lab frames
