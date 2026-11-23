@@ -152,6 +152,14 @@ as a second characteristic that also gives the distance to the user.
 - 22.11 Hybrid misses when the turban is not visible → keep the strict 3% rule (never the wrong person) and bridge the
   gaps with M06 tracking instead of loosening the colour rule (thresholds were set on the test frames themselves).
 
+- 23.11 **Someone passes by the user → the two person boxes overlap** (seen in our videos). Risks: YOLO merges them or
+  shifts a box, the turban can fall inside the passer-by's head area, and the 1 s IoU fallback can jump to the wrong box.
+  **What to say to Gabi:** today the strict rules keep it safe (turban only on a head, 2× background, wide/close boxes
+  skipped) → wrong person 1.8% on all videos, and when unsure the method gives *no* user rather than a wrong one.
+  **Fix in M06:** the tracker keeps each person's ID through the crossing (Kalman motion + IoU), the turban re-confirms the
+  user after it, an ID switch is allowed only with the turban seen, and while boxes overlap (IoU > ~0.3) the drone holds
+  its position instead of following. We will count ID swaps on the crossing scenes as the M06 metric (not measured yet).
+
 ## 7. Teamwork and tools
 - Shared GitHub repo; a GitHub action @mentions the partner on every push; `UPDATES.md` log; a live "Project updates"
   panel in VS Code (Claude Code plugin); M05 data shared in `M05_data/`; work split equally by method.

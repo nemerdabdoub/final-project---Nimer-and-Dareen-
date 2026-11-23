@@ -8,6 +8,10 @@
       0 false alarms, 29.9 FPS, delay ~290 ms, M06 76% -> 82%.
 - [ ] 20-25 min, both: agree the 4 questions for Gabi (slide 20): req. 1 via tracking OK? enough labelled frames? real low-light
       flight? turban marker OK? + say the next step: M06 tracking, due 7.12.
+- [ ] **Add to what we say (Dareen: one line on the "where it fails" / questions slide):** when someone passes by the
+      user, the person boxes OVERLAP. Today: strict turban-on-head rule → wrong person only 1.8%, and when unsure we give no
+      user instead of a wrong one. M06: tracker keeps IDs through the crossing, turban re-confirms the user, drone holds
+      position while boxes overlap; we will count ID swaps (not measured yet). Ask Gabi: is "hold while overlapping" OK?
 - [ ] 25-30 min: laptops charged + chargers, deck open on one laptop, HDMI/adapter; Nimer: AI-log line done? 12.11 moves video
       found (phone)? If not, say "will send after the meeting".
 
