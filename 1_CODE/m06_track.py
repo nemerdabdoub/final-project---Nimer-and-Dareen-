@@ -72,7 +72,9 @@ def main():
     ap = argparse.ArgumentParser(description="M06: track THE user in a recorded drone video")
     ap.add_argument("video")
     ap.add_argument("--model", default="yolo11n.pt")
-    ap.add_argument("--tracker", default="bytetrack", choices=["bytetrack", "botsort"])
+    ap.add_argument("--tracker", default="bytetrack",
+                    choices=["bytetrack", "botsort", "ocsort", "deepocsort", "fasttrack", "tracktrack"],
+                    help="any tracker shipped with Ultralytics 8.4 (see ultralytics/cfg/trackers)")
     ap.add_argument("--step", type=int, default=2, help="process every Nth frame (1 = all)")
     ap.add_argument("--seconds", type=float, default=0, help="only the first N seconds (0 = whole video)")
     a = ap.parse_args()
