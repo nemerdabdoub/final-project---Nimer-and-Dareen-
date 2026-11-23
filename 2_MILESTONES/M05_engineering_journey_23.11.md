@@ -5,7 +5,8 @@ Alternatives we considered but did not build (RT-DETR, ArUco, face recognition, 
 
 ## 1. The question
 The drone must find **every person** (they are obstacles) and know **which one is the user** in every frame, fast enough to
-steer live on a laptop without a GPU. Work-plan targets: detection >= 90%; we added >= 15 FPS (live control), never the
+steer live on a laptop without a GPU. Approved work plan: **requirement 1 = identify the user in >= 90% of frames in lab conditions**, requirement 3 = >= 10 FPS;
+we added >= 15 FPS (live control), never the
 wrong person, no false alarms.
 
 ## 2. Data: honest, hand-labelled, and tested on new footage
@@ -29,7 +30,7 @@ wrong person, no false alarms.
 | Colour alone fires on red objects (mural, sofa, red cars, dome) | colour only counts **on a person's head** (hybrid) | false alarms 71% → **0%** |
 | YOLO alone cannot tell people apart | the turban picks the person | wrong person ~36% → **0%** (20.11) |
 | A hand at the lens became the "user" | **hand filter**: skip boxes wider than 60% AND taller than 90% of the frame | the hand false alarm gone |
-| Overall detection 85%, target 90% | measured **why**: every miss is a small, far or edge-cut person; 0% misses for big, fully visible people | new column "following distance (> 1/4 height)": **96-98%** → target met where the drone works |
+| Overall person detection 85% (lab) | measured **why**: every miss is a small, far or edge-cut person; 0% misses for big, fully visible people | new column "following distance (> 1/4 height)": **96-98%** → target met where the drone works |
 | Tried to reach 90% on all people | lower confidence, bigger models, 1280 px input, tiles | only YOLO11s at 1280 px passes (91.7%) but runs at 5 FPS → rejected |
 | A framed portrait detected as a person | **fine-tuned** YOLO11n on 335 of our own frames (gentle: frozen backbone, 80 classes kept) | portrait gone, detection 85.4 → 84.4%, but it **forgot bikes** → not adopted; lesson for next semester |
 | New footage: a passer-by in a **red shirt** | found on the new clips; 3 wrong frames of 164 | next fix: M06 tracking keeps the ID; smaller head area for small boxes |
@@ -52,7 +53,10 @@ Full tables: `M05_data/results/userpick_allvideos_22.11/table.md`. All 8 detecto
 1. **Hybrid, not colour or YOLO alone**: 15x fewer wrong-person frames (3 vs ~45), no false alarms (0 vs 59-79).
 2. **YOLO11n, not a bigger YOLO**: the bigger ones gain 2-4 points but drop to 16 or 6 FPS; 11n keeps ~30 FPS, which leaves CPU
    time for M06 (tracker + controller). Among the fast models 11n has the best following-distance detection and no false alarms.
-3. **90% target**: met at following distance (96.2%); not for small far people (59.4% with the 7-8 m footage) - the drone will follow at 3-6 m.
+3. **Requirement 1 (user in >= 90% of frames, lab): half met.** YOLO11n **detects** the user in 99.0% of the lab frames (103/104;
+   92.7% on all videos), but the turban **identifies** her as THE user in 73.1% (76/104, never wrong in the lab; 70.1% on all videos).
+   Identification above 90% is the job of M06 tracking (keeps her ID between turban sightings; first run 76% → 82%).
+   People in general: 96.2% at following distance, 59.4% counting tiny far people.
 
 ## 7. Extra work-plan item: strollers and e-scooters (obstacles, next semester)
 COCO (80 classes) and Open Images (601) have bikes but no scooter/stroller. YOLO-World / YOLOE can be asked for them by text,

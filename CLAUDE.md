@@ -25,7 +25,7 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
     (`2_MILESTONES/M05_diagnosis_and_improvements_22.11.md`), demo videos (YOLO11n, on Dareen's laptop), AI log lines (Dareen).
   - **Summary for Gabi:** `4_DOCUMENTS/M05_summary_for_Gabi_23.11.pdf` / `.docx` (5 pages).
   - **Winner (proposed, Nimer to confirm):** YOLO11n + turban colour — most accurate (85.4% all, 96.2% people > 1/4 height)
-    and fastest. 90% target met only for people at following distance.
+    and fastest. Work-plan req. 1 (user in >= 90% of frames, lab): user detected 99%, identified by the turban 73% → M06 tracking closes the gap.
   - Open before the meeting: Nimer confirms the winner + reads the summary; Nimer's AI log line; the 12.11 moves
     video is not on Dareen's laptop (only the log) — find it (phone / Nimer).
 - **New clips 22.11 (bikes, Med Faculty) tested:** hybrid 83/88 right (5 wrong = man in red shirt), 0 false alarms; YOLO-World/YOLOE

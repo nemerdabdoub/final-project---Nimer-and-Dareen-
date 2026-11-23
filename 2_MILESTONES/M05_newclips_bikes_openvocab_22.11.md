@@ -138,7 +138,9 @@ Frames: M05 132 + NEW1 151 + NEW2 120 = **403 frames, 164 with the user, 239 wit
   frames correct 87.8% vs 66-72%. This is the main M05 result and it holds on footage we never tuned on.
 - **YOLO11n stays the choice.** YOLO11m is a little better everywhere (+7 user frames of 164, +9% people) but runs at 6.2 FPS, below the
   15 FPS we need. Among the fast (nano) models 11n is tied best on the user, has the best following-distance detection (96.2%) and no false alarms.
-- **Work-plan target (>= 90% detection):** met at following distance (96.2% over all videos); not met for all people (59.4%):
+- **Correction 23.11 - work-plan requirement 1 is "identify the user in >= 90% of frames in lab conditions"** (not person detection):
+  the user is **detected** (YOLO11n box on her) in 99.0% of lab frames (92.7% all videos) but **identified** by the turban in 73.1%
+  (70.1% all videos) → identification above 90% comes from M06 tracking. Person detection for reference: following distance 96.2%, all people 59.4%:
   the new clips have many small far people (7-8 m height). The drone will follow at 3-6 m, where the target is met.
 - Hand labels vs Claude's by-eye boxes: same user in 126 of 129 checked frames; the hand labels also count 11 half-visible user frames,
   which is why "user found" is a bit lower here (70.1% vs 75.2%) - the conclusions do not change.
