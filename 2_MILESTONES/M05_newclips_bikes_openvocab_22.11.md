@@ -121,21 +121,22 @@ Frames: M05 132 + NEW1 151 + NEW2 120 = **403 frames, 164 with the user, 239 wit
 
 **Finding people (ALL videos, Table A rules)**
 
-| detector | all people | following distance (> 1/4 height) | precision | speed (22.11 controlled run) |
+| detector | all people | following distance (> 1/4 height) | precision | speed, whole hybrid (clean re-run 23.11, on charger) |
 |---|---|---|---|---|
-| **YOLO11n** | 59.4% (359/604) | 96.2% (251/261) | 94.7% | **23.8 FPS** |
-| YOLOv12n | 59.3% | 95.0% | 93.2% | 21.6 FPS |
-| YOLO26n | 58.8% | 94.3% | 93.4% | 24.4 FPS |
-| YOLO11s | 64.9% | 95.8% | 93.6% | 14.0 FPS |
-| YOLO11m | **68.2%** | **97.3%** | **96.9%** | 6.5 FPS |
-| gentle fine-tune | 56.5% | 95.4% | 91.2% | 27.4 FPS |
+| **YOLO11n** | 59.4% (359/604) | 96.2% (251/261) | 94.7% | 33.5 ms = **29.9 FPS** |
+| YOLOv12n | 59.3% | 95.0% | 93.2% | 40.0 ms = 25.0 FPS |
+| YOLO26n | 58.8% | 94.3% | 93.4% | 33.2 ms = **30.1 FPS** |
+| YOLO11s | 64.9% | 95.8% | 93.6% | 63.3 ms = 15.8 FPS |
+| YOLO11m | **68.2%** | **97.3%** | **96.9%** | 161.4 ms = 6.2 FPS |
+| gentle fine-tune | 56.5% | 95.4% | 91.2% | 33.4 ms = 29.9 FPS |
 
-(ms/frame inside this run are not used: the laptop was busy with other work, so the timings were noisy. Speeds from the controlled 22.11 run.)
+(Re-run 23.11 with nothing else running, on the charger: every accuracy count identical to the first run; speeds above from this clean run.
+ Colour only alone: 6.9 ms. YOLO11s at 15.8 FPS is just at our 15 FPS limit, with no time left for the tracker and controller.)
 
 **What it means**
 - **The hybrid beats colour-only and YOLO-alone on every video**: wrong person 1.8% vs 24-27%, false alarms 0 vs 59-79 frames,
   frames correct 87.8% vs 66-72%. This is the main M05 result and it holds on footage we never tuned on.
-- **YOLO11n stays the choice.** YOLO11m is a little better everywhere (+7 user frames of 164, +9% people) but runs at 6.5 FPS, below the
+- **YOLO11n stays the choice.** YOLO11m is a little better everywhere (+7 user frames of 164, +9% people) but runs at 6.2 FPS, below the
   15 FPS we need. Among the fast (nano) models 11n is tied best on the user, has the best following-distance detection (96.2%) and no false alarms.
 - **Work-plan target (>= 90% detection):** met at following distance (96.2% over all videos); not met for all people (59.4%):
   the new clips have many small far people (7-8 m height). The drone will follow at 3-6 m, where the target is met.
