@@ -1,7 +1,7 @@
 # Updates log (newest first)
 **DAREEN, PLEASE:** upload `3_EVIDENCE/2026-11-22/143404_recording_session1.mp4` (450 MB) to our shared Google Drive folder
 "Final Project Dareen and Nimer" — Nimer needs the video (videos are not in git). Tell him when it is there.
-**LATEST PUSHES (23.11):** Dareen 23.11 – hybrid VERIFIED on all videos (392 frames: wrong person 1.3% vs 26-29%, 0 false alarms, 90.3% correct; nano hybrids tie → keep YOLO11n) + which YOLO for M06 / obstacles (note §5-6) · Nimer 17:50 – `4_DOCUMENTS/Next_three_steps_22.11.pdf` + first M06 run on 161951 (tracker keeps the user in 82% of frames vs 76% old way) ·
+**LATEST PUSHES (23.11):** Dareen 23.11 – her 149 test labels done (user agrees with Claude's by-eye marks in 126/129) and **she is labelling Nimer's half too → Nimer: do NOT run `label nimer`** · Dareen 23.11 – hybrid VERIFIED on all videos (392 frames: wrong person 1.3% vs 26-29%, 0 false alarms, 90.3% correct; nano hybrids tie → keep YOLO11n) + which YOLO for M06 / obstacles (note §5-6) · Nimer 17:50 – `4_DOCUMENTS/Next_three_steps_22.11.pdf` + first M06 run on 161951 (tracker keeps the user in 82% of frames vs 76% old way) ·
 Dareen 17:36 – `record_video.py`: keys T = take off, L = land in the recording window (not flight-tested yet) · Dareen 17:40 – new clips tested (hybrid 83/88 right, 5 wrong = man in red shirt; 0 false alarms over the car park) + YOLO-World / YOLOE work-plan check (not usable as is) + `prepare` done → **Nimer: `python m05_newclips.py label nimer`** · Nimer 15:45 – labelling set-up for the new 22.11 clips (`1_CODE/m05_newclips.py`, test-only) — **Dareen: run `python m05_newclips.py prepare` and push** ·
 Nimer 15:30 – short plain project summary `4_DOCUMENTS/Project_summary_22.11.pdf` (1 page, everything so far) ·
 Dareen 15:15 – new filming at the Med Faculty (2 clips, `2_MILESTONES/filming_22.11_bikes_med_faculty.md`) + M06 tracking tool `1_CODE/m06_track.py` ·
@@ -18,6 +18,11 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
+
+## 23.11.2026, Dareen: test-set labels (22.11 clips)
+- Dareen's half: 149 frames hand-labelled and pushed (`M05_data/test_22.11/labels`); one corrupted file (143404 f00050) redone.
+  User boxes agree with Claude's by-eye marks in 126 of 129 frames (98%).
+- **Dareen is labelling Nimer's half now (he is busy) → Nimer: don't run `label nimer`.** Then the all-videos table is re-run on hand labels.
 
 ## 23.11.2026, Dareen: hybrid verified on ALL videos + which YOLO to use
 - `1_CODE/m05_userpick_allvideos.py`: Table-B rules on the 20.11 frames + both 22.11 clips (392 frames, 153 with the user).
