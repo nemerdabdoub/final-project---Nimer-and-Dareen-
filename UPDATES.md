@@ -12,6 +12,7 @@
       user, the person boxes OVERLAP. Today: strict turban-on-head rule → wrong person only 1.8%, and when unsure we give no
       user instead of a wrong one. M06: tracker keeps IDs through the crossing, turban re-confirms the user, drone holds
       position while boxes overlap; we will count ID swaps (not measured yet). Ask Gabi: is "hold while overlapping" OK?
+- [ ] **Talking points PDF (2 pages, what to say, numbers, questions): `4_DOCUMENTS/Talking_points_Gabi_23.11.pdf`** - both read it.
 - [ ] 25-30 min: laptops charged + chargers, deck open on one laptop, HDMI/adapter; Nimer: AI-log line done? 12.11 moves video
       found (phone)? If not, say "will send after the meeting".
 
