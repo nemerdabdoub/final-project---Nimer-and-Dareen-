@@ -36,6 +36,21 @@ export type LabReport = {
   pdfTime?: string
 }
 
+export type ActivityItem = {
+  at: number   // ms since epoch
+  text: string
+  done?: boolean
+  ms?: number  // how long it took
+}
+
+export type Activity = {
+  now: string          // what Claude is doing right now
+  since: number        // when "now" started (ms)
+  busy: boolean
+  recent: ActivityItem[] // newest first
+  tools: number        // tool calls this session
+}
+
 export type Snapshot = {
   labs?: LabReport[]
   commits: Commit[]
@@ -51,6 +66,6 @@ export type Snapshot = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'project-updates': { snapshot: Shaped<Snapshot>; improveDone: Shaped<string[]> }
+    'project-updates': { snapshot: Shaped<Snapshot>; improveDone: Shaped<string[]>; activity: Shaped<Activity> }
   }
 }

@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Commit, FalseAlarm, LabReport, LocalFile, PartnerFile, Snapshot } from '../types'
+import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -26,6 +26,56 @@ const empty: Snapshot = { commits: [], local: [], ahead: 0, behind: 0, checkedAt
 const snapshot = atom({ plugin: 'project-updates', key: 'snapshot' } as const, empty, {
   shape: 'snapshot-2',
 })
+
+// ---------------- live Claude activity ----------------
+const noActivity: Activity = { now: 'idle', since: 0, busy: false, recent: [], tools: 0 }
+const activity = atom({ plugin: 'project-updates', key: 'activity' } as const, noActivity, { shape: 'activity-1' })
+const RECENT = 8
+
+function clip(s: string, n = 70): string {
+  const one = s.replace(/\s+/g, ' ').trim()
+  return one.length > n ? one.slice(0, n - 1) + '…' : one
+}
+
+function base(p: string): string {
+  return p.split(/[\\/]/).pop() || p
+}
+
+// One short line saying what a tool call is doing.
+function describe(e: any): string {
+  const t: string = e.tool ?? 'tool'
+  const who = e.agentId ? 'subagent: ' : ''
+  const d = (x: string) => who + x
+  switch (t) {
+    case 'Bash':
+    case 'PowerShell':
+      return d(`${t === 'Bash' ? 'Running' : 'PowerShell'}: ${clip(e.description || e.command || '', 60)}`)
+    case 'Read': return d(`Reading ${base(e.file_path ?? '')}`)
+    case 'Write': return d(`Writing ${base(e.file_path ?? '')}`)
+    case 'Edit': return d(`Editing ${base(e.file_path ?? '')}`)
+    case 'Grep': return d(`Searching for "${clip(e.pattern ?? '', 40)}"`)
+    case 'Glob': return d(`Finding files ${clip(e.pattern ?? '', 40)}`)
+    case 'Agent': return d(`Started a helper agent: ${clip(e.description ?? '', 50)}`)
+    case 'Artifact': return d(`Artifact: ${e.action ?? 'publish'}`)
+    case 'AskUserQuestion': return d('Waiting for your answer')
+    case 'Skill': return d(`Using skill ${e.skill ?? ''}`)
+    default:
+      if (t.startsWith('mcp__')) return d(`Connector: ${t.split('__').slice(1).join(' / ')}`)
+      return d(t)
+  }
+}
+
+async function setNow($: any, text: string, busy: boolean, push?: { text: string; done?: boolean; ms?: number }) {
+  await update($, activity, a => {
+    const recent = push ? [{ at: Date.now(), ...push }, ...a.recent].slice(0, RECENT) : a.recent
+    return { ...a, now: text, since: Date.now(), busy, recent, tools: a.tools + (push && !push.done ? 1 : 0) }
+  })
+}
+
+function ago(ms: number): string {
+  const s = Math.max(0, Math.round((Date.now() - ms) / 1000))
+  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${s % 60} s`
+}
 
 const SET_NAME: Record<string, string> = { '152': 'all 152 frames', '132': 'turban frames (132)', '20': 'no turban (20)' }
 
@@ -269,6 +319,32 @@ export const register: Register = (on, options) => {
     return started
   })
 
+  // Live activity: every tool call, and when a turn starts / ends.
+  on('tool.call', async ($, e, next) => {
+    const text = describe(e)
+    const t0 = Date.now()
+    try { await setNow($, text, true, { text }) } catch { /* never block the tool */ }
+    const result = await next(e)
+    try {
+      await update($, activity, a => ({
+        ...a,
+        recent: a.recent.map((r, i) => (i === a.recent.findIndex(x => x.text === text && !x.done) ? { ...r, done: true, ms: Date.now() - t0 } : r)),
+      }))
+    } catch { /* ignore */ }
+    return result
+  })
+
+  on('turn.start', async ($, e, next) => {
+    if (!(e as any).agentId) { try { await setNow($, 'Thinking about your message…', true) } catch { /* ignore */ } }
+    return next(e)
+  })
+
+  on('turn.complete', async ($, e, next) => {
+    const r = await next(e)
+    if (!(e as any).agentId) { try { await setNow($, 'Finished – waiting for you', false) } catch { /* ignore */ } }
+    return r
+  })
+
   on('command.run', { command: 'updates' }, async $ => {
     await refresh($)
     await $.ui.open({ id: PANE, title: 'Project updates' })
@@ -279,10 +355,26 @@ export const register: Register = (on, options) => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text, Button, Link } = $.ui.resolve(e)
     const s = await read($, snapshot)
+    const act = await read($, activity)
     const color = (name: string) => (name === 'Dareen' ? '#d0508a' : name === 'Nimer' ? '#3a8fd6' : undefined)
 
     return (
       <Box flexDirection="column" gap={1}>
+        <Box flexDirection="column">
+          <Text bold>Claude right now</Text>
+          <Text color={act.busy ? 'warning' : 'success'}>
+            {act.busy ? '● ' : '○ '}{act.now}
+            {act.since > 0 && <Text dimColor>  ({ago(act.since)})</Text>}
+          </Text>
+          {act.recent.slice(0, RECENT).map((r, i) => (
+            <Text key={'act:' + r.at + ':' + i} dimColor={r.done}>
+              {stamp(r.at).slice(6)} {r.done ? '✓' : '…'} {r.text}
+              {r.ms !== undefined && <Text dimColor>  {r.ms < 1000 ? `${r.ms} ms` : `${Math.round(r.ms / 1000)} s`}</Text>}
+            </Text>
+          ))}
+          <Text dimColor>{act.tools} tool calls this session · updates live</Text>
+        </Box>
+
         <Box flexDirection="column">
           <Text dimColor>
             Checked {s.checkedAt || '…'} · refreshes every 5 s
