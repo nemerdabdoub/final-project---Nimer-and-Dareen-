@@ -1,4 +1,9 @@
 # Updates log (newest first)
+**NEW for both (Nimer 23.11): `4_DOCUMENTS/How_to_run_this_project_mentor_guide.pdf`** - 4 pages of supervisor-style advice:
+see the whole loop and fix the weakest link (tracking, controller, command delay), the cycle for every experiment, a requirement
+trace table, honest data rules (hold-out set), M06 states FOLLOWING/UNSURE/LOST, delay + simple controller, safety steps,
+working with Gabi, and a day-by-day plan for M06 (due 7.12).
+
 **>>> 30-MIN PREP BEFORE GABI (Nimer + Dareen) - tick as you go <<<**
 - [ ] 0-5 min, both: read the meeting brief below; Nimer tells Dareen "YOLO11n + turban confirmed".
 - [ ] 5-10 min, Dareen: send Nimer the 20-slide deck (link or .pptx); split it: Dareen = results slides, Nimer = work-plan check + M06 + questions.
