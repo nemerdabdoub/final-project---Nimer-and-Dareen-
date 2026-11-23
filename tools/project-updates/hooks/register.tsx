@@ -310,7 +310,7 @@ export const register: Register = (on, options) => {
                 </Text>
                 {l.next && <Text dimColor>next: {l.next}</Text>}
                 {l.pdf && l.pdfTime !== 'missing' && (
-                  <Button onPress={() => openPdf($, l.pdf as string)}>
+                  <Button key={'labpdf:' + l.lab} onPress={() => openPdf($, l.pdf as string)}>
                     open PDF <Text dimColor>updated {l.pdfTime}</Text>
                   </Button>
                 )}
