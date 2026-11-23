@@ -28,7 +28,16 @@ export type PartnerFile = {
   count?: number
 }
 
+export type LabReport = {
+  lab: string
+  status: string
+  next?: string
+  pdf?: string // full path
+  pdfTime?: string
+}
+
 export type Snapshot = {
+  labs?: LabReport[]
   commits: Commit[]
   local: LocalFile[]
   falseAlarms: FalseAlarm[]

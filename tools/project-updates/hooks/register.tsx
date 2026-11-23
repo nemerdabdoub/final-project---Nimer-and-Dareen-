@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Commit, FalseAlarm, LocalFile, PartnerFile, Snapshot } from '../types'
+import type { Commit, FalseAlarm, LabReport, LocalFile, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -16,8 +16,9 @@ const FIND = [
   "  Where-Object { $_.FullName -like '*\\cmd\\git.exe' } | Select-Object -First 1 -ExpandProperty FullName };",
   "$c = (Get-Command code.cmd -ErrorAction SilentlyContinue).Source;",
   "if (-not $c) { $c = \"$env:LOCALAPPDATA\\Programs\\Microsoft VS Code\\bin\\code.cmd\" };",
-  "\"$g\"; \"$c\"",
+  "\"$g\"; \"$c\"; \"$env:USERPROFILE\"",
 ].join(' ')
+let HOME = ''
 const REFRESH_MS = 5_000
 const FETCH_EVERY = 24 // fetch from GitHub every 24th refresh (2 minutes)
 
@@ -63,6 +64,31 @@ async function readFalseAlarms($: any): Promise<FalseAlarm[]> {
     }
   }
   return [...best.values()]
+}
+
+// Personal lab reports (not project work): read from a status file outside the repo, so this section only
+// appears on a laptop that has LAB 2\lab_status.json. Nothing about it is committed or sent anywhere.
+async function readLabs($: any): Promise<LabReport[]> {
+  if (!HOME) return []
+  const dir = `${HOME}\\OneDrive\\Desktop\\Documents\\LAB 2`
+  let raw: any[] = []
+  try { raw = JSON.parse(await $.fs.read(`${dir}\\lab_status.json`)) } catch { return [] }
+  const labs: LabReport[] = []
+  for (const r of Array.isArray(raw) ? raw : []) {
+    const lab: LabReport = { lab: String(r.lab ?? ''), status: String(r.status ?? ''), next: r.next ? String(r.next) : undefined }
+    if (r.pdf) {
+      lab.pdf = `${dir}\\${String(r.pdf).replace(/\//g, '\\')}`
+      try { lab.pdfTime = stamp((await $.fs.stat(lab.pdf)).mtimeMs) } catch { lab.pdfTime = 'missing' }
+    }
+    labs.push(lab)
+  }
+  return labs
+}
+
+function openPdf($: any, full: string) {
+  return $.process.run(['powershell', '-NoProfile', '-Command', `Start-Process -FilePath '${full.replace(/'/g, "''")}'`], {
+    timeoutMs: 20_000,
+  })
 }
 
 function who(name: string): string {
@@ -129,9 +155,10 @@ async function autoSync($: any) {
 async function findTools($: any) {
   if (REPO) return
   const found = await $.process.run(['powershell', '-NoProfile', '-Command', FIND], { timeoutMs: 60_000 })
-  const [g = '', c = ''] = found.stdout.split(/\r?\n/).map((s: string) => s.trim())
+  const [g = '', c = '', h = ''] = found.stdout.split(/\r?\n/).map((s: string) => s.trim())
   if (g) GIT = g
   if (c) CODE = c
+  if (h) HOME = h
   const top = await git($, ['rev-parse', '--show-toplevel'])
   REPO = top.stdout.trim().replace(/\//g, '\\')
   const url = await git($, ['remote', 'get-url', 'origin'])
@@ -180,6 +207,7 @@ async function refresh($: any) {
       local.sort((a, b) => (a.modified < b.modified ? 1 : -1))
 
       const falseAlarms = await readFalseAlarms($)
+      const labs = await readLabs($)
 
       // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
       // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
@@ -210,7 +238,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -268,6 +296,29 @@ export const register: Register = (on, options) => {
           <Text dimColor>Auto pull + push every 2 min · never stashes · never force-pushes</Text>
           {s.error && <Text color="error">{s.error}</Text>}
         </Box>
+
+        {(s.labs ?? []).length > 0 && (
+          <Box flexDirection="column">
+            <Text bold>Lab reports <Text dimColor>(this laptop only, not in git)</Text></Text>
+            {(s.labs ?? []).map(l => (
+              <Box key={'lab:' + l.lab} flexDirection="column">
+                <Text>
+                  <Text bold>{l.lab}</Text>{'  '}
+                  <Text color={/done|submitted/i.test(l.status) ? 'success' : /not/i.test(l.status) ? 'warning' : undefined}>
+                    {l.status}
+                  </Text>
+                </Text>
+                {l.next && <Text dimColor>next: {l.next}</Text>}
+                {l.pdf && l.pdfTime !== 'missing' && (
+                  <Button onPress={() => openPdf($, l.pdf as string)}>
+                    open PDF <Text dimColor>updated {l.pdfTime}</Text>
+                  </Button>
+                )}
+                {l.pdf && l.pdfTime === 'missing' && <Text color="warning">PDF not found</Text>}
+              </Box>
+            ))}
+          </Box>
+        )}
 
         <Box flexDirection="column">
           <Text bold>Files changed on this laptop ({s.local.length})</Text>
