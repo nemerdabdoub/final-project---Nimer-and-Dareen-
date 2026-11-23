@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, PartnerFile, Snapshot } from '../types'
+import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -114,6 +114,58 @@ async function readFalseAlarms($: any): Promise<FalseAlarm[]> {
     }
   }
   return [...best.values()]
+}
+
+// ---------------- mentor (מנחה) ----------------
+// Reads 2_MILESTONES/mentor_plan.md: the FIRST milestone that still has open tasks is the current one.
+async function readMentor($: any): Promise<Mentor | undefined> {
+  let text = ''
+  try { text = await $.fs.read(`${REPO}\\2_MILESTONES\\mentor_plan.md`) } catch { return undefined }
+  const blocks = text.split(/\r?\n(?=## )/).filter(b => b.startsWith('## '))
+  for (const b of blocks) {
+    const lines = b.split(/\r?\n/)
+    const tasks = lines.filter(l => /^- \[( |x|X)\]/.test(l.trim()))
+    const open = tasks.filter(l => /^- \[ \]/.test(l.trim())).map(l => l.trim().slice(6))
+    if (tasks.length === 0 || open.length === 0) continue
+    const get = (k: string) => (lines.find(l => l.startsWith(k + ':')) ?? '').slice(k.length + 1).trim()
+    const due = get('Due')
+    const daysLeft = due ? Math.ceil((new Date(due + 'T23:59:00').getTime() - Date.now()) / 86_400_000) : 0
+    return {
+      milestone: lines[0].replace(/^##\s*/, ''), due, daysLeft, question: get('Question'), metric: get('Metric'),
+      asks: get('Ask').split('|').map(s => s.trim()).filter(Boolean),
+      done: tasks.length - open.length, total: tasks.length, next: open.slice(0, 3),
+    }
+  }
+  return undefined
+}
+
+const PRINCIPLES = [
+  'Know your current question, its metric and its pass line before you run anything.',
+  'Fix the weakest link: tracking, the controller and the command delay - not detection.',
+  'Change one thing at a time, re-measure, then decide in one line with the number.',
+  'Never tune on the test set. Keep a hold-out set and report that as the real result.',
+  'Always give the denominator: "3 of 164", not only "1.8%".',
+  'When unsure, hold. Never chase a guess.',
+  'Get an ugly end-to-end version working early, then improve the worst stage.',
+  'Bring Gabi decisions with evidence: "we chose X because of Y - do you agree?"',
+  'Write one page per milestone now; the final report will be 70% done.',
+  'Test offline before you fly: recorded video, ground test, hover, slow follow.',
+]
+
+// One piece of advice that fits what is happening right now.
+function mentorTip(s: Snapshot, a: Activity): { text: string; level: 'error' | 'warning' | 'success' | undefined } {
+  const m = s.mentor
+  const now = a.now.toLowerCase()
+  if (m && m.daysLeft <= 3 && m.done / Math.max(1, m.total) < 0.7)
+    return { text: `${m.daysLeft} day(s) left and ${m.total - m.done} tasks open: cut scope now, agree with Gabi what is "done".`, level: 'error' }
+  if (s.behind > 0) return { text: 'Your partner pushed new work: pull and read UPDATES.md before you change anything.', level: 'warning' }
+  if (/flight|takeoff|take off|land|hover|drone_interface|moves/.test(now))
+    return { text: 'Flight: phone in hand, Manual Control, open space, battery > 40%, Ctrl+C = stop. Log the flight.', level: 'error' }
+  if (/editing|writing/.test(now)) return { text: 'Changing code: one change at a time, then re-run the same test and compare.', level: undefined }
+  if (/running|powershell/.test(now)) return { text: 'Running an experiment: save the result CSV with date and parameters; never overwrite.', level: undefined }
+  if (s.local.length > 8) return { text: `${s.local.length} files changed and not committed: commit small, clear steps so your partner can follow.`, level: 'warning' }
+  if (m && m.daysLeft <= 7) return { text: `${m.daysLeft} days to ${m.milestone}: start the one-page summary and the questions for Gabi now.`, level: 'warning' }
+  return { text: PRINCIPLES[Math.floor(Date.now() / 60_000) % PRINCIPLES.length], level: 'success' }
 }
 
 // Personal lab reports (not project work): read from a status file outside the repo, so this section only
@@ -258,6 +310,7 @@ async function refresh($: any) {
 
       const falseAlarms = await readFalseAlarms($)
       const labs = await readLabs($)
+      const mentor = await readMentor($)
 
       // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
       // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
@@ -288,7 +341,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs, mentor,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -374,6 +427,40 @@ export const register: Register = (on, options) => {
           ))}
           <Text dimColor>{act.tools} tool calls this session · updates live</Text>
         </Box>
+
+        {(() => {
+          const m = s.mentor
+          const tip = mentorTip(s, act)
+          return (
+            <Box flexDirection="column">
+              <Text bold>מנחה · Mentor <Text dimColor>(live advice)</Text></Text>
+              <Text color={tip.level}>» {tip.text}</Text>
+              {m ? (
+                <Box flexDirection="column">
+                  <Text>
+                    <Text bold>{m.milestone}</Text>
+                    <Text color={m.daysLeft <= 3 ? 'error' : m.daysLeft <= 7 ? 'warning' : undefined}>
+                      {'  '}{m.daysLeft} days left (due {m.due})
+                    </Text>
+                    <Text dimColor>  · {m.done}/{m.total} done</Text>
+                  </Text>
+                  {m.question && <Text dimColor>Question: {m.question}</Text>}
+                  {m.metric && <Text dimColor>Pass line: {m.metric}</Text>}
+                  <Text>Next:</Text>
+                  {m.next.map((t, i) => (
+                    <Text key={'mn:' + i}>  {i === 0 ? '→' : '·'} {t}</Text>
+                  ))}
+                  {m.asks.length > 0 && <Text dimColor>Gabi will ask: {m.asks.join(' · ')}</Text>}
+                  <Button key="mentor-plan" onPress={() => openFile($, '2_MILESTONES/mentor_plan.md')}>
+                    open the plan (tick tasks there)
+                  </Button>
+                </Box>
+              ) : (
+                <Text dimColor>No open milestone in 2_MILESTONES/mentor_plan.md.</Text>
+              )}
+            </Box>
+          )
+        })()}
 
         <Box flexDirection="column">
           <Text dimColor>

@@ -1,4 +1,8 @@
 # Updates log (newest first)
+**NEW (Nimer 23.11): panel section "מנחה · Mentor" (live)** - shows the current milestone (M06), days left, progress, the next
+tasks, the pass line, what Gabi will ask, and one piece of advice that fits what is happening right now. It reads
+`2_MILESTONES/mentor_plan.md`: **tick tasks there (`- [x]`) and push**; both panels update.
+
 **NEW for both (Nimer 23.11): `4_DOCUMENTS/How_to_run_this_project_mentor_guide.pdf`** - 4 pages of supervisor-style advice:
 see the whole loop and fix the weakest link (tracking, controller, command delay), the cycle for every experiment, a requirement
 trace table, honest data rules (hold-out set), M06 states FOLLOWING/UNSURE/LOST, delay + simple controller, safety steps,

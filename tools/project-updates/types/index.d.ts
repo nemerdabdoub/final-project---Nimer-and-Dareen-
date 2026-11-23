@@ -51,7 +51,20 @@ export type Activity = {
   tools: number        // tool calls this session
 }
 
+export type Mentor = {
+  milestone: string
+  due: string        // YYYY-MM-DD
+  daysLeft: number
+  question: string
+  metric: string
+  asks: string[]
+  done: number
+  total: number
+  next: string[]     // next open tasks
+}
+
 export type Snapshot = {
+  mentor?: Mentor
   labs?: LabReport[]
   commits: Commit[]
   local: LocalFile[]
