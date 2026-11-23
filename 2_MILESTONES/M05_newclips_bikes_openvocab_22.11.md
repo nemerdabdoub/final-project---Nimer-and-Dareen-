@@ -1,7 +1,7 @@
 # M05 on NEW footage (22.11, Medical Faculty, bikes / cars / people) + YOLO-World / YOLOE (work-plan item)
 
 Clips: `3_EVIDENCE/2026-11-22/143404_recording_session1.mp4` (ground level, the user in the turban, bike racks, passers-by)
-and `144943_recording_session2.mp4` (7-8 m high over the car park, no user; 42 s "signal lost").
+and `144943_recording_session2.mp4` (first ~10 s on the ground WITH the user, then 7-8 m high over the car park without her; 42 s "signal lost").
 Never used for tuning, so this is the first **honest** test of the M05 choice.
 **No hand labels yet**, so detection is compared with a big model (YOLO11l at 1280 px) = **estimate**.
 The hand-labelled score comes from Nimer's test set (`python m05_newclips.py label ...`, `M05_data/test_22.11/`).
@@ -13,7 +13,7 @@ Results: `M05_data/results/newclips_22.11/` and `M05_data/results/openvocab_22.1
 | | frames with a "user" | right | wrong |
 |---|---|---|---|
 | **Hybrid** (clip 1) | 88 | **83** | 5 = a passer-by in a **red shirt** (7-12 s): his box is small, so the "head" area (top 35%) reaches his red shoulders |
-| **Hybrid** (clip 2, no user, red cars + red dome) | 0 | - | **0 false alarms** |
+| **Hybrid** (clip 2: car park part, red cars + red dome) | 0 | - | **0 false alarms** (it also missed the user in the first 10 s: head cut off / back-lit) |
 | Colour only (both clips) | 223 | ~90 | ~130 false: red dome, red fire boxes, red cars, a hand at the lens, the red "signal lost" icon |
 
 - The hybrid did not see the user when she was **far away** (e.g. 187 s, 290-293 s): no person box around her (same as M05: small people).
@@ -55,3 +55,47 @@ a backpack, a planter. There were **no strollers** in the clips, so recall canno
 - 7-8 m height = people too small for following; the following view is 1.5-2 m high, 3-6 m away.
 - 42 s of "signal lost": the app banner and red icon remain - skip such frames (and the colour must ignore the app's red icons).
 - Battery ~9%/min; land at 30%.
+
+## 5. VERIFIED: finding THE user on ALL our videos, same rules (added 23.11)
+Script `1_CODE/m05_userpick_allvideos.py`, results `M05_data/results/userpick_allvideos_22.11/` (`table.md`, `counts.csv`).
+- Same rules as Table B in `m05.py` (each frame judged alone: right = IoU >= 0.5 with the user box; colour = point inside it).
+  **Check that the code is the same:** on the M05 frames it reproduces Table B exactly (hybrid YOLO11n 73.1% / 0% / 0% / 78.8%).
+- New clips: user box marked **by eye** (Claude, 23.11) on all 299 frames, from YOLO11l boxes: `user_gt_22.11.json`.
+  39 frames left out (black "signal lost", or the user only half in view with no box). To be replaced by the hand labels.
+- Sets: M05 132 frames (104 with user) · NEW1 142 (44) · NEW2 118 (5) → **392 frames, 153 with the user, 239 without**.
+
+| method (ALL videos, 392 frames) | user found | wrong person | false alarm | frames correct | ms/frame |
+|---|---|---|---|---|---|
+| colour only | 65.4% (100/153) | 26.1% (40) | 31.0% (74/239) | 67.6% | 15 |
+| YOLO11n alone (biggest person) | 69.9% (107) | 28.8% (44) | 23.0% (55) | 74.2% | 35 |
+| YOLO11m alone | 72.5% (111) | 26.8% (41) | 31.4% (75) | 70.2% | 213 |
+| **hybrid YOLO11n (our choice)** | **75.2% (115)** | **1.3% (2)** | **0% (0)** | **90.3%** | **35** |
+| hybrid YOLOv12n | 75.2% (115) | 1.3% (2) | 0% | 90.3% | 42 |
+| hybrid YOLO26n | 75.2% (115) | 2.0% (3) | 0% | 90.3% | 34 |
+| hybrid YOLO11s | 77.8% (119) | 2.0% (3) | 0% | 91.3% | 65 |
+| hybrid YOLO11m | 78.4% (120) | 0.7% (1) | 0% | 91.6% | 213 |
+| hybrid gentle fine-tune | 70.6% (108) | 3.9% (6) | 0% | 88.5% | (timing noisy) |
+
+**Answers**
+1. **Hybrid vs the others, on all videos: yes, clearly better.** Wrong person 2 of 153 vs 40-45 for colour or YOLO alone (20x fewer),
+   false alarms 0 of 239 vs 55-75. Frames correct 90.3% vs 67-74%.
+2. **Hybrid YOLO11n vs other hybrids: a tie.** The three nano hybrids find the same 115 frames; 11s / 11m find 4-5 frames more
+   (3%) but are 2x / 6x slower. 4-5 frames out of 153 is too small a difference to call one better. → keep YOLO11n.
+3. **Better than before?** On the new clip 1 (user closer, good light): user found **88.6%**, frames correct **96.5%** vs 73.1% / 78.8%
+   on the 20.11 frames; still 0 false alarms. Weak spots that remain: user far away, head out of frame or back-lit (clip 2 start: 0 of 5),
+   and other people in red (2 wrong frames here, 5 at 1 frame/s).
+
+## 6. Which YOLO for our aims (recommendation, 23.11)
+- **Now (M06, following the user): YOLO11n + turban colour + a tracker (ByteTrack/BoT-SORT, `m06_track.py`).**
+  Not a bigger model: the remaining misses (head cut off, back-lit, far, red clothes) are fixed by *keeping the ID over time*,
+  not by a few % more detection. 11n leaves CPU time for the tracker and the controller.
+- **Do not run two YOLOs on every frame** on the laptop CPU (11n 35 ms + 11s 65 ms ~ 10 FPS): too slow for control.
+- **Next semester (obstacles: people, bikes, cars, e-scooters, strollers with kids): ONE enhanced YOLO11n** (or 11s if it stays >= 15 FPS),
+  fine-tuned with **all needed classes together**: keep person/bicycle/car/motorcycle (COCO) and add `scooter` and `stroller`.
+  Lesson from our gentle fine-tune: training on person only made the model forget bikes, so the training set must contain every class.
+  Data: our own clips (campus has many e-scooters; film strollers) + public labelled sets; draft boxes by YOLOE / YOLO-World, corrected by hand.
+- **Ready-made models checked:** COCO (80 classes) and Open Images V7 (601 classes) have bikes but **no scooter and no stroller**.
+  YOLOE prompt-free (4585 classes) has `scooter` and `baby carriage`, and YOLOE / YOLO-World take text prompts, but on our clips
+  they called bikes "stroller/scooter" and run at ~7 FPS → use them as the **labelling helper**, not as the flying detector.
+  Fallback if fine-tuning is not ready: 11n every frame + YOLOE on every 5th frame only for scooters/strollers.
+- **Stroller with a kid** = stroller box (new class) + a person box inside it; either way it goes into the obstacle map.

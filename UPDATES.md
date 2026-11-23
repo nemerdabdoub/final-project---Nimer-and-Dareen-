@@ -19,6 +19,17 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 23.11.2026, Dareen: hybrid verified on ALL videos + which YOLO to use
+- `1_CODE/m05_userpick_allvideos.py`: Table-B rules on the 20.11 frames + both 22.11 clips (392 frames, 153 with the user).
+  Reproduces the old Table B exactly. User box on the new clips marked by eye (Claude) → `M05_data/results/userpick_allvideos_22.11/`.
+- **Hybrid YOLO11n: found 75.2%, wrong person 1.3% (2), false alarms 0/239, frames correct 90.3%** vs colour 65/26/31/68 and YOLO alone 70/29/23/74.
+  Nano hybrids tie; 11s/11m +4-5 frames at 2-6x slower. New clip 1 alone: 88.6% found, 96.5% correct.
+- Correction: clip 2 (144943) has the user in its first ~10 s (hybrid missed those 5 frames: head cut off / back-lit).
+- **Recommendation:** M06 = YOLO11n + turban + tracker (not a bigger model, not two YOLOs per frame). Next semester obstacles =
+  ONE fine-tuned YOLO11n with person/bike/car/motorcycle + scooter + stroller (COCO and Open Images V7 have no scooter/stroller;
+  YOLOE prompt-free has them but is slow and confuses bikes → use it to draft labels). Note §5-6.
+- Open: hand labels of `M05_data/test_22.11` (both) replace Claude's by-eye user boxes.
+
 ## 22.11.2026 17:50, Nimer: next-steps PDF + first M06 tracking run on Nimer's laptop
 - `4_DOCUMENTS/Next_three_steps_22.11.pdf` (one calm page): Monday prep, label the new footage, start following the user.
 - `python m06_track.py ..\3_EVIDENCE\2026-11-20\161951_recording_test60.mp4 --seconds 60` (YOLO11n + ByteTrack, every 2nd
