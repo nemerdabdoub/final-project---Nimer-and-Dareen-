@@ -3,7 +3,7 @@ m05_userpick_allvideos.py - "finding THE user" (Table B) for every method on ALL
 
 Frame sets (one frame = one decision, no 1-second hold, exactly like Table B in m05.py):
   M05   20.11 clips, turban frames   : 132 frames, hand labels (3_EVIDENCE/m05_user_detection/labels_marker)
-  NEW1  22.11 clip 143404 (ground)   : 1 frame / 2 s, user box marked by eye on YOLO11l boxes (user_gt_22.11.json)
+  NEW1  22.11 clip 143404 (ground)   : 1 frame / 2 s, HAND labels (M05_data/test_22.11/labels, Dareen 23.11)
   NEW2  22.11 clip 144943            : 1 frame / 2 s, user only in the first 10 s (ground), then 7-8 m over the car park
                                        (red cars, red dome, no user) -> mostly a false-alarm test
   (The 20 no-turban frames of 154124 are left out: no colour method can find a user without the turban.)
@@ -11,11 +11,14 @@ Frame sets (one frame = one decision, no 1-second hold, exactly like Table B in 
 Methods: colour only; each detector alone (its guess = the biggest person); each detector + turban colour (hybrid).
 Rules per frame: user in frame -> right (IoU >= 0.5 with the user box; colour: point inside it) / wrong / missed;
                  no user -> false alarm if anything is picked, else correct.
-Output: M05_data/results/userpick_allvideos_22.11/  (table.md, counts.csv)
-Run from 1_CODE:  python m05_userpick_allvideos.py
+Output: M05_data/results/userpick_allvideos_22.11/  (table.md + counts.csv; table_byeye.md + counts_byeye.csv)
+Also: person detection (Table A rules) per set, now that the new clips have hand labels.
+Run from 1_CODE:  python m05_userpick_allvideos.py           (hand labels)
+                  python m05_userpick_allvideos.py byeye     (Claude's by-eye user boxes, user_gt_22.11.json, for comparison)
 """
 import csv
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -28,6 +31,8 @@ HERE = Path(__file__).resolve().parent
 EV = HERE.parent / "3_EVIDENCE" / "m05_user_detection"
 OUT = HERE.parent / "M05_data" / "results" / "userpick_allvideos_22.11"
 GT_NEW = OUT / "user_gt_22.11.json"
+TEST_LABELS = HERE.parent / "M05_data" / "test_22.11" / "labels"
+BYEYE = "byeye" in sys.argv
 DETECTORS = ["yolo11n.pt", "yolo12n.pt", "yolo26n.pt", "yolo11s.pt", "yolo11m.pt", "yolo11n_drone_gentle.pt"]
 
 
@@ -37,16 +42,34 @@ def framesets():
         g = read_labels(EV / "labels_marker", p, (1, 1))       # normalised; scaled when the image is read
         if g is not None:
             sets["M05"].append((p, "marker"))
-    gt = json.loads(GT_NEW.read_text())
-    sets["NEW1"] = [(EV / "newclips_22.11_frames" / n, gt[n]) for n in sorted(gt) if n.startswith("143404")]
-    sets["NEW2"] = [(EV / "newclips_22.11_frames" / n, gt[n]) for n in sorted(gt) if n.startswith("144943")]
+    if BYEYE:
+        gt = json.loads(GT_NEW.read_text())
+        sets["NEW1"] = [(EV / "newclips_22.11_frames" / n, gt[n]) for n in sorted(gt) if n.startswith("143404")]
+        sets["NEW2"] = [(EV / "newclips_22.11_frames" / n, gt[n]) for n in sorted(gt) if n.startswith("144943")]
+        return sets
+    for key, stem in (("NEW1", "143404"), ("NEW2", "144943")):
+        sets[key] = []
+        for p in frames_in(EV / "newclips_22.11_frames"):
+            if p.name.startswith(stem) and (TEST_LABELS / (p.stem + ".txt")).exists():
+                img = cv2.imread(str(p))
+                h, w = img.shape[:2]
+                if img[h // 4:, w // 8:].mean() >= 20:             # skip black "signal lost" frames
+                    sets[key].append((p, "hand"))
     return sets
+
+
+def all_people(item, img):
+    p, g = item
+    if g in ("marker", "hand"):
+        u, o = read_labels(EV / "labels_marker" if g == "marker" else TEST_LABELS, p, img.shape)
+        return u + o
+    return None                                                # by-eye: users only, no person labels
 
 
 def user_box(item, img):
     p, g = item
-    if g == "marker":
-        users = read_labels(EV / "labels_marker", p, img.shape)[0]
+    if g in ("marker", "hand"):
+        users = read_labels(EV / "labels_marker" if g == "marker" else TEST_LABELS, p, img.shape)[0]
         return users[0] if users else None
     return g                                                   # [x1, y1, x2, y2] or None
 
@@ -69,7 +92,7 @@ def main():
     for s, items in sets.items():
         for it in items:
             img = cv2.imread(str(it[0]))
-            cache[(s, str(it[0]))] = (img, user_box(it, img))
+            cache[(s, str(it[0]))] = (img, user_box(it, img), all_people(it, img))
     results, speed = {}, {}                                    # (method, set) -> outcome counts
 
     def add(method, s, outcome):
@@ -77,7 +100,8 @@ def main():
         d[outcome] += 1
 
     t = 0.0
-    for (s, _), (img, u) in cache.items():
+    detc = {}                                                  # (detector, set) -> [tp, fp, fn, big_tp, big_n]
+    for (s, _), (img, u, _) in cache.items():
         t0 = time.perf_counter()
         pt = colour_only_user(turban_mask(img))
         t += time.perf_counter() - t0
@@ -88,11 +112,16 @@ def main():
         name = det.replace(".pt", "")
         model(next(iter(cache.values()))[0], verbose=False)
         t = 0.0
-        for (s, _), (img, u) in cache.items():
+        for (s, _), (img, u, gp) in cache.items():
             t0 = time.perf_counter()
             people = m05.people_of(model, img)
             pick = hybrid_user(turban_mask(img), people)
             t += time.perf_counter() - t0
+            if gp is not None:
+                d = detc.setdefault((name, s), [0, 0, 0, 0, 0])
+                a, b, c = m05.match(people, gp)
+                bg = [q for q in gp if q[3] - q[1] >= m05.BIG_PERSON * img.shape[0]]
+                d[0] += a; d[1] += b; d[2] += c; d[3] += m05.match(people, bg)[0]; d[4] += len(bg)
             add(f"hybrid {name}", s, judge(u, box=pick))
             big = max(people, key=lambda b: (b[2] - b[0]) * (b[3] - b[1])) if people else None
             add(f"{name} alone", s, judge(u, box=big))
@@ -110,7 +139,8 @@ def main():
             without = d["alarm"] + d["none"]
             rows.append([m, s, withu, without, d["right"], d["wrong"], d["missed"], d["alarm"],
                          d["right"] + d["none"], round(speed[m], 1)])
-    with open(OUT / "counts.csv", "w", newline="") as f:
+    tag = "_byeye" if BYEYE else ""
+    with open(OUT / f"counts{tag}.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["method", "set", "frames with user", "frames without user", "right", "wrong person", "missed",
                     "false alarm", "frames correct", "ms/frame (whole method)"])
@@ -119,7 +149,7 @@ def main():
     pct = lambda a, b: f"{100 * a / b:.1f}%" if b else "-"
     lines = ["# Finding THE user on ALL our videos (same rules for every method)", "",
              "Sets: " + ", ".join(f"{s} = {len(v)} frames" for s, v in sets.items()) +
-             ". Counts in counts.csv; % = count / frames.", ""]
+             (". Ground truth on the new clips: Claude by-eye user boxes." if BYEYE else ". Ground truth: hand labels everywhere.") + " % = count / frames.", ""]
     for s in list(sets) + ["ALL"]:
         R = [r for r in rows if r[1] == s]
         lines += [f"## {s}  (frames with the user: {R[0][2]}, without: {R[0][3]})", "",
@@ -130,7 +160,19 @@ def main():
             lines.append(f"| {r[0]} | {pct(right, wu)} ({right}/{wu}) | {pct(wrong, wu)} ({wrong}) | {pct(missed, wu)} | "
                          f"{pct(alarm, wo)} ({alarm}/{wo}) | {pct(correct, wu + wo)} | {ms} |")
         lines.append("")
-    (OUT / "table.md").write_text("\n".join(lines), encoding="utf-8")
+    if detc:
+        lines += ["## Person detection (Table A rules: every labelled person, IoU >= 0.5)", "",
+                  "| detector | set | detection rate | following distance (> 1/4 height) | precision |",
+                  "|---|---|---|---|---|"]
+        for d0 in DETECTORS:
+            n0 = d0.replace(".pt", "")
+            for s in list(sets) + ["ALL"]:
+                keys = [(n0, x) for x in sets] if s == "ALL" else [(n0, s)]
+                v = [sum(detc[k][i] for k in keys if k in detc) for i in range(5)]
+                lines.append(f"| {n0} | {s} | {pct(v[0], v[0] + v[2])} ({v[0]}/{v[0] + v[2]}) | "
+                             f"{pct(v[3], v[4])} ({v[3]}/{v[4]}) | {pct(v[0], v[0] + v[1])} |")
+        lines.append("")
+    (OUT / f"table{tag}.md").write_text("\n".join(lines), encoding="utf-8")
     print("\n".join(lines))
 
 

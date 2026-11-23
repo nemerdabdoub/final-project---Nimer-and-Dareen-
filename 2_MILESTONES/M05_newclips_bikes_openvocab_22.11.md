@@ -56,7 +56,7 @@ a backpack, a planter. There were **no strollers** in the clips, so recall canno
 - 42 s of "signal lost": the app banner and red icon remain - skip such frames (and the colour must ignore the app's red icons).
 - Battery ~9%/min; land at 30%.
 
-## 5. VERIFIED: finding THE user on ALL our videos, same rules (added 23.11)
+## 5. (Preliminary, by-eye user boxes) finding THE user on ALL our videos - replaced by section 7 (hand labels)
 Script `1_CODE/m05_userpick_allvideos.py`, results `M05_data/results/userpick_allvideos_22.11/` (`table.md`, `counts.csv`).
 - Same rules as Table B in `m05.py` (each frame judged alone: right = IoU >= 0.5 with the user box; colour = point inside it).
   **Check that the code is the same:** on the M05 frames it reproduces Table B exactly (hybrid YOLO11n 73.1% / 0% / 0% / 78.8%).
@@ -99,3 +99,45 @@ Script `1_CODE/m05_userpick_allvideos.py`, results `M05_data/results/userpick_al
   they called bikes "stroller/scooter" and run at ~7 FPS → use them as the **labelling helper**, not as the flying detector.
   Fallback if fine-tuning is not ready: 11n every frame + YOLOE on every 5th frame only for scooters/strollers.
 - **Stroller with a kid** = stroller box (new class) + a person box inside it; either way it goes into the obstacle map.
+
+## 7. FINAL (hand labels, 23.11): all 13 methods on all our videos
+Dareen hand-labelled all 299 new frames (`M05_data/test_22.11/labels`, both halves). Same script, now on hand labels:
+`M05_data/results/userpick_allvideos_22.11/table.md` (by-eye version kept as `table_byeye.md`).
+Frames: M05 132 + NEW1 151 + NEW2 120 = **403 frames, 164 with the user, 239 without**; 604 labelled people.
+
+**Finding THE user (ALL videos)** - bold = best in the column
+
+| method | user found | wrong person | false alarm | frames correct |
+|---|---|---|---|---|
+| colour only | 64.0% (105/164) | 24.4% (40) | 33.1% (79/239) | 65.8% |
+| YOLO11n alone (biggest person) | 66.5% | 27.4% (45) | 24.7% (59) | 71.7% |
+| YOLO11m alone | 68.9% | 25.6% (42) | 32.6% (78) | 68.0% |
+| **hybrid YOLO11n (our choice)** | 70.1% (115) | 1.8% (3) | **0% (0)** | 87.8% |
+| hybrid YOLOv12n | 70.1% (115) | 1.8% (3) | **0%** | 87.8% |
+| hybrid YOLO26n | 70.7% (116) | 2.4% (4) | 0.8% (2) | 87.6% |
+| hybrid YOLO11s | 73.8% (121) | 1.8% (3) | 0.8% (2) | 88.8% |
+| hybrid YOLO11m | **74.4% (122)** | **0.6% (1)** | **0%** | **89.6%** |
+| hybrid gentle fine-tune | 65.9% (108) | 3.7% (6) | 0.4% (1) | 85.9% |
+
+**Finding people (ALL videos, Table A rules)**
+
+| detector | all people | following distance (> 1/4 height) | precision | speed (22.11 controlled run) |
+|---|---|---|---|---|
+| **YOLO11n** | 59.4% (359/604) | 96.2% (251/261) | 94.7% | **23.8 FPS** |
+| YOLOv12n | 59.3% | 95.0% | 93.2% | 21.6 FPS |
+| YOLO26n | 58.8% | 94.3% | 93.4% | 24.4 FPS |
+| YOLO11s | 64.9% | 95.8% | 93.6% | 14.0 FPS |
+| YOLO11m | **68.2%** | **97.3%** | **96.9%** | 6.5 FPS |
+| gentle fine-tune | 56.5% | 95.4% | 91.2% | 27.4 FPS |
+
+(ms/frame inside this run are not used: the laptop was busy with other work, so the timings were noisy. Speeds from the controlled 22.11 run.)
+
+**What it means**
+- **The hybrid beats colour-only and YOLO-alone on every video**: wrong person 1.8% vs 24-27%, false alarms 0 vs 59-79 frames,
+  frames correct 87.8% vs 66-72%. This is the main M05 result and it holds on footage we never tuned on.
+- **YOLO11n stays the choice.** YOLO11m is a little better everywhere (+7 user frames of 164, +9% people) but runs at 6.5 FPS, below the
+  15 FPS we need. Among the fast (nano) models 11n is tied best on the user, has the best following-distance detection (96.2%) and no false alarms.
+- **Work-plan target (>= 90% detection):** met at following distance (96.2% over all videos); not met for all people (59.4%):
+  the new clips have many small far people (7-8 m height). The drone will follow at 3-6 m, where the target is met.
+- Hand labels vs Claude's by-eye boxes: same user in 126 of 129 checked frames; the hand labels also count 11 half-visible user frames,
+  which is why "user found" is a bit lower here (70.1% vs 75.2%) - the conclusions do not change.

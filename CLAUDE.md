@@ -29,7 +29,8 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
   - Open before the meeting: Nimer confirms the winner + reads the summary; Nimer's AI log line; the 12.11 moves
     video is not on Dareen's laptop (only the log) — find it (phone / Nimer).
 - **New clips 22.11 (bikes, Med Faculty) tested:** hybrid 83/88 right (5 wrong = man in red shirt), 0 false alarms; YOLO-World/YOLOE
-  checked for scooters/strollers = not usable as is. `2_MILESTONES/M05_newclips_bikes_openvocab_22.11.md`. Test set to label: `M05_data/test_22.11/`.
+  checked for scooters/strollers = not usable as is. `2_MILESTONES/M05_newclips_bikes_openvocab_22.11.md`. Test set hand-labelled (Dareen, 23.11). **Final all-videos table (403 frames, hand labels): hybrid YOLO11n 1.8% wrong, 0 false alarms,
+  87.8% correct, 96.2% detection at following distance → YOLO11n confirmed** (note §7).
 - M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
   comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 
