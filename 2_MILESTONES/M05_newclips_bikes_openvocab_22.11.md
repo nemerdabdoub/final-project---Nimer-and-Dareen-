@@ -142,3 +142,20 @@ Frames: M05 132 + NEW1 151 + NEW2 120 = **403 frames, 164 with the user, 239 wit
   the new clips have many small far people (7-8 m height). The drone will follow at 3-6 m, where the target is met.
 - Hand labels vs Claude's by-eye boxes: same user in 126 of 129 checked frames; the hand labels also count 11 half-visible user frames,
   which is why "user found" is a bit lower here (70.1% vs 75.2%) - the conclusions do not change.
+
+## 8. Simple tweaks of YOLO11n (23.11): confidence cut-off x input size
+Script `1_CODE/m05_tweak_sweep.py`, same 403 hand-labelled frames, results `M05_data/results/tweak_sweep_23.11/sweep.md`.
+Triggered by a frame at 1:59 of clip 1: a far woman got person 0.23 (just under the 0.25 cut-off); YOLO11n also gave 0.23 to a golf cart.
+
+| setting | people (all) | following distance | precision | user found | wrong person | false alarm | frames correct | FPS |
+|---|---|---|---|---|---|---|---|---|
+| 640 px, 0.25 (current) | 59.4% | **96.2%** | **94.7%** | 70.1% | 3 | 0 | 87.8% | **29.2** |
+| 640 px, 0.15 | 61.9% | 96.6% | 87.2% | 68.9% | 5 | 0 | 87.3% | 29.0 |
+| **800 px, 0.25** | 61.9% | 95.0% | 92.6% | **72.6%** | 3 | 0 | **88.8%** | 23.0 |
+| 960 px, 0.25 | 64.2% | 95.0% | 91.3% | 72.6% | 3 | 1 | 88.6% | 18.3 |
+| 960 px, 0.15 | **66.9%** | 95.4% | 83.6% | 70.7% | 7 | 2 | 87.6% | 18.3 |
+
+- **Lowering the cut-off does not pay:** +1-2.5 points of people, but up to 2.7x more wrong boxes (golf carts) and more wrong-person frames.
+- **Input 800 px is the one simple tweak that helps a little:** +2.5 points people and user found, same 3 wrong / 0 false alarms, 23 FPS
+  (+10 ms). Cost: 3 fewer near people (96.2 → 95.0%), 10 more wrong boxes.
+- **Decision: keep 640 px / 0.25 for M05**; re-test 800 px in M06 once the tracker's CPU cost is known (candidate for the obstacle model).
