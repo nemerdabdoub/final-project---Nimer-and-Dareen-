@@ -7,6 +7,8 @@ that playbook. Edit freely: keep the format (`## id | Title`, then `When:`, `Why
 `4_DOCUMENTS/ADVISOR_GUIDE.md` and `4_DOCUMENTS/How_to_run_this_project_mentor_guide.pdf`.
 
 ## Principles
+- We are the third team on this topic: "it works" is not enough. Show what they did not measure (4_DOCUMENTS/STAND_OUT_STRATEGY.md).
+- Give every percentage its data size and a 95% interval: 28/30 runs = 93% (79-98%) cannot separate two methods; 3/164 frames can.
 - Every number needs three things: what data, what rule, compared with what. A number alone convinces nobody.
 - Fix the weakest link of the whole loop (camera → detect → track → decide → move), not the part you like most.
 - Write the question and the pass line BEFORE you run anything. Afterwards it is too easy to move the line.

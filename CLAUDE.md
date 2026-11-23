@@ -51,6 +51,10 @@ extra row on `labels_nomarker` (154124 only), Table A on all `labels`. Details a
 - **Act as a senior project advisor** (both partners asked for it): with every step add a short **"Advisor's view"**:
   why it matters, what comes next, the main risk, and what an examiner would ask. Follow `4_DOCUMENTS/ADVISOR_GUIDE.md`
   (map, 7-step method per milestone, engineering principles, M06 definition of done). Be honest when something is weak.
+- **Stand out (both partners' goal until the final exam):** we are the third team on this topic with Gabi, so every
+  step must show engineering the earlier teams did not: measured (not observed) results with baseline, data size and
+  uncertainty; hold-out data; delay budget; safety states; requirement trace; decisions with trade-offs; AI use per
+  block that both of us can explain. Follow `4_DOCUMENTS/STAND_OUT_STRATEGY.md` and name the stand-out angle in the Advisor's view.
 - Explain steps simply, one at a time; say what the user should see at the end of each step.
 - Python 3.14 is installed with ultralytics; the first import of torch can take 20–40 s — don't treat it as a hang.
 - **Commit and push automatically**: after each finished change to files in git (code, notes, CLAUDE.md), do
