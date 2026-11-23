@@ -1,4 +1,16 @@
 # Updates log (newest first)
+**>>> 30-MIN PREP BEFORE GABI (Nimer + Dareen) - tick as you go <<<**
+- [ ] 0-5 min, both: read the meeting brief below; Nimer tells Dareen "YOLO11n + turban confirmed".
+- [ ] 5-10 min, Dareen: send Nimer the 20-slide deck (link or .pptx); split it: Dareen = results slides, Nimer = work-plan check + M06 + questions.
+- [ ] 10-15 min, demos open and paused: Dareen = `3_EVIDENCE/2026-11-23_M05_final/` demo video; Nimer = M06 tracker video
+      `3_EVIDENCE/m06_tracking/161951_recording_test60_bytetrack.mp4` (user kept 76% -> 82%).
+- [ ] 15-20 min, both: say the key numbers out loud once: detected 99%, identified 73% (never wrong), wrong person 1.8%,
+      0 false alarms, 29.9 FPS, delay ~290 ms, M06 76% -> 82%.
+- [ ] 20-25 min, both: agree the 4 questions for Gabi (slide 20): req. 1 via tracking OK? enough labelled frames? real low-light
+      flight? turban marker OK? + say the next step: M06 tracking, due 7.12.
+- [ ] 25-30 min: laptops charged + chargers, deck open on one laptop, HDMI/adapter; Nimer: AI-log line done? 12.11 moves video
+      found (phone)? If not, say "will send after the meeting".
+
 **>>> NIMER + NIMER'S CLAUDE: READ FIRST - MEETING BRIEF (23.11, 1 hour before Gabi) <<<**
 - **Decision: YOLO11n + turban colour (hybrid).** Final test on ALL our videos, hand-labelled by Dareen (403 frames: 20.11 lab + both
   22.11 campus clips): user found 70.1% of her frames, **wrong person 1.8% (3/164), false alarms 0/239**, frames correct 87.8%,
