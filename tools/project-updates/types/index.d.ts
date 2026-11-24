@@ -76,7 +76,14 @@ export type Moodle = {
   error?: string
 }
 
+export type Message = {
+  who: string
+  when: string     // "24.11 18:40"
+  text: string
+}
+
 export type Snapshot = {
+  messages?: Message[]
   moodle?: Moodle
   mentor?: Mentor
   labs?: LabReport[]

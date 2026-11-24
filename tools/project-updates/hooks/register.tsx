@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
+import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Message, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -359,12 +359,53 @@ async function notifyPushes($: any) {
     cs.slice(0, 3).map(c => '• ' + clip(c.subject, 70)).join('\n') + (cs.length > 3 ? `\n+${cs.length - 3} more` : '')
   if (theirs.length) {
     const from = theirs[0].who === ME ? partner : theirs[0].who
-    await toast($, `New from ${from} (${theirs.length} push${theirs.length > 1 ? 'es' : ''})`,
+    const isMsg = theirs.every(c => c.subject.startsWith('💬'))
+    await toast($, isMsg ? `💬 Message from ${from}` : `New from ${from} (${theirs.length} push${theirs.length > 1 ? 'es' : ''})`,
       list(theirs) + '\nPulled automatically - read UPDATES.md.')
   }
   if (mine.length) await toast($, `Sent to ${partner} ✓ (${mine.length})`, list(mine))
   popNote = `Pop-up ${stamp(Date.now())}: ${theirs.length} new from ${partner}, ${mine.length} sent`
   await save()
+}
+
+// ---------------- messages to the partner ----------------
+// One small file per message in messages/ (never two people editing one file -> no merge conflicts).
+// Sending commits ONLY that file and pushes; the partner's panel pops it up ("New from ...") within 2 min.
+let msgNote = ''
+
+async function sendMessage($: any, text: string) {
+  const t = text.trim()
+  if (!t || !REPO) return
+  if (!ME) ME = who((await git($, ['config', 'user.name'])).stdout.trim())
+  const d = new Date()
+  const id = `${d.getFullYear()}${two(d.getMonth() + 1)}${two(d.getDate())}_${two(d.getHours())}${two(d.getMinutes())}${two(d.getSeconds())}`
+  const rel = `messages/${id}_${ME}.txt`
+  try {
+    await $.fs.write(`${REPO}\\${rel.replace('/', '\\')}`, `${ME} ${stamp(d.getTime())}\n${t}\n`)
+    await git($, ['add', '--', rel])
+    const c = await git($, ['commit', '-m', `💬 ${ME}: ${clip(t.replace(/\s+/g, ' '), 90)}`, '--', rel])
+    if (c.exitCode !== 0) throw new Error(c.stderr || c.stdout)
+    await autoSync($)                                    // pull if needed, then push now (not in 2 min)
+    msgNote = /needs|stopped|paused/.test(syncNote) ? `Saved, not pushed yet: ${syncNote}` : `Sent ✓ ${stamp(Date.now()).slice(6)}`
+  } catch (err) {
+    msgNote = `Not sent: ${clip(String(err), 120)}`
+  }
+  await refresh($)
+}
+
+async function readMessages($: any): Promise<Message[]> {
+  if (!REPO) return []
+  try {
+    const all = (await $.fs.list(`${REPO}\\messages`)) as { name: string }[]
+    const names = all.map(e => e.name).filter(n => n.endsWith('.txt')).sort().reverse().slice(0, 6)
+    const out: Message[] = []
+    for (const n of names) {
+      const [head = '', ...rest] = String(await $.fs.read(`${REPO}\\messages\\${n}`)).split(/\r?\n/)
+      const sp = head.indexOf(' ')
+      out.push({ who: head.slice(0, sp), when: head.slice(sp + 1), text: rest.join(' ').trim() })
+    }
+    return out
+  } catch { return [] }
 }
 
 async function findTools($: any) {
@@ -428,6 +469,7 @@ async function refresh($: any) {
       const labs = await readLabs($)
       const mentor = await readMentor($)
       const moodle = await readMoodle($)
+      const messages = await readMessages($)
 
       // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
       // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
@@ -458,7 +500,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle, messages,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -523,7 +565,7 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button, Link } = $.ui.resolve(e)
+    const { Box, Text, Button, Link, Input } = $.ui.resolve(e)
     const s = await read($, snapshot)
     const act = await read($, activity)
     const color = (name: string) => (name === 'Dareen' ? '#d0508a' : name === 'Nimer' ? '#3a8fd6' : undefined)
@@ -537,6 +579,21 @@ export const register: Register = (on, options) => {
           const partner = me === 'Dareen' ? 'Nimer' : 'Dareen'
           return (
             <Box flexDirection="column">
+              <Text bold>💬 Message {partner}</Text>
+              <Input
+                key="msg-partner"
+                placeholder={`type a message to ${partner}, Enter = send (pops up on her/his laptop)`}
+                submitLabel="send"
+                onSubmit={(v: string) => { void sendMessage($, v) }}
+              />
+              {msgNote !== '' && <Text color={msgNote.startsWith('Sent') ? 'success' : 'warning'}>{msgNote}</Text>}
+              {(s.messages ?? []).map((m, i) => (
+                <Text key={'msg:' + i}>
+                  <Text color={color(m.who)}>{m.who === me ? '→ ' : '← '}{m.who}</Text>
+                  <Text dimColor> {m.when}  </Text>{m.text}
+                </Text>
+              ))}
+              <Text> </Text>
               <Text bold>Sent & received <Text dimColor>(every push pops up on the other laptop)</Text></Text>
               {s.commits.slice(0, 8).map(c => (
                 <Text key={'sr:' + c.sha}>
