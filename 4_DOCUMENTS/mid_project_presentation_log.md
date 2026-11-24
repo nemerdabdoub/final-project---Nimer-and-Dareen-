@@ -47,6 +47,9 @@ as a second characteristic that also gives the distance to the user.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
+- 24.11 Session 1 (22.11 outdoor hold-out, never tuned on; user in a red head covering among other people): hybrid
+  YOLO11n + turban picked the user by colour in 29% of 2,501 frames, fallback 1%, none 70% — raw share, not yet a
+  miss rate (she is often out of view / only a sleeve in close-ups). Correct "USER 0.86" box when she is in view (Nimer).
 - 24.11 Session 2 (22.11, DJI Fly screen recording from height, no people in view): hybrid YOLO11n + turban picked no user
   in 2,464 / 2,464 frames → 0 false user picks on a never-tuned no-user clip (Nimer). Note: screen recordings include app
   controls and a black gap; crop/skip before scoring.
