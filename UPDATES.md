@@ -1,19 +1,33 @@
 # Updates log (newest first)
-**>>> DAREEN, WED 25.11 NIGHT (scheduled 24.11) <<<**
-- [ ] Model decision in one line: **M05 milestone (23.11) = hybrid YOLO11n + turban** (what we delivered). **24.11 proposal = hybrid YOLO11m**
-      (most accurate on the GPU) - final only if Nimer agrees AND the speed holds in the field. If not, YOLO11n stays.
-- [ ] Field power (laptop is on battery in the field -> it slows to ~8-10 FPS): ask Gabi / lab for a **portable power station**
-      (AC socket, pure sine, >= 300 W, >= 500 Wh; check the watts on the laptop charger brick).
-- [ ] Ask Claude: **"TensorRT FP16"** - convert YOLO11m, re-check accuracy (403 frames) and speed (likely 2-3x faster).
-- [ ] Ask Claude: **"speed check on battery"** - unplug, Fn+Q performance mode, run `m05_speed_gpu.py` (see the 24.11 laptop note below).
-- [ ] Nimer: confirm YOLO11m (or keep YOLO11n).
-- [ ] **FINAL COMPARISON TABLE for the semester-A final presentation** (after the speed checks): Claude writes
-      `1_CODE/m05_final_table.py` -> one table built automatically from the saved results (markdown + Excel + slide).
-      Rows: colour only, YOLO alone, hybrids YOLO11n/s/m, 12n, 26n/s/m, RT-DETR-L, RF-DETR N/S/M, fine-tuned, + YOLO11m TensorRT FP16.
-      Columns: family/year, size (M params), licence | frames correct, user found /164, wrong person /164 + 95% CI,
-      false alarms /239 | frames correct on never-tuned 22.11 clips | people: all, following distance, precision |
-      speed (same script): CPU only, GPU on charger, GPU on battery | verdict (>= 10 FPS on battery? chosen/rejected + why).
-      Footnote: same 403 frames, same turban rule, conf 0.25, 640 px, hardware, date, scripts. Slide = compact 6 columns.
+**>>> DAREEN'S OPEN TASKS - ONE LIST (updated 24.11, 02:30). Tick [x] when done. <<<**
+Model decision now: **M05 delivered 23.11 = hybrid YOLO11n + turban. Proposal 24.11 = hybrid YOLO11m** (final only if Nimer agrees AND field speed holds).
+
+A. Wed 25.11 night - finish the model choice (in this order, with Claude)
+- [ ] 1. Speed check ON CHARGER: Fn+Q performance mode -> say "speed check".
+- [ ] 2. Speed check ON BATTERY (the field case) -> say "speed check on battery". Also note how long the laptop battery lasts.
+- [ ] 3. "TensorRT FP16": convert YOLO11m, re-check accuracy (403 frames) + speed.
+- [ ] 4. FINAL COMPARISON TABLE for the semester-A final presentation: `1_CODE/m05_final_table.py` builds it from saved results
+      (markdown + Excel + slide). Rows: colour only, YOLO alone, hybrids YOLO11n/s/m, 12n, 26n/s/m, RT-DETR-L, RF-DETR N/S/M,
+      fine-tuned, + YOLO11m TensorRT. Columns: family/year, size, licence | frames correct, user found /164, wrong person /164 + 95% CI,
+      false alarms /239 | frames correct on never-tuned 22.11 clips | people: all, following distance, precision | speed: CPU, GPU
+      charger, GPU battery | verdict. Footnote with the rules. Slide = compact 6 columns.
+- [ ] 5. Deck `4_DOCUMENTS/M05_for_Gabi_24.11_GPU_update.pptx`: put the final table in; speaker notes for slides 13-15;
+      decide: keep or remove slide 15 (trackers).
+
+B. Ask other people
+- [ ] 6. Nimer: confirm YOLO11m (or keep YOLO11n).
+- [ ] 7. Gabi / lab: is there a portable power station (AC socket, pure sine, >= 300 W, >= 500 Wh)? Otherwise budget?
+- [ ] 8. Crazyflie: reply to Israel with Nimer (advice: decline politely, keep as optional extension).
+- [ ] 9. Upload `3_EVIDENCE/2026-11-22/143404_recording_session1.mp4` to the shared Drive for Nimer (if not done yet).
+
+C. Drone (next time at the field / with the drone)
+- [ ] 10. `record_video.py`: last try got no camera frames (DJI Fly must show the camera view; adb PATH line first).
+- [ ] 11. Test the new keys T = take off, L = land - on the ground first, with the flight checklist.
+
+D. M06 tracking (due 7.12) - task list in `2_MILESTONES/mentor_plan.md`; first step: YOLO11(m) + BoT-SORT on the 22.11 clips, crossing scenes.
+
+FYI: Windows power mode on charger was set to "Best performance" (24.11). Mentor coach panel hidden this session (files kept; "open the mentor panel").
+
 
 **Nimer 24.11:** panel got an optional personal "Moodle – upcoming" section (reads a private calendar link kept outside the
 repo; it does not show on Dareen's laptop). G:sync: `144943_recording_session2.mp4` copied from the Drive into
