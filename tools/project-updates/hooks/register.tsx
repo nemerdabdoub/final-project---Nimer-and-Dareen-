@@ -530,6 +530,28 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="column" gap={1}>
+        {(() => {
+          // Sent & received: the last pushes on GitHub, yours = sent to the partner (pop-up on their laptop),
+          // theirs = received (pop-up here). Same list both laptops see, from origin/main.
+          const me = ME || 'Nimer'
+          const partner = me === 'Dareen' ? 'Nimer' : 'Dareen'
+          return (
+            <Box flexDirection="column">
+              <Text bold>Sent & received <Text dimColor>(every push pops up on the other laptop)</Text></Text>
+              {s.commits.slice(0, 8).map(c => (
+                <Text key={'sr:' + c.sha}>
+                  {c.who === me
+                    ? <Text color="success">⬆ sent to {partner}  </Text>
+                    : <Text color={color(c.who) ?? 'warning'}>⬇ from {c.who}  </Text>}
+                  <Text dimColor>{c.when}  </Text>{clip(c.subject, 80)}
+                </Text>
+              ))}
+              {s.commits.length === 0 && <Text dimColor>Loading pushes…</Text>}
+              {popNote !== '' && <Text dimColor>Last pop-up: {popNote.replace(/^Pop-up /, '')}</Text>}
+            </Box>
+          )
+        })()}
+
         <Box flexDirection="column">
           <Text bold>Claude right now</Text>
           <Text color={act.busy ? 'warning' : 'success'}>
