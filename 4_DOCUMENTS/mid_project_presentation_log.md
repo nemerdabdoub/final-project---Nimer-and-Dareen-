@@ -47,6 +47,9 @@ as a second characteristic that also gives the distance to the user.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
+- 24.11 Session 2 (22.11, DJI Fly screen recording from height, no people in view): hybrid YOLO11n + turban picked no user
+  in 2,464 / 2,464 frames → 0 false user picks on a never-tuned no-user clip (Nimer). Note: screen recordings include app
+  controls and a black gap; crop/skip before scoring.
 - 22.11 M05 test run on Nimer's laptop (CPU, stand-in labels, NOT final): speed YOLO11n 26 FPS (38 ms), YOLO26n 22 FPS
   (46 ms), YOLOv12n 16 FPS (62 ms). Proof: `3_EVIDENCE/m05_user_detection/m05_table_*_PRELIM_suggested_labels.csv`.
 - 22.11 Table B, PRELIMINARY (Dareen's corrected half, 61 frames with the turban, brightness 1.0): colour only finds the
