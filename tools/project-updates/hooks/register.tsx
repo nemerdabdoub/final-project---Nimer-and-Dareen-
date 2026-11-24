@@ -308,6 +308,65 @@ async function autoSync($: any) {
   }
 }
 
+// ---------------- push pop-ups (Windows notification) ----------------
+// Every new commit that reaches GitHub (origin/main) gives one pop-up on this laptop:
+//   your own push  -> "Sent to <partner>: ..."   ·   the partner's push -> "New from <partner>: ..."
+// The last seen commit is kept in %USERPROFILE%\.claude\project_updates_seen.txt, so pushes made while the
+// laptop was off still pop up once at the next start. The very first run only sets the baseline (no pop-up).
+const TOAST = [
+  '[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null;',
+  '$t = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02);',
+  '$x = $t.GetElementsByTagName("text");',
+  '$x.Item(0).AppendChild($t.CreateTextNode($env:TOAST_TITLE)) > $null;',
+  '$x.Item(1).AppendChild($t.CreateTextNode($env:TOAST_BODY)) > $null;',
+  '$app = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe";',
+  '[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show([Windows.UI.Notifications.ToastNotification]::new($t))',
+].join(' ')
+let ME = ''
+let lastSeen: string | undefined // undefined = not loaded yet
+let popNote = ''
+
+function toast($: any, title: string, body: string) {
+  // Text goes in through environment variables, so quotes or $ in commit messages can't break the command.
+  return $.process.run(['powershell', '-NoProfile', '-Command', TOAST], {
+    timeoutMs: 20_000, env: { TOAST_TITLE: clip(title, 60), TOAST_BODY: clip(body, 220) },
+  })
+}
+
+async function notifyPushes($: any) {
+  const seenFile = HOME ? `${HOME}\\.claude\\project_updates_seen.txt` : ''
+  if (!ME) ME = who((await git($, ['config', 'user.name'])).stdout.trim())
+  const head = (await git($, ['rev-parse', 'origin/main'])).stdout.trim()
+  if (!head) return
+  if (lastSeen === undefined) {
+    try { lastSeen = seenFile ? String(await $.fs.read(seenFile)).trim() : '' } catch { lastSeen = '' }
+  }
+  if (lastSeen === head) return
+  const save = async () => {
+    lastSeen = head
+    if (seenFile) try { await $.fs.write(seenFile, head) } catch { /* pop-ups still work this session */ }
+  }
+  if (!lastSeen) { await save(); return } // first run: baseline only
+  const r = await git($, ['log', `${lastSeen}..${head}`, '--format=%an%x1f%s', '-30'])
+  if (r.exitCode !== 0) { await save(); return } // old commit no longer known: start fresh
+  const rows = r.stdout.split('\n').filter((l: string) => l.trim()).map((l: string) => {
+    const [a = '', s = ''] = l.split('\x1f'); return { who: who(a), subject: s.trim() }
+  })
+  const partner = ME === 'Dareen' ? 'Nimer' : 'Dareen'
+  const mine = rows.filter(c => c.who === ME)
+  const theirs = rows.filter(c => c.who !== ME)
+  const list = (cs: { subject: string }[]) =>
+    cs.slice(0, 3).map(c => '• ' + clip(c.subject, 70)).join('\n') + (cs.length > 3 ? `\n+${cs.length - 3} more` : '')
+  if (theirs.length) {
+    const from = theirs[0].who === ME ? partner : theirs[0].who
+    await toast($, `New from ${from} (${theirs.length} push${theirs.length > 1 ? 'es' : ''})`,
+      list(theirs) + '\nPulled automatically - read UPDATES.md.')
+  }
+  if (mine.length) await toast($, `Sent to ${partner} ✓ (${mine.length})`, list(mine))
+  popNote = `Pop-up ${stamp(Date.now())}: ${theirs.length} new from ${partner}, ${mine.length} sent`
+  await save()
+}
+
 async function findTools($: any) {
   if (REPO) return
   const found = await $.process.run(['powershell', '-NoProfile', '-Command', FIND], { timeoutMs: 60_000 })
@@ -326,6 +385,9 @@ async function refresh($: any) {
       await findTools($)
       if (!REPO) throw new Error('This folder is not a git repo: open the project folder in VS Code.')
       if (tick++ % FETCH_EVERY === 0) await autoSync($)
+      // Pop-ups: checks every 5 s (local, cheap), so a push made from this laptop pops up at once,
+      // the partner's within 2 min (next fetch). A failed pop-up never breaks the panel.
+      try { await notifyPushes($) } catch { /* ignore */ }
 
       const log = await git($, [
         'log', 'origin/main', '-20', '--name-only',
@@ -396,7 +458,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs, mentor, moodle,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
