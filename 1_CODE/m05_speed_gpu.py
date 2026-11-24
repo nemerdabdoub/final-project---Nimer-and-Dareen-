@@ -40,6 +40,16 @@ def pct(xs, p):
 def main():
     imgs = [cv2.imread(str(p)) for p in FRAMES]
     print("hardware:", HW, "| frames:", len(imgs), "| repeats:", REPEATS)
+    if GPU:
+        # 24.11: the laptop GPU starts in a power-saving state and needs ~10-20 s of load to reach full clocks;
+        # without this the first models in the list were timed "cold" (YOLO11n ~100 ms instead of ~15 ms).
+        warm = load_detector("yolo11n.pt")
+        t_end = time.time() + 20
+        while time.time() < t_end:
+            for im in imgs:
+                m05.people_of(warm, im)
+        del warm
+        print("GPU warmed up for 20 s")
     rows = []
     t_col = []
     for _ in range(REPEATS):

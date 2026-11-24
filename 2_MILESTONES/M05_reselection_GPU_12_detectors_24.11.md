@@ -58,6 +58,18 @@ chosen on the M05 frames and tested on the new clips (never tuned on) → follow
 - **To do:** one confirmation run with Dareen at the laptop ("Best performance" power mode), and the end-to-end loop
   with the tracker: `m06_track.py --model yolo11m.pt --tracker botsort`.
 
+## 4b. Laptop speed finding (24.11, ~01:00-02:00)
+
+Repeated speed runs gave very different numbers: sometimes YOLO11m hybrid ~35-45 FPS, sometimes every model ~8-10 FPS.
+Cause: the **Lenovo (83JE) slows itself under long load** - CPU clock 4.6 GHz -> 2.6 GHz (measured), even with Windows power
+mode "Best performance" and the run started outside Claude at high priority. Not the models: the colour-only step alone is 6 ms
+when the laptop is at full speed and ~34 ms when it is slowed. (Ultralytics also sets OpenCV to 1 thread; tested: colour still 6.8 ms, not the cause.)
+In the slowed state: YOLO11n 10.2, YOLO11m 8.4, YOLO26s/m ~9.7, RF-DETR 7-7.6, RT-DETR 6 FPS (`speed_gpu_24.11.csv` = this slowed run).
+**In the field the laptop runs on battery -> expect the slowed state.** Plan: (1) portable power station (AC, pure sine,
+>= 300 W, >= 500 Wh) so the laptop runs at full speed; (2) TensorRT FP16 export of the detector (typically 2-3x faster),
+accuracy re-checked on the 403 frames; (3) automatic fallback to YOLO11n if the loop drops below ~12 FPS; (4) Lenovo
+performance mode (Fn+Q) + charger whenever possible. To measure next: speed on battery, laptop battery life under load.
+
 ## 5. Decision (proposal by Dareen, Nimer to confirm)
 
 **Switch the hybrid from YOLO11n to YOLO11m** (same turban rule, same thresholds).
