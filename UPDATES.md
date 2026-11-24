@@ -7,6 +7,13 @@
 - [ ] Ask Claude: **"TensorRT FP16"** - convert YOLO11m, re-check accuracy (403 frames) and speed (likely 2-3x faster).
 - [ ] Ask Claude: **"speed check on battery"** - unplug, Fn+Q performance mode, run `m05_speed_gpu.py` (see the 24.11 laptop note below).
 - [ ] Nimer: confirm YOLO11m (or keep YOLO11n).
+- [ ] **FINAL COMPARISON TABLE for the semester-A final presentation** (after the speed checks): Claude writes
+      `1_CODE/m05_final_table.py` -> one table built automatically from the saved results (markdown + Excel + slide).
+      Rows: colour only, YOLO alone, hybrids YOLO11n/s/m, 12n, 26n/s/m, RT-DETR-L, RF-DETR N/S/M, fine-tuned, + YOLO11m TensorRT FP16.
+      Columns: family/year, size (M params), licence | frames correct, user found /164, wrong person /164 + 95% CI,
+      false alarms /239 | frames correct on never-tuned 22.11 clips | people: all, following distance, precision |
+      speed (same script): CPU only, GPU on charger, GPU on battery | verdict (>= 10 FPS on battery? chosen/rejected + why).
+      Footnote: same 403 frames, same turban rule, conf 0.25, 640 px, hardware, date, scripts. Slide = compact 6 columns.
 
 **Nimer 24.11:** panel got an optional personal "Moodle – upcoming" section (reads a private calendar link kept outside the
 repo; it does not show on Dareen's laptop). G:sync: `144943_recording_session2.mp4` copied from the Drive into
