@@ -47,6 +47,10 @@ as a second characteristic that also gives the distance to the user.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
+- 24.11 **Session 1 hold-out, labelled (313 frames ~1/s, never tuned on, different red marker):** user in view →
+  correct 85.6% (95% CI 77-91), wrong person 8.2% (red-shirt passer-by + occlusion), missed 6.2%; user not in view →
+  0 false picks / 189 (0-2.0%). The raw "70% no user" was mostly her being out of view.
+  `2_MILESTONES/M05_session1_holdout_inview_24.11.md` (Nimer + Claude labels).
 - 24.11 Session 1 (22.11 outdoor hold-out, never tuned on; user in a red head covering among other people): hybrid
   YOLO11n + turban picked the user by colour in 29% of 2,501 frames, fallback 1%, none 70% — raw share, not yet a
   miss rate (she is often out of view / only a sleeve in close-ups). Correct "USER 0.86" box when she is in view (Nimer).
