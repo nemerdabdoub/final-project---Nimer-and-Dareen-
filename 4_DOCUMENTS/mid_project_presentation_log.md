@@ -47,6 +47,9 @@ as a second characteristic that also gives the distance to the user.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
+- 24.11 M06 first try, YOLO11n + BoT-SORT on the same 313 session-1 frames: in view 83.5% correct / 7.2% wrong / 0 false
+  picks - no gain over M05 because the colour rule overrides the track ID (red-shirt passer-by). Diagnosis → "sticky ID"
+  rule to test next (Nimer).
 - 24.11 **Session 1 hold-out, labelled (313 frames ~1/s, never tuned on, different red marker):** user in view →
   correct 85.6% (95% CI 77-91), wrong person 8.2% (red-shirt passer-by + occlusion), missed 6.2%; user not in view →
   0 false picks / 189 (0-2.0%). The raw "70% no user" was mostly her being out of view.

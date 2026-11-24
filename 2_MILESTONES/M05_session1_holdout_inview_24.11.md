@@ -36,3 +36,23 @@ So the raw "29% turban / 70% none" from the demo run was mostly the user being o
   checks only the top `HEAD_PART` of each box, but for a small far person that strip still reaches the shirt →
   test a smaller `HEAD_PART` for small boxes, or require the colour blob above the shoulder line; (3) at a crossing (two boxes overlap) do not switch.
 - Re-run this same scoring after each fix → before/after on the same 313 frames.
+
+## M06 first try: YOLO11n + BoT-SORT on the same 313 frames (24.11)
+`python m06_track.py ..\3_EVIDENCE\2026-11-22\143404_recording_session1.mp4 --tracker botsort --step 3` (same frames as
+M05). Every pick that differs from M05, every "track" pick and frames 0-13 checked by eye.
+
+| Frames | n | M05 hybrid: correct / wrong / none | **M06 BoT-SORT: correct / wrong / none** |
+|---|---|---|---|
+| Y – in view | 97 | 83 (85.6%) / 8 (8.2%) / 6 | **81 (83.5%) / 7 (7.2%) / 9** |
+| P – partly | 27 | 6 / 0 / 21 | 8 / 0 / 19 (tracker keeps her on sleeve close-ups) |
+| N – not in view | 189 | 0 false picks | **0 false picks** |
+
+**No real gain yet - and the reason is a rule, not the tracker.** BoT-SORT did keep her identity (ID 2 at frames 2-7,
+13 - frame 7 is now right), but in `m06_track.py` **the colour always wins**: when the red-shirt passer-by (ID 6)
+passes the colour test, the user ID is switched to him ("re-identification") for frames 8-12. 25 such switches in the
+clip. Track-only picks were 3 in view + 4 partly, all correct (yellow box on her when the colour is lost).
+Other differences: 3 frames she was found by M05 but not here (tracker detections differ slightly from plain predict).
+
+**Next rule to test ("sticky ID"):** while the remembered user ID is still in the picture, a colour hit on a
+*different* ID only takes over if it repeats for ~1 s (or her ID has been gone). Expected effect on this clip:
+frames 8-12 stay on her → wrong person 7 → ~2 (the occlusion frames 0-1 remain, there is no history yet).
