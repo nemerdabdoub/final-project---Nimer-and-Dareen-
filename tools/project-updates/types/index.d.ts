@@ -63,7 +63,21 @@ export type Mentor = {
   next: string[]     // next open tasks
 }
 
+export type MoodleEvent = {
+  title: string
+  course: string
+  due: number      // ms since epoch
+}
+
+export type Moodle = {
+  configured: boolean
+  events: MoodleEvent[]
+  fetchedAt: string
+  error?: string
+}
+
 export type Snapshot = {
+  moodle?: Moodle
   mentor?: Mentor
   labs?: LabReport[]
   commits: Commit[]

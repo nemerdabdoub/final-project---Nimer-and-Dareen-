@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, PartnerFile, Snapshot } from '../types'
+import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -114,6 +114,60 @@ async function readFalseAlarms($: any): Promise<FalseAlarm[]> {
     }
   }
   return [...best.values()]
+}
+
+// ---------------- Moodle deadlines (personal) ----------------
+// Reads the Moodle calendar export link from %USERPROFILE%\.claude\moodle_calendar_url.txt (never in git) and
+// downloads the iCal feed every 15 minutes. The section appears only on a laptop that has that file.
+const MOODLE_EVERY = 180 // refresh ticks of 5 s = 15 min
+let moodleCache: Moodle | undefined
+
+function icalTime(v: string): number {
+  const m = v.match(/(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z?))?/)
+  if (!m) return 0
+  const [, y, mo, d, h = '23', mi = '59', s = '0', z] = m
+  return z ? Date.UTC(+y, +mo - 1, +d, +h, +mi, +s) : new Date(+y, +mo - 1, +d, +h, +mi, +s).getTime()
+}
+
+function parseIcal(text: string): MoodleEvent[] {
+  const unfolded = text.replace(/\r?\n[ \t]/g, '')
+  const events: MoodleEvent[] = []
+  for (const block of unfolded.split('BEGIN:VEVENT').slice(1)) {
+    const get = (k: string) => (block.match(new RegExp('\\n' + k + '[^:\\n]*:([^\\r\\n]*)')) ?? [])[1] ?? ''
+    const due = icalTime(get('DTEND') || get('DTSTART'))
+    const title = get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';')
+    const course = get('CATEGORIES').replace(/\\,/g, ',')
+    if (title && due) events.push({ title, course, due })
+  }
+  return events.sort((a, b) => a.due - b.due)
+}
+
+async function readMoodle($: any): Promise<Moodle | undefined> {
+  if (!HOME) return undefined
+  const cfg = `${HOME}\\.claude\\moodle_calendar_url.txt`
+  let url = ''
+  try { url = (await $.fs.read(cfg)).split(/\r?\n/).map((l: string) => l.trim()).find((l: string) => /^https?:\/\//.test(l)) ?? '' }
+  catch { return undefined }                                  // no file -> no section
+  if (!url) return { configured: false, events: [], fetchedAt: '' }
+  if (moodleCache && tick % MOODLE_EVERY !== 1) return moodleCache
+  const ps = `$ProgressPreference='SilentlyContinue'; (Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri $env:MOODLE_URL).Content`
+  const r = await $.process.run(['powershell', '-NoProfile', '-Command', ps], { timeoutMs: 45_000, env: { MOODLE_URL: url } })
+  if (r.exitCode !== 0 || !/BEGIN:VCALENDAR/.test(r.stdout)) {
+    moodleCache = { configured: true, events: moodleCache?.events ?? [], fetchedAt: moodleCache?.fetchedAt ?? '',
+      error: 'Could not download the Moodle calendar (check the link or the internet).' }
+    return moodleCache
+  }
+  const now = Date.now()
+  moodleCache = { configured: true, events: parseIcal(r.stdout).filter(e => e.due > now - 3_600_000).slice(0, 10),
+    fetchedAt: stamp(now) }
+  return moodleCache
+}
+
+function daysLeft(ms: number): string {
+  const h = (ms - Date.now()) / 3_600_000
+  if (h < 0) return 'now'
+  if (h < 24) return `${Math.round(h)} h`
+  return `${Math.floor(h / 24)} d`
 }
 
 // ---------------- mentor (מנחה) ----------------
@@ -311,6 +365,7 @@ async function refresh($: any) {
       const falseAlarms = await readFalseAlarms($)
       const labs = await readLabs($)
       const mentor = await readMentor($)
+      const moodle = await readMoodle($)
 
       // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
       // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
@@ -341,7 +396,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs, mentor,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote, dareenFiles, labs, mentor, moodle,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -475,6 +530,33 @@ export const register: Register = (on, options) => {
           <Text dimColor>Auto pull + push every 2 min · never stashes · never force-pushes</Text>
           {s.error && <Text color="error">{s.error}</Text>}
         </Box>
+
+        {s.moodle && (
+          <Box flexDirection="column">
+            <Text bold>Moodle – upcoming <Text dimColor>(this laptop only)</Text></Text>
+            {!s.moodle.configured && (
+              <Text dimColor>
+                Paste your Moodle calendar export link (Calendar → Export calendar → All courses → Get calendar URL)
+                into .claude\moodle_calendar_url.txt
+              </Text>
+            )}
+            {s.moodle.error && <Text color="warning">{s.moodle.error}</Text>}
+            {s.moodle.configured && s.moodle.events.length === 0 && !s.moodle.error && (
+              <Text dimColor>Nothing due soon.</Text>
+            )}
+            {s.moodle.events.map((ev, i) => {
+              const h = (ev.due - Date.now()) / 3_600_000
+              return (
+                <Text key={'md:' + i + ':' + ev.due}>
+                  <Text color={h < 24 ? 'error' : h < 72 ? 'warning' : undefined} bold>{daysLeft(ev.due).padStart(4)}</Text>
+                  {'  '}{ev.title}
+                  <Text dimColor>  {ev.course} · {stamp(ev.due)}</Text>
+                </Text>
+              )
+            })}
+            {s.moodle.fetchedAt && <Text dimColor>updated {s.moodle.fetchedAt} · every 15 min</Text>}
+          </Box>
+        )}
 
         {(s.labs ?? []).length > 0 && (
           <Box flexDirection="column">

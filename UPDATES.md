@@ -1,4 +1,8 @@
 # Updates log (newest first)
+**Nimer 24.11:** panel got an optional personal "Moodle – upcoming" section (reads a private calendar link kept outside the
+repo; it does not show on Dareen's laptop). G:sync: `144943_recording_session2.mp4` copied from the Drive into
+`3_EVIDENCE/2026-11-22/` (thanks Dareen!) and YOLO11n + turban detection demo running on it.
+
 **NEW (Nimer 23.11): panel section "מנחה · Mentor" (live)** - shows the current milestone (M06), days left, progress, the next
 tasks, the pass line, what Gabi will ask, and one piece of advice that fits what is happening right now. It reads
 `2_MILESTONES/mentor_plan.md`: **tick tasks there (`- [x]`) and push**; both panels update.
