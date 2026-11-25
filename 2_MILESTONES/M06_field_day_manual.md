@@ -1,104 +1,119 @@
-# M06 FIELD DAY MANUAL (Wednesday, Nimer + Dareen together, 6–8 h)
+# FIELD DAY MANUAL — from M05 leftovers to the CONTROLLER in one day (Wednesday, Nimer + Dareen, 7–8 h)
 
-Tick each box as you go. Times are estimates. **Rule of the day: everything that needs the drone gets done today;
-everything else is computer work later** (see `M06_plan_together_step_by_step.md` §4).
+Tick each box as you go. Times are estimates. **Goal of the day: close M05, and fly the first closed loop (the drone turns
+to keep the user in the picture), plus film the M06 test set.** Only labelling + measuring stays for the computer later.
 
 ## Why we are doing this (read together, 2 min)
-- **Aim of M06:** the drone keeps the SAME user through crossings and moments when the turban is hidden, never follows
-  the wrong person, and knows what to do when unsure (FOLLOWING / UNSURE / LOST).
-- **Today's purpose:** collect the **test material** that proves it: crossing scenes nobody has tuned on, a 60 s clip
-  (work-plan req. 4), and the **command delay** (the missing number in our delay budget: video 256 ms + detection ~34 ms + command ?).
+- **Aim of M06:** the drone keeps the SAME user through crossings and turned-away moments, never follows the wrong person,
+  and knows what to do when unsure: **FOLLOWING** (controller on) / **UNSURE** (hover) / **LOST** (hover, pilot lands).
+- **Today:** (1) finish the M05 model choice with measurements, (2) test sticky ID + states + controller on the real drone,
+  (3) film crossing scenes nobody has tuned on, (4) measure the command delay (the missing number in our delay budget:
+  video 256 ms + detection ~34 ms + command ?).
 - **Pass lines:** user kept >= 90% of frames · <= 1 ID swap in 10 crossings · 0 wrong-person follows · 60 s continuous ·
-  >= 10 FPS long run.
+  >= 10 FPS long run (we aim for >= 15 for control).
+
+## Ready before the day (done 25.11 night by Dareen + Claude)
+- [x] **Paired test 11n vs 11m** (`m05_paired_test.py`, 403 frames): YOLO11m right where 11n is wrong in **7** frames,
+      the opposite **0** → **p = 0.016, a real (small) gain of +1.7 pts**. YOLO26m vs 11n: 7 vs 2, p = 0.18 → could be luck.
+      → **Rule for today: use YOLO11m if it keeps >= 15 FPS live on battery; otherwise YOLO11n.**
+- [x] **`m06_follow.py`**: tracker (BoT-SORT) + **sticky ID** (switch only after 3 turban frames on the new person) +
+      **3 safety states** + **controller** (yaw from box centre, forward from box height; dead band, max stick 0.25, rate limit).
+      Offline test on 60 s of session 1: FOLLOWING 69%, UNSURE 10%, LOST 20% (not checked by eye yet).
+- [x] **`command_delay_test.py`**: red flash + stopwatch on every command; also measures the loop delay by itself.
+- [ ] Nothing of the above has touched the real drone yet → that is today.
 
 ## Tools checklist
 **Hardware**
-- [ ] DJI Neo + **3 or more batteries charged** (check the LEDs)
-- [ ] Samsung S10 with DJI Fly, charged + USB cable (+ a spare cable)
+- [ ] DJI Neo + **4 batteries charged** (today has more flying)
+- [ ] Samsung S10 with DJI Fly, charged + USB cable (+ spare cable)
 - [ ] Dareen's laptop **100%** + charger
-- [ ] Second phone that films **60 fps** (for the command delay) + a small stand or a person to hold it
-- [ ] The purple-red turban (user)
-- [ ] **A third person = passer-by**, ideally with a **red shirt** (the M05 failure case) + one other top (dark)
-- [ ] 2 ground marks (cones / bags) at **3 m** and **6 m** from the drone
-- [ ] Water, hat, power bank for the phones
+- [ ] Second phone that films **60 fps** + someone to hold it or a stand
+- [ ] Purple-red turban · **a third person = passer-by in a RED shirt** (+ one dark top)
+- [ ] 2 ground marks at **3 m** and **6 m** · water, hat, power bank
 
-**Software (on Dareen's laptop, in `1_CODE`)**
-- [ ] scrcpy + ADB working (lab files in 1_CODE) · `drone_interface.py`
-- [ ] `record_video.py` (records the mirror; keys T = take off, L = land, Esc = stop + save)
-- [ ] `command_delay_test.py` (NEW: red flash + stopwatch on every command; Y = yaw right, U = yaw left)
-- [ ] `m06_track.py` (YOLO11n + BoT-SORT + turban) for the first look in the evening
+**Software (Dareen's laptop, terminal in `1_CODE`; use the GPU python:** `C:\Users\LOREN\venvs\gpu\Scripts\python.exe`, written `GPU` below)
+- [ ] scrcpy + ADB · `record_video.py` · `command_delay_test.py` · `m06_follow.py` · `m06_track.py` · `python -m pip install lap` done
 
 ---
 
-## TONIGHT (before the day) — 20 min
-- [ ] 0.1 Charge everything: drone batteries, S10, laptop, second phone (5 min to plug in)
-- [ ] 0.2 Book the passer-by (red shirt) and agree the time and place (big open space, little wind) (10 min)
-- [ ] 0.3 Check the weather forecast (wind < 20 km/h) (5 min)
+## TONIGHT — 20 min
+- [ ] 0.1 Charge: 4 drone batteries, S10, laptop, second phone
+- [ ] 0.2 Book the passer-by (red shirt): time + place (big open space, little wind)
+- [ ] 0.3 Weather: wind < 20 km/h
 
-## BLOCK A — at the laptop, before leaving · ≈ 1 h 30 min
-- [ ] **A1 Pull and agree (15 min)** — open a terminal in `1_CODE` (`OPEN_TERMINAL_HERE.bat`):
-      `git pull` · read "Why we are doing this" above together · agree the pass lines.
-      *You should see:* both of you can say the aim in one sentence.
-- [ ] **A2 Connect the drone indoors (15 min)** — drone on the table, props OFF or drone not armed, S10 by USB, DJI Fly open
-      **on the camera view**, Manual Control. Run `python connection_test.py`.
-      *You should see:* the drone picture on the laptop.
-- [ ] **A3 Fix the recording (30 min)** — `python record_video.py 0.5 indoor_test` (30 s).
-      *You should see:* "Recording to: …" and at the end "Saved: … N frames". Open the .mp4 and check it plays.
-      If it says "No frames were received": DJI Fly is not on the camera view, or adb is not on PATH → fix, try again.
-      **If it still fails after 30 min → backup:** record on the drone itself (record button in DJI Fly) and download later.
-- [ ] **A4 Command-delay script, dry run (15 min)** — `python command_delay_test.py --dry`. Press Y and U a few times.
-      *You should see:* the screen flashes RED with a big stopwatch and "press #n"; nothing is sent to the drone;
-      Esc → "Saved: …_command_delay_dry.csv".
-- [ ] **A5 Take-off / land keys on the ground (10 min)** — only with the flight checklist and props on, in a safe spot:
-      in `record_video.py`, T must show the take-off status, L the landing. If unsure, skip and take off by hand today.
-- [ ] **A6 Pack (5 min)** — everything from the tools checklist.
+## BLOCK A — at the laptop, before leaving · ≈ 1 h 45 min
+- [ ] **A1 Pull + aim (10 min)** — `git pull`; read "Why" and "Ready before the day" together; agree the pass lines.
+- [ ] **A2 Look at the follow script offline (20 min)** — open `3_EVIDENCE/m06_tracking/143404_recording_session1_follow.mp4`.
+      Check by eye: green box = always the user? Does the red-shirt man ever get the USER box? Do UNSURE/LOST appear when
+      she is really hidden? Write 3 lines. *You should see:* the user box stays on her through the red-shirt moment.
+- [ ] **A3 Connect the drone indoors (15 min)** — drone on the table (not flying), S10 by USB, DJI Fly on the **camera view**,
+      Manual Control. `python connection_test.py` → *you should see* the drone picture on the laptop.
+- [ ] **A4 Recording (20 min)** — `python record_video.py 0.5 indoor_test` → "Saved: … N frames", the .mp4 plays.
+      If "No frames were received": DJI Fly not on camera view / adb PATH → fix. **Backup:** record on the drone (DJI Fly button).
+- [ ] **A5 Delay script dry (10 min)** — `python command_delay_test.py --dry`, press Y / U → red flash, "Saved …_dry.csv".
+- [ ] **A6 Follow script live DRY on the table (20 min)** — drone on the table, camera pointed at one of you wearing the
+      turban: `GPU m06_follow.py --live --dry`. Walk left / right / turn away / leave the picture.
+      *You should see:* FOLLOWING + yaw sign follows you (you go right → yaw +), UNSURE then LOST when you leave,
+      yaw back to 0 at once. Note the FPS for 11n: ____ ; then `--model yolo11m.pt`: FPS ____ (on charger).
+- [ ] **A7 Speed on charger, long run (runs while you pack, 10 min)** — `GPU m06_follow.py --video ..\3_EVIDENCE\2026-11-22\143404_recording_session1.mp4 --model yolo11m.pt --seconds 600`
+      → FPS at the end of the run in the CSV (last rows): ____ .
+- [ ] **A8 T / L keys (5 min)** — only with the flight checklist; if unsure, take off and land by hand today.
+- [ ] **A9 Pack (5 min).**
 
-## BLOCK B — at the field · ≈ 4 h (about 6 batteries)
-**Before EVERY flight:** phone in hand · DJI Fly in **Manual Control** · big open space, nobody under the drone ·
-battery > 40% · Ctrl+C / Esc ready · if anything looks wrong: **take over with the phone and land by hand**.
-Fly at **following height 1.5–2 m**, user **3–6 m** away. Each clip **60–90 s**.
-To record a clip: `python record_video.py 0 <name>` → T (or take off by hand) → film → land → Esc (saves).
+## BLOCK B — at the field · ≈ 4 h 30 min (about 7 batteries of flying, with charging breaks)
+**Before EVERY flight:** phone in hand · DJI Fly in **Manual Control** · open space, nobody under the drone · battery > 40% ·
+Esc / Ctrl+C ready · if anything looks wrong: **take over with the phone and land by hand**.
+Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field case). Battery at start: ____ %.
 
-- [ ] **B1 Set up (20 min)** — marks at 3 m and 6 m; laptop in the shade, on battery (note the battery %: ____ %);
-      a 30 s test hover + short recording; check the file is saved.
-- [ ] **B2 Crossing scenes = the M06 test set (≈ 90 min, ~3 batteries)** — film in this order (most important first):
-  - [ ] `cross_front_LR` — passer-by walks **in front** of the user, left → right (do 3 crossings in one clip)
-  - [ ] `cross_front_RL` — in front, right → left (3 crossings)
-  - [ ] `redshirt_side` — passer-by in **red shirt** walks next to the user for 10 s, then away (the M05 failure)
-  - [ ] `turn_away` — user turns her back (turban hidden) 3–5 s, 3 times
-  - [ ] `continuous_60s` — **60 s+** of the user walking normally, the drone keeps her in view (req. 4)
-  - [ ] `cross_behind` — passer-by walks **behind** the user, both directions
-  - [ ] `cross_close` — crossing **1 m** from the user · `cross_far` — crossing **5 m** behind
-  - [ ] `out_and_back` — user walks out of the picture and back in
-  *You should see:* 8+ files in `3_EVIDENCE/<today>/`, each 60–90 s, the user mostly in the picture.
-- [ ] **B3 Command delay (≈ 40 min, 1 battery)** — drone hovering at 1.5 m, nobody near. The second phone films the
-      **laptop screen and the drone together** at **60 fps** (start filming first). Run `python command_delay_test.py`.
-      Press **Y** (yaw right), wait 3 s, **U** (yaw left), wait 3 s … **10 presses** in total. Esc → hover → land by hand.
-      *You should see:* the red flash on the screen, the drone turning a bit after it, "picture moved after … ms"
-      in the terminal and "Saved: …_command_delay.csv". Repeat once if the phone video missed the screen.
-- [ ] **B4 Laptop battery note (2 min)** — battery % at the end: ____ % after ____ h on battery.
-- [ ] **B5 Filming note on the phone right away (10 min)** — for every clip: name, what happened (e.g. "2nd crossing too
-      far"), time, light/sun, who wore what.
-- [ ] **B6 Pack up, count batteries and props (10 min)**
-
-*Not today:* the yaw-only "follow" test needs the controller (computer work after today). Do not improvise it in the field.
+- [ ] **B1 Setup (15 min)** — marks at 3 m / 6 m; 30 s hover test with `python record_video.py 0.5 field_test`.
+- [ ] **B2 Film the crossing scenes = the M06 test set, never tuned on (≈ 90 min, ~3 batteries)**
+      For each: `python record_video.py 0 <name>` → take off → film 60–90 s → land → Esc. Most important first:
+  - [ ] `cross_front_LR` — passer-by walks **in front** of the user left → right (3 times)
+  - [ ] `cross_front_RL` — in front, right → left (3 times)
+  - [ ] `redshirt_side` — red shirt walks **next to** the user 10 s, then away (the M05 failure)
+  - [ ] `turn_away` — user turns her back 3–5 s, 3 times
+  - [ ] `continuous_60s` — 60 s+ walking normally (work-plan req. 4)
+  - [ ] `cross_behind` — behind the user, both directions
+  - [ ] `cross_close` (1 m) and `cross_far` (5 m)
+  - [ ] `out_and_back` — user leaves the picture and comes back
+- [ ] **B3 Command delay (30 min, 1 battery)** — drone hovering, second phone films **screen + drone** at **60 fps**.
+      `python command_delay_test.py` → Y, wait 3 s, U, wait 3 s … **10 presses** → Esc → land.
+      *You should see:* red flash → drone turns; terminal "picture moved after … ms"; "Saved …_command_delay.csv".
+- [ ] **B4 Live DRY on battery = the speed test on battery (20 min, 1 battery)** — drone hovering, user in front:
+      `GPU m06_follow.py --live --dry --seconds 300` (11n), then `--model yolo11m.pt --seconds 300`.
+      FPS 11n ____ , 11m ____ ; laptop battery ____ % → **decide the model: 11m if >= 15 FPS, else 11n** → chosen: ____
+- [ ] **B5 FIRST CLOSED LOOP: yaw only (30 min, 1 battery)** — drone hovering 1.5 m, user 4 m in front, nobody else near.
+      `GPU m06_follow.py --live --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly in an arc left and right.
+      *You should see:* the drone **turns** to keep her centred, stops turning in the middle (dead band), hovers when she
+      hides (UNSURE / LOST). Esc at once if it turns the wrong way or keeps spinning. Repeat with a passer-by crossing.
+- [ ] **B6 Yaw + distance (30 min, 1 battery) — ONLY if B5 was calm and correct** —
+      `GPU m06_follow.py --live --forward --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly away / closer,
+      2–3 m of space all around. *You should see:* the drone follows slowly (max stick 0.15), stops at ~3–4 m.
+- [ ] **B7 Filming note on the phone now (10 min)** — per clip / test: name, what happened, time, light, who wore what,
+      anything unsafe.
+- [ ] **B8 Pack up, count batteries and props (10 min).** Battery at end: ____ %.
 
 ## BLOCK C — back at the laptop · ≈ 1 h 15 min
-- [ ] **C1 Back up the videos (20 min)** — copy `3_EVIDENCE/<today>/` + the 60 fps phone video into
-      `3_EVIDENCE/<today>_M06_field/` (NOT git); upload to the shared Drive for Nimer.
-- [ ] **C2 Filming note (20 min)** — `2_MILESTONES/filming_M06_crossings.md`: table clip → scene → length → notes;
-      plus the automatic loop-delay numbers from B3.
-- [ ] **C3 First look (25 min)** — `python m06_track.py ..\3_EVIDENCE\<today>_M06_field\<cross_front_LR clip>.mp4 --tracker botsort`
-      Watch the output video together. Write 3 lines: when was the user kept, when did the passer-by steal the ID.
-      (First torch import can take 20–40 s.)
-- [ ] **C4 Push (10 min)** — note + UPDATES line + presentation-log line ("field day: N crossing clips, loop delay X ms").
+- [ ] **C1 Back up (20 min)** — `3_EVIDENCE/<today>/` + `3_EVIDENCE/m06_tracking/live_*` + the 60 fps phone video →
+      `3_EVIDENCE/<today>_M06_field/` (NOT git) + shared Drive.
+- [ ] **C2 Note (20 min)** — `2_MILESTONES/M06_field_day_<date>.md`: clips, delay numbers, FPS on charger vs battery,
+      model chosen + why, what the closed loop did (worked / problems), safety events.
+- [ ] **C3 First look at a crossing (25 min)** — `GPU m06_follow.py --video ..\3_EVIDENCE\<today>\<…cross_front_LR>.mp4`
+      → watch: did the passer-by ever get the USER box? Count ID switches.
+- [ ] **C4 Push (10 min)** — note + UPDATES + presentation-log lines (model decision, delay, first closed loop).
 
 ## End of the day — you should have
-- [ ] 8+ crossing clips + one 60 s clip (the M06 hold-out test, never tuned on)
-- [ ] Command-delay CSV + 60 fps phone video (counted later: frames from red flash to drone turn × 16.7 ms)
-- [ ] Laptop battery use on a field day
-- [ ] Filming note pushed; first impression of BoT-SORT on a crossing
+- [ ] M05 closed: model chosen with a paired test + live FPS on battery
+- [ ] Sticky ID + states + controller tested live: dry → yaw only → (yaw + distance)
+- [ ] 8+ crossing clips + 60 s clip (M06 hold-out) · command-delay CSV + 60 fps video
+**Total:** A 1 h 45 + travel + B 4 h 30 + C 1 h 15 ≈ **7.5 h** (+ travel).
 
-**Total:** A 1 h 30 + travel + B 4 h + C 1 h 15 ≈ **7 h** (+ travel).
-**Next (computer, later):** sticky-ID rule → safety states → CVAT labels → measure vs M05 → delay from the video →
-controller offline → write-up (`M06_plan_together_step_by_step.md` §4). Long speed test on battery = at home, no drone needed.
+**Left for the computer (≈ 8 h, any time before 7.12):** label the crossing clips with IDs in CVAT (4 h) → measure M05 vs
+M06 on them: % user kept, ID swaps, recovery, IDF1/HOTA with TrackEval (2.5 h) → count the delay in the 60 fps video (1 h) →
+one-page summary + decision log + demo (1.5 h). Tuning K_YAW / dead band from today's CSV if the loop was slow or jerky.
+
+## Main risks
+- The loop turns the wrong way or oscillates → Esc, check the yaw sign / lower `--max-yaw` / bigger dead band; don't push it.
+- Recording gives no frames → record on the drone itself, film anyway.
+- No passer-by → crossings are the core of M06; book someone tonight.
+- Laptop slows down on battery → B4 measures exactly that; fall back to 11n.

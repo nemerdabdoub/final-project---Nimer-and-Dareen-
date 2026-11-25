@@ -120,6 +120,7 @@ as a second characteristic that also gives the distance to the user.
   37% wrong person; YOLO alone 29-36 FPS / ~40% CPU (8 of 20 cores), 36% wrong person; **hybrid YOLO11n 31 FPS / ~40% CPU,
   96% big-people detection, 0% wrong, 0% false alarm, 79% frames correct** (≈ +5 ms/frame over YOLO alone).
   `M05_data/results/full_comparison_22.11/` (script `1_CODE/m05_full_table.py`). **Candidate main results slide.**
+- 25.11 Paired test (McNemar, 403 frames): hybrid YOLO11m right where 11n wrong in 7 frames, opposite 0 → p = 0.016, real but small gain (+1.7 pts); YOLO26m vs 11n p = 0.18 (could be luck). Rule: 11m if >= 15 FPS live on battery, else 11n.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
@@ -198,3 +199,4 @@ as a second characteristic that also gives the distance to the user.
 - 24.11: **All 6 Ultralytics trackers compared** (ByteTrack, BoT-SORT, OC-SORT, Deep OC-SORT, FastTrack, TrackTrack CVPR 2025) on 161951: BoT-SORT best (84% user kept, 8 corrections), TrackTrack 83% / 10, ByteTrack 82% / 15; clip 161825 cannot separate them (all 61%).
 - 23.11: **Gabi's YOLO26n idea checked (M06 first look, clip 161951, 751 frames):** the adaptive (NSA) Kalman is in the Ultralytics tracker and works with any detector, not built into YOLO26n. User kept: YOLO11n + ByteTrack 82% (reproduces Nimer), **YOLO11n + BoT-SORT 84%**, YOLO26n 81% with both. BoT-SORT needs half the turban corrections (8 vs 12-15) → lead candidate YOLO11n + BoT-SORT; one clip only, differences in % within noise. `2_MILESTONES/M06_tracker_grid_23.11.md`.
 - 23.11: **correction against the approved work plan**: requirement 1 = identify the USER in >= 90% of frames in lab conditions (earlier notes wrongly read it as person detection). Lab: user detected by YOLO11n in 99.0% (103/104), identified by the turban in 73.1% (76/104, never wrong); all videos 92.7% / 70.1%. Req. 3 = >= 10 FPS (29.9 ✓). Identification above 90% = M06 tracking. Gabi deck updated (work-plan check slide).
+- 25.11 `m06_follow.py`: sticky ID (switch after 3 turban frames) + safety states FOLLOWING/UNSURE/LOST + P-controller (yaw, optional forward; dead band, max stick, rate limit); offline on 60 s of session 1: FOLLOWING 69 / UNSURE 10 / LOST 20% (not checked by eye). Field day manual: M05 close → closed-loop yaw test → crossing scenes → command delay.

@@ -1,5 +1,7 @@
 # M06 user tracking: plan done TOGETHER (Nimer + Dareen)
 
+**25.11 night: the Wednesday day now covers M05 leftovers → controller; use `M06_field_day_manual.md`. Sticky ID, states and the controller are built (`1_CODE/m06_follow.py`); the paired test is done. Left after the day: labels + measuring + write-up.**
+
 Due: **Mon 7.12.2026**. Written 25.11, revised the same day: **one long day together (Wednesday, 6–8 h), drone work FIRST**,
 so everything after it can be done on the computer. Tick `- [ ]` → `- [x]` and push.
 
