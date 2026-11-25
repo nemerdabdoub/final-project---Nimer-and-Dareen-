@@ -29,6 +29,7 @@ from command_delay_test import small_grey, shift_px
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
 VIDEO_FPS = 25
+ORBIT_SIDE = 0.15        # ORBIT TEST: steady sideways stick (circles around the user)
 
 # (name, mode, seconds, PILOT text, USER text)   mode: HOVER / TURN / FOLLOW / SIDE / ABOVE / DELAY / SPEED
 STEPS = [
@@ -42,6 +43,8 @@ STEPS = [
      "Walk slowly anywhere: away, closer, diagonal. 60 s."),
     ("SIDE TEST", "SIDE", 40, "Phone in hand. Drone also slides sideways. Esc = stop.",
      "Step slowly sideways left, stop, right, stop."),
+    ("ORBIT TEST", "ORBIT", 30, "Phone in hand. Drone circles around the user (slides + turns). Esc = stop.",
+     "Stand still in the middle, turn slowly to keep facing the drone."),
     ("FROM ABOVE", "ABOVE", 40, "First climb by hand to 3.5-4 m, THEN SPACE. Camera tilts down by itself.",
      "Walk slowly, turn your back 3 times."),
     ("DELAY TEST", "DELAY", 0, "Hover 1.5 m, point at a still scene. Drone turns by itself 10 times.",
@@ -74,7 +77,7 @@ def wrap(t, n=70):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="yolo11n.pt")
-    ap.add_argument("--max-yaw", type=float, default=0.2)
+    ap.add_argument("--max-yaw", type=float, default=0.3)
     ap.add_argument("--auto-advance", action="store_true", help="simulator test only: SPACE pressed by itself")
     ap.add_argument("--auto", action="store_true",
                     help="AUTOMATIC: 10 s countdown -> take off -> climb to ~1.5 m -> TURN -> FOLLOW -> SIDE -> land")
@@ -113,7 +116,7 @@ def main():
         name, mode = STEPS[k][0], STEPS[k][1]
         running, step_t0 = True, time.perf_counter()
         fol = F.Follower()
-        ctl = F.Controller(a.max_yaw, mode in ("FOLLOW", "SIDE"), use_side=(mode == "SIDE"))
+        ctl = F.Controller(a.max_yaw, mode in ("FOLLOW", "SIDE", "ORBIT"), use_side=(mode == "SIDE"))
         pulses = []
         now = time.perf_counter()
         if mode == "ABOVE" and real:
@@ -139,7 +142,7 @@ def main():
         running = False
         step = min(step + 1, len(STEPS) - 1)
 
-    AUTO_STEPS = [i for i, st in enumerate(STEPS) if st[0] in ("TURN TEST", "FOLLOW TEST", "SIDE TEST")]
+    AUTO_STEPS = [i for i, st in enumerate(STEPS) if st[0] in ("TURN TEST", "FOLLOW TEST", "SIDE TEST", "ORBIT TEST")]
     auto = {"phase": "countdown" if a.auto else None, "t": time.perf_counter(), "k": 0, "done": False}
 
     def auto_bg(fn, label):
@@ -185,11 +188,14 @@ def main():
                     pass
             yaw = fwd = side = 0.0
             if running and not low_batt:
-                if mode in ("TURN", "FOLLOW", "SIDE", "ABOVE"):
+                if mode in ("TURN", "FOLLOW", "SIDE", "ABOVE", "ORBIT"):
                     yaw, fwd = ctl.step(box, state, W, H)
                     side = ctl.side
-                    if state == "FOLLOWING":
-                        drone.send_speeds(forward=fwd, right=side, yaw_cw=yaw)
+                    if mode == "ORBIT" and state == "FOLLOWING":
+                        side = ORBIT_SIDE                  # steady slide; yaw keeps her centred, fwd keeps the distance = circle
+                    if state == "FOLLOWING" or (state == "UNSURE" and yaw):
+                        drone.send_speeds(forward=fwd if state == "FOLLOWING" else 0.0,
+                                          right=side if state == "FOLLOWING" else 0.0, yaw_cw=yaw)
                     else:
                         drone.stop()
                 elif mode in ("DELAY", "SPEED"):

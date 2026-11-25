@@ -53,14 +53,16 @@ LOST_AFTER = 2.0        # s without the user -> LOST
 MAX_NO_TURBAN = 10.0    # s of tracking without seeing the turban -> UNSURE (needs a re-confirm)
 # controller
 X_DEAD = 0.15           # |x error| below this -> no yaw
-K_YAW = 0.5             # yaw stick per unit x error (x error -1..1)
+K_YAW = 0.6             # yaw stick per unit x error (x error -1..1)
 TARGET_H = 0.45         # wanted user height / frame height (~3-4 m away)
 H_DEAD = 0.08
 K_FWD = 1.0
 MAX_FWD = 0.15
 K_SIDE = 0.4            # SIDE mode: sideways stick per unit x error
-MAX_SIDE = 0.15         # SIDE mode: max sideways stick (slow)
+MAX_SIDE = 0.25         # SIDE mode: max sideways stick (slow)
 RATE = 0.05             # max change of a stick value per processed frame
+SEARCH_YAW = 0.15       # UNSURE (user lost < 2 s): keep turning slowly toward the side she was last seen (25.11 evening:
+                        # the user was in view only 33-55% because the drone stopped when she left the side of the picture)
 # --colour (Nimer's idea): user score = (turban + clothes colour similarity) / 2
 COMBO_MIN = 0.55        # combined score needed to (re)confirm a person as the user (first value; tune on crossing clips)
 ENROL_N = 5             # template = mean of up to 5 enrolment views
@@ -137,6 +139,7 @@ class Controller:
         self.predict, self.delay, self.yaw_rate, self.hfov = predict, delay, yaw_rate, hfov
         self.hist = []                                  # (time, yaw sent)
         self.t_last = None
+        self.last_x = 0.0                               # last seen off-centre error (for the search turn)
 
     def _in_pipe(self, now):
         """degrees the drone has been commanded to turn in the last `delay` seconds (not yet seen in the picture)"""
@@ -156,6 +159,7 @@ class Controller:
         if state == "FOLLOWING" and box is not None:
             x1, y1, x2, y2 = box
             x_err = ((x1 + x2) / 2 - W / 2) / (W / 2)
+            self.last_x = x_err
             if self.predict:
                 x_err -= self._in_pipe(now) / (self.hfov / 2)
             if abs(x_err) > X_DEAD:
@@ -167,7 +171,10 @@ class Controller:
             h_err = TARGET_H - (y2 - y1) / H
             if self.use_forward and abs(h_err) > H_DEAD:
                 want_fwd = clip(K_FWD * h_err, MAX_FWD)
-        if state != "FOLLOWING":                    # safety: hover at once, no rate limit
+        if state == "UNSURE" and abs(self.last_x) > X_DEAD:   # search: turn slowly toward where she left (no other move)
+            self.fwd = self.side = 0.0
+            self.yaw = SEARCH_YAW * (1 if self.last_x > 0 else -1)
+        elif state != "FOLLOWING":                  # LOST / low battery: hover at once, no rate limit
             self.yaw = self.fwd = self.side = 0.0
         else:
             self.side += clip(want_side - self.side, RATE)
