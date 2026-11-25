@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Activity, Checklist, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Message, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
+import type { Activity, Checklist, Commit, FalseAlarm, LocalFile, Mentor, Message, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -117,60 +117,6 @@ async function readFalseAlarms($: any): Promise<FalseAlarm[]> {
   return [...best.values()]
 }
 
-// ---------------- Moodle deadlines (personal) ----------------
-// Reads the Moodle calendar export link from %USERPROFILE%\.claude\moodle_calendar_url.txt (never in git) and
-// downloads the iCal feed every 15 minutes. The section appears only on a laptop that has that file.
-const MOODLE_EVERY = 180 // refresh ticks of 5 s = 15 min
-let moodleCache: Moodle | undefined
-
-function icalTime(v: string): number {
-  const m = v.match(/(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z?))?/)
-  if (!m) return 0
-  const [, y = '0', mo = '1', d = '1', h = '23', mi = '59', s = '0', z] = m
-  return z ? Date.UTC(+y, +mo - 1, +d, +h, +mi, +s) : new Date(+y, +mo - 1, +d, +h, +mi, +s).getTime()
-}
-
-function parseIcal(text: string): MoodleEvent[] {
-  const unfolded = text.replace(/\r?\n[ \t]/g, '')
-  const events: MoodleEvent[] = []
-  for (const block of unfolded.split('BEGIN:VEVENT').slice(1)) {
-    const get = (k: string) => (block.match(new RegExp('\\n' + k + '[^:\\n]*:([^\\r\\n]*)')) ?? [])[1] ?? ''
-    const due = icalTime(get('DTEND') || get('DTSTART'))
-    const title = get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';')
-    const course = get('CATEGORIES').replace(/\\,/g, ',')
-    if (title && due) events.push({ title, course, due })
-  }
-  return events.sort((a, b) => a.due - b.due)
-}
-
-async function readMoodle($: any): Promise<Moodle | undefined> {
-  if (!HOME) return undefined
-  const cfg = `${HOME}\\.claude\\moodle_calendar_url.txt`
-  let url = ''
-  try { url = (await $.fs.read(cfg)).split(/\r?\n/).map((l: string) => l.trim()).find((l: string) => /^https?:\/\//.test(l)) ?? '' }
-  catch { return undefined }                                  // no file -> no section
-  if (!url) return { configured: false, events: [], fetchedAt: '' }
-  if (moodleCache && tick % MOODLE_EVERY !== 1) return moodleCache
-  const ps = `$ProgressPreference='SilentlyContinue'; (Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri $env:MOODLE_URL).Content`
-  const r = await $.process.run(['powershell', '-NoProfile', '-Command', ps], { timeoutMs: 45_000, env: { MOODLE_URL: url } })
-  if (r.exitCode !== 0 || !/BEGIN:VCALENDAR/.test(r.stdout)) {
-    moodleCache = { configured: true, events: moodleCache?.events ?? [], fetchedAt: moodleCache?.fetchedAt ?? '',
-      error: 'Could not download the Moodle calendar (check the link or the internet).' }
-    return moodleCache
-  }
-  const now = Date.now()
-  moodleCache = { configured: true, events: parseIcal(r.stdout).filter(e => e.due > now - 3_600_000).slice(0, 10),
-    fetchedAt: stamp(now) }
-  return moodleCache
-}
-
-function daysLeft(ms: number): string {
-  const h = (ms - Date.now()) / 3_600_000
-  if (h < 0) return 'now'
-  if (h < 24) return `${Math.round(h)} h`
-  return `${Math.floor(h / 24)} d`
-}
-
 // ---------------- mentor (מנחה) ----------------
 // Reads 2_MILESTONES/mentor_plan.md: the FIRST milestone that still has open tasks is the current one.
 async function readMentor($: any): Promise<Mentor | undefined> {
@@ -221,31 +167,6 @@ function mentorTip(s: Snapshot, a: Activity): { text: string; level: 'error' | '
   if (s.local.length > 8) return { text: `${s.local.length} files changed and not committed: commit small, clear steps so your partner can follow.`, level: 'warning' }
   if (m && m.daysLeft <= 7) return { text: `${m.daysLeft} days to ${m.milestone}: start the one-page summary and the questions for Gabi now.`, level: 'warning' }
   return { text: PRINCIPLES[Math.floor(Date.now() / 60_000) % PRINCIPLES.length], level: 'success' }
-}
-
-// Personal lab reports (not project work): read from a status file outside the repo, so this section only
-// appears on a laptop that has LAB 2\lab_status.json. Nothing about it is committed or sent anywhere.
-async function readLabs($: any): Promise<LabReport[]> {
-  if (!HOME) return []
-  const dir = `${HOME}\\OneDrive\\Desktop\\Documents\\LAB 2`
-  let raw: any[] = []
-  try { raw = JSON.parse(await $.fs.read(`${dir}\\lab_status.json`)) } catch { return [] }
-  const labs: LabReport[] = []
-  for (const r of Array.isArray(raw) ? raw : []) {
-    const lab: LabReport = { lab: String(r.lab ?? ''), status: String(r.status ?? ''), next: r.next ? String(r.next) : undefined }
-    if (r.pdf) {
-      lab.pdf = `${dir}\\${String(r.pdf).replace(/\//g, '\\')}`
-      try { lab.pdfTime = stamp((await $.fs.stat(lab.pdf)).mtimeMs) } catch { lab.pdfTime = 'missing' }
-    }
-    labs.push(lab)
-  }
-  return labs
-}
-
-function openPdf($: any, full: string) {
-  return $.process.run(['powershell', '-NoProfile', '-Command', `Start-Process -FilePath '${full.replace(/'/g, "''")}'`], {
-    timeoutMs: 20_000,
-  })
 }
 
 function who(name: string): string {
@@ -526,9 +447,7 @@ async function refresh($: any) {
       local.sort((a, b) => (a.modified < b.modified ? 1 : -1))
 
       const falseAlarms = await readFalseAlarms($)
-      const labs = await readLabs($)
       const mentor = await readMentor($)
-      const moodle = await readMoodle($)
       const messages = await readMessages($)
       const checklist = await readChecklist($)
 
@@ -561,7 +480,7 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle, messages, checklist,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, mentor, messages, checklist,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
@@ -811,56 +730,6 @@ export const register: Register = (on, options) => {
           <Text dimColor>Auto pull + push every 2 min · never stashes · never force-pushes</Text>
           {s.error && <Text color="error">{s.error}</Text>}
         </Box>
-
-        {s.moodle && (
-          <Box flexDirection="column">
-            <Text bold>Moodle – upcoming <Text dimColor>(this laptop only)</Text></Text>
-            {!s.moodle.configured && (
-              <Text dimColor>
-                Paste your Moodle calendar export link (Calendar → Export calendar → All courses → Get calendar URL)
-                into .claude\moodle_calendar_url.txt
-              </Text>
-            )}
-            {s.moodle.error && <Text color="warning">{s.moodle.error}</Text>}
-            {s.moodle.configured && s.moodle.events.length === 0 && !s.moodle.error && (
-              <Text dimColor>Nothing due soon.</Text>
-            )}
-            {s.moodle.events.map((ev, i) => {
-              const h = (ev.due - Date.now()) / 3_600_000
-              return (
-                <Text key={'md:' + i + ':' + ev.due}>
-                  <Text color={h < 24 ? 'error' : h < 72 ? 'warning' : undefined} bold>{daysLeft(ev.due).padStart(4)}</Text>
-                  {'  '}{ev.title}
-                  <Text dimColor>  {ev.course} · {stamp(ev.due)}</Text>
-                </Text>
-              )
-            })}
-            {s.moodle.fetchedAt && <Text dimColor>updated {s.moodle.fetchedAt} · every 15 min</Text>}
-          </Box>
-        )}
-
-        {(s.labs ?? []).length > 0 && (
-          <Box flexDirection="column">
-            <Text bold>Lab reports <Text dimColor>(this laptop only, not in git)</Text></Text>
-            {(s.labs ?? []).map(l => (
-              <Box key={'lab:' + l.lab} flexDirection="column">
-                <Text>
-                  <Text bold>{l.lab}</Text>{'  '}
-                  <Text color={/done|submitted/i.test(l.status) ? 'success' : /not/i.test(l.status) ? 'warning' : undefined}>
-                    {l.status}
-                  </Text>
-                </Text>
-                {l.next && <Text dimColor>next: {l.next}</Text>}
-                {l.pdf && l.pdfTime !== 'missing' && (
-                  <Button key={'labpdf:' + l.lab} onPress={() => openPdf($, l.pdf as string)}>
-                    open PDF <Text dimColor>updated {l.pdfTime}</Text>
-                  </Button>
-                )}
-                {l.pdf && l.pdfTime === 'missing' && <Text color="warning">PDF not found</Text>}
-              </Box>
-            ))}
-          </Box>
-        )}
 
         <Box flexDirection="column">
           <Text bold>Files changed on this laptop ({s.local.length})</Text>

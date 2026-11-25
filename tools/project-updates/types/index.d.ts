@@ -28,14 +28,6 @@ export type PartnerFile = {
   count?: number
 }
 
-export type LabReport = {
-  lab: string
-  status: string
-  next?: string
-  pdf?: string // full path
-  pdfTime?: string
-}
-
 export type ActivityItem = {
   at: number   // ms since epoch
   text: string
@@ -63,19 +55,6 @@ export type Mentor = {
   next: string[]     // next open tasks
 }
 
-export type MoodleEvent = {
-  title: string
-  course: string
-  due: number      // ms since epoch
-}
-
-export type Moodle = {
-  configured: boolean
-  events: MoodleEvent[]
-  fetchedAt: string
-  error?: string
-}
-
 export type Message = {
   who: string
   when: string     // "24.11 18:40"
@@ -96,9 +75,7 @@ export type Checklist = {
 export type Snapshot = {
   checklist?: Checklist
   messages?: Message[]
-  moodle?: Moodle
   mentor?: Mentor
-  labs?: LabReport[]
   commits: Commit[]
   local: LocalFile[]
   falseAlarms: FalseAlarm[]
