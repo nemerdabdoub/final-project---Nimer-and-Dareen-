@@ -40,7 +40,12 @@ import m05                                    # turban colour, head check, hand 
 from user_score import user_scores, body_crop, colour_feat, colour_similarity   # identity score per box (0..1)
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
-SWITCH_FRAMES = 3       # turban on another ID this many frames in a row (and not on ours) -> switch
+SWITCH_FRAMES = 3       # (old rule, --old-switch) turban on another ID this many frames in a row -> switch
+# GUARDED SWITCH (default, 25.11 - Nimer's eye check: the red shirt held the lock 4-7 s while she was visible with 0.85-0.98):
+SWITCH_SECONDS = 1.0    # the other person must look like the user for 1 s in a row ...
+KEEP_MIN = 0.30         # ... AND our current user must look unlike the user (smoothed score < 0.30) or be out of view ...
+SWITCH_MARGIN = 0.30    # ... AND the other must score clearly higher (by 0.30). Never switch while she is visible and scoring.
+HEAD_DEFAULT = 0.20     # head area = top 20% of the box (anatomy: head ~1/8 of the body + turban); M05 used 35%
 START_FRAMES = 2        # turban on the same ID this many frames in a row -> first lock
 LOST_AFTER = 2.0        # s without the user -> LOST
 MAX_NO_TURBAN = 10.0    # s of tracking without seeing the turban -> UNSURE (needs a re-confirm)
@@ -65,28 +70,46 @@ def clip(v, m):
 class Follower:
     """Sticky-ID user choice + safety state. Feed it boxes, ids and the turban pick of one frame."""
 
-    def __init__(self):
-        self.user_id, self.cand, self.cand_n = None, None, 0
+    def __init__(self, guarded=True):
+        self.user_id, self.cand, self.cand_n, self.cand_since = None, None, 0, None
         self.last_seen = self.last_turban = None
-        self.switches = 0
+        self.switches = self.blocked = 0
+        self.guarded = guarded
+        self.ema = {}                                   # smoothed user score per track ID
 
-    def update(self, t, boxes, ids, colour_box):
+    def update(self, t, boxes, ids, colour_box, scores=None):
+        if scores is not None:
+            for tid, sc in zip(ids, scores):
+                if tid is not None:
+                    self.ema[tid] = 0.7 * self.ema.get(tid, sc) + 0.3 * sc
         turban_id = None
         if colour_box is not None and boxes:
             k = max(range(len(boxes)), key=lambda j: m05.iou(boxes[j], colour_box))
             turban_id = ids[k]
         if turban_id is not None and turban_id == self.user_id:
-            self.cand, self.cand_n, self.last_turban = None, 0, t        # our user re-confirmed
+            self.cand, self.cand_n, self.cand_since, self.last_turban = None, 0, None, t   # our user re-confirmed
         elif turban_id is not None:
-            self.cand_n = self.cand_n + 1 if turban_id == self.cand else 1
-            self.cand = turban_id
-            need = START_FRAMES if self.user_id is None else SWITCH_FRAMES
-            if self.cand_n >= need:
+            if turban_id == self.cand:
+                self.cand_n += 1
+            else:
+                self.cand, self.cand_n, self.cand_since = turban_id, 1, t
+            if self.user_id is None:
+                ok = self.cand_n >= START_FRAMES
+            elif not self.guarded:
+                ok = self.cand_n >= SWITCH_FRAMES
+            else:
+                mine_visible = self.user_id in ids
+                mine, theirs = self.ema.get(self.user_id, 0.0), self.ema.get(turban_id, 0.0)
+                long_enough = t - self.cand_since >= SWITCH_SECONDS
+                ok = long_enough and (not mine_visible or (mine < KEEP_MIN and theirs > mine + SWITCH_MARGIN))
+                if long_enough and not ok:
+                    self.blocked += 1                   # a switch the guard refused (she was visible and scoring)
+            if ok:
                 if self.user_id is not None:
                     self.switches += 1
-                self.user_id, self.cand, self.cand_n, self.last_turban = turban_id, None, 0, t
+                self.user_id, self.cand, self.cand_n, self.cand_since, self.last_turban = turban_id, None, 0, None, t
         else:
-            self.cand, self.cand_n = None, 0
+            self.cand, self.cand_n, self.cand_since = None, 0, None
         box = boxes[ids.index(self.user_id)] if self.user_id is not None and self.user_id in ids else None
         if box is not None:
             self.last_seen = t
@@ -152,6 +175,8 @@ def main():
     ap.add_argument("--max-yaw", type=float, default=0.25)
     ap.add_argument("--seconds", type=float, default=0, help="stop after N s (0 = until Esc / end)")
     ap.add_argument("--colour", action="store_true", help="user score = turban + clothes colour (enrol with E)")
+    ap.add_argument("--old-switch", action="store_true", help="old sticky rule (3 turban frames) instead of the guarded switch")
+    ap.add_argument("--head", type=float, default=HEAD_DEFAULT, help="head area for the turban (0.20 default; M05 used 0.35)")
     a = ap.parse_args()
     try:
         import lap  # noqa: F401
@@ -159,12 +184,15 @@ def main():
         sys.exit("The tracker needs one extra package. Run:  python -m pip install lap   then start again.")
 
     model = m05.load_model(a.model)
-    fol, ctl = Follower(), Controller(a.max_yaw, a.forward)
+    m05.HEAD_PART = a.head                                     # used by the hybrid pick and the user score
+    fol, ctl = Follower(guarded=not a.old_switch), Controller(a.max_yaw, a.forward)
     OUT.mkdir(parents=True, exist_ok=True)
-    name = (Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")) + ("_colour" if a.colour else "")
+    name = ((Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")) + ("_colour" if a.colour else "")
+            + ("_old" if a.old_switch else "") + (f"_head{int(a.head * 100)}" if a.head != HEAD_DEFAULT else ""))
     mode = "OFFLINE" if a.video else ("LIVE DRY (nothing sent)" if a.dry else "LIVE - SENDING " +
                                       ("yaw+forward" if a.forward else "yaw only"))
-    head = f"M06 follow  {a.model.replace('.pt', '')} + {a.tracker} + turban   {mode}"
+    head = (f"M06 follow  {a.model.replace('.pt', '')} + {a.tracker} + turban (head {a.head:.0%}"
+            f"{', old switch' if a.old_switch else ', guarded switch'})   {mode}")
     print(head)
     drone = cap = None
     if a.video:
@@ -238,7 +266,7 @@ def main():
                     scores = [(ts + colour_similarity(template, fr, b)) / 2 for ts, b in zip(scores, boxes)]
                     k = max(range(len(boxes)), key=lambda j: scores[j]) if boxes else None
                     colour_box = boxes[k] if k is not None and scores[k] >= COMBO_MIN else None
-            box, state = fol.update(t, boxes, ids, colour_box)
+            box, state = fol.update(t, boxes, ids, colour_box, scores)
             yaw, fwd = ctl.step(box, state, W, H)
             if send:
                 if state == "FOLLOWING":
@@ -290,7 +318,8 @@ def main():
         w.writerows(rows)
     tot = max(1, n)
     print(f"\n{n} frames: FOLLOWING {100 * counts['FOLLOWING'] / tot:.0f}%  UNSURE {100 * counts['UNSURE'] / tot:.0f}%  "
-          f"LOST {100 * counts['LOST'] / tot:.0f}%   ID switches by turban: {fol.switches}")
+          f"LOST {100 * counts['LOST'] / tot:.0f}%   ID switches by turban: {fol.switches}"
+          f"   switches refused by the guard: {fol.blocked}")
     print(f"Saved: {OUT / (name + '_follow.mp4')}  (+ .csv)")
 
 

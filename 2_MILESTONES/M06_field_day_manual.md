@@ -18,6 +18,9 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
   **yaw sign = error sign in 111/111 frames, and each turn moved the user back toward the centre** (right turn → error −0.02,
   left turn → +0.10 in 0.6 s); `record_video.py` records (226 frames / 9 s); ~15 FPS in the sim. Not tested in the sim:
   key presses (E, Y/U) — do those in A5/A6b.
+- **Red-shirt fix (25.11 night):** guarded switch (the USER moves to another person only if that person looks like the
+  user for 1 s AND she is out of view or scores < 0.30) + head area 20% (anatomy) = new default in `m06_follow.py`. Session 1:
+  the red-shirt man never gets USER (was 3 s); switches 10 → 3. Old rule for comparison: `--old-switch --head 0.35`.
 - **Ready from last night:** paired test (11m really better than 11n, p = 0.016) · `m06_follow.py` (BoT-SORT + sticky ID +
   states + controller + `--colour`) · `command_delay_test.py` · user score per box. **None of it has touched the real drone yet.**
 
