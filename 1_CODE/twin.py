@@ -84,6 +84,7 @@ def run(video, model, s):
     model.predictor = None                            # fresh tracker per run
     i, n, foll, inview, sum_x, flips, last_sign = 0, 0, 0, 0, 0.0, 0, 0
     enrol, tmpl = [], None
+    log = []                                              # (frame index, window offset, window width, locked box)
     batt = s["battery"]
     while ok and (not s["seconds"] or i / vfps < s["seconds"]):
         if i % step == 0:
@@ -115,6 +116,7 @@ def run(video, model, s):
             side = ctl.side if state == "FOLLOWING" else 0.0
             if not (state == "FOLLOWING" or (state == "UNSURE" and yaw)):
                 yaw, side = 0.0, 0.0
+            log.append((i, neo.off, neo.vw, box if state == "FOLLOWING" else None))
             neo.step(yaw, side)
             n += 1
             if boxes:
@@ -140,7 +142,39 @@ def run(video, model, s):
     mins = max(1e-6, n * dt / 60)
     return {"following_%": round(100 * foll / max(1, n), 1), "mean_off_centre": round(sum_x / max(1, foll), 3),
             "people_in_view_%": round(100 * inview / max(1, n), 1), "yaw_flips_per_min": round(flips / mins, 1),
-            "turned_deg": round(neo.heading, 0), "frames": n}
+            "turned_deg": round(neo.heading, 0), "frames": n, "_log": log, "_W": W}
+
+
+def check_labels(log, W, video, labels):
+    """compare the twin's locked box (mapped back to the full picture) with the hand-labelled user box"""
+    stem = Path(video).stem
+    cap = cv2.VideoCapture(video)
+    Hh = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    cap.release()
+    res = {"right": 0, "wrong": 0, "missed": 0, "user_outside_view": 0, "ok_none": 0, "false_pick": 0}
+    for i, off, vw, box in log:
+        lab = m05.read_labels(labels, Path(f"{stem}_{i:05d}.jpg"), (Hh, W))
+        if lab is None:
+            continue
+        users = lab[0]
+        full = None
+        if box is not None:
+            k = vw / W                                  # twin window -> full picture
+            full = [off + box[0] * k, box[1], off + box[2] * k, box[3]]
+        if users:
+            u = users[0]
+            cx = (u[0] + u[2]) / 2
+            if not (off <= cx <= off + vw):
+                res["user_outside_view"] += 1
+            elif full is None:
+                res["missed"] += 1
+            elif m05.iou(full, u) >= 0.3:
+                res["right"] += 1
+            else:
+                res["wrong"] += 1
+        else:
+            res["false_pick" if full is not None else "ok_none"] += 1
+    return res
 
 
 def main():
@@ -162,6 +196,7 @@ def main():
     ap.add_argument("--battery", type=float, default=100)
     ap.add_argument("--drain", type=float, default=5.0, help="battery %% per minute")
     ap.add_argument("--sweep", action="store_true")
+    ap.add_argument("--labels", default="", help="hand-label folder (YOLO txt) -> count right / wrong person")
     ap.add_argument("--show", action="store_true")
     a = ap.parse_args()
     import lap  # noqa: F401
@@ -182,6 +217,9 @@ def main():
         sc = run(a.video, model, s)
         row = {"max_yaw": s["max_yaw"], "k_yaw": s["k_yaw"], "search": not s["no_search"], "predict": s["predict"],
                "side": s["side"], "colour": s.get("colour", False), **sc}
+        log, Wd = row.pop("_log"), row.pop("_W")
+        if a.labels:
+            row.update(check_labels(log, Wd, a.video, a.labels))
         rows.append(row)
         print("  ".join(f"{k}={v}" for k, v in row.items()), flush=True)
     path = OUT / ("twin_sweep.csv" if a.sweep else "twin_run.csv")
