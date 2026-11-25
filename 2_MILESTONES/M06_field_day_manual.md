@@ -69,6 +69,10 @@ In a fresh terminal the lab's `scrcpy.py` cannot find `adb` (`FileNotFoundError:
 through `run_with_adb.py`**, e.g. `%GPU% run_with_adb.py record_video.py 0 cross_front_LR` or
 `%GPU% run_with_adb.py m06_follow.py --live --dry`. (Or once per cmd window inside 1_CODE: `set PATH=%CD%;%PATH%`.)
 Testing alone: `%GPU% countdown.py 45 m06_follow.py --live --dry --seconds 60` = big countdown on the laptop, then the script.
+**A6b colour enrolment ✓ (25.11 14:54):** try 1 FAILED because of the setup — window BEHIND her (turban looked black), camera
+low on a shiny table (head at the top edge + reflection doubled her box) → score 0.30–0.48, never USER (correctly: no guessing).
+Try 2 (light on her face, camera higher, cloth on the table): **FOLLOWING 100%, USER ~0.9 after E, ~27 FPS.**
+**Field lesson: sun/window BEHIND THE DRONE, never behind the user; the drone sees her whole head from slightly above.**
 **Table tests done 25.11 14:15–14:30:** A3b tilt ✓ · A4 recording ✓ (751 frames / 30 s) · A6 live dry ✓ (yaw sign right 269/269, ~28 FPS GPU plugged).
 
 ## 3. Power rules (longer flights, clean numbers)

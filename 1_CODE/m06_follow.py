@@ -215,6 +215,7 @@ def main():
     enrol = []                                                 # clothes-colour views of the user ("this is me")
     template = None
     want_enrol = False
+    last_e = 0.0
 
     def enrol_view(fr, boxes, tscores, need_alone):
         """add one view of the user's clothes: the only person, or the clearest turban (>= 0.5)"""
@@ -296,8 +297,8 @@ def main():
                 key = cv2.waitKey(1) & 0xFF
                 if key == 27:
                     break
-                if key in (ord("e"), ord("E")) and a.colour:
-                    want_enrol = True
+                if key in (ord("e"), ord("E")) and a.colour and time.perf_counter() - last_e > 1.0:
+                    want_enrol, last_e = True, time.perf_counter()     # held E / auto-repeat = one view per second
             elif n % 200 == 0:
                 print(f"  {t:5.0f} s done ...")
     except KeyboardInterrupt:
