@@ -136,6 +136,13 @@ summary for Gabi (docx + pdf) and demo boxes tagged USER / person. **Next:** agr
 Shared between Nimer and Dareen and both Claude Code sessions. Every change pushed to GitHub gets one entry here.
 Claude: read the newest entries at the start of each session and tell the user what the partner changed.
 
+## 25.11.2026, Nimer: video gallery script (all project videos on one page)
+`1_CODE/make_video_gallery.py` → `3_EVIDENCE/ALL_VIDEOS.html` + `3_EVIDENCE/_thumbs/` (both not in git): every .mp4 under
+3_EVIDENCE as a card (thumbnail at 30 %, date, length, MB, codec, folder), grouped by category with tabs, dark mode; click the
+picture = play. On Nimer's laptop: 32 videos (first flights 8, lab 20.11 10, field 22.11 2, M05 demos 10, M06 tracking 2).
+Dareen: `python make_video_gallery.py` on your laptop (you have more clips) - re-run after each G:sync / field day.
+G:sync 25.11: nothing new on the Drive (the 403 labelled frames for the ML test are not there yet).
+
 ## 25.11.2026, Nimer: follow script reproduced + ReID test + panel upgrades for both
 - **`m06_follow.py` (Dareen's, default = no `--colour`) on 60 s of session 1, Nimer's laptop, YOLO11n + BoT-SORT, CPU:** exactly
   Dareen's numbers - FOLLOWING 69 % / UNSURE 10 % / LOST 20 %, 10 turban switches, median 11.7 FPS. Checked by eye: t=1 s USER on
