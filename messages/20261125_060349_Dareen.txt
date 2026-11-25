@@ -1,0 +1,2 @@
+Dareen 25.11 06:03
+Your "simulate first, like Vivado" idea is done: 1_CODE/sim_drone.py. In cmd: set DRONE_SIM=<video> and every script runs on a simulated drone (turning = the view slides, with delay). Rehearsed tomorrow: follow script + yaw loop work, yaw sign correct 111/111. Tomorrow FIRST: set DRONE_SIM= (empty) before the real drone - if a script prints [SIM] it is not the real drone. Checklist updated: 4_DOCUMENTS/M06_field_day_checklist.docx
