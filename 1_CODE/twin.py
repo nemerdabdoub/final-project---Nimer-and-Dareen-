@@ -30,7 +30,8 @@ import cv2
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import m05
 import m06_follow as F
-from user_score import user_scores
+from user_score import user_scores, body_crop, colour_feat, colour_similarity
+import numpy as np
 
 HFOV, VIEW = 118.0, 0.60
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "twin"
@@ -82,6 +83,7 @@ def run(video, model, s):
     ctl = F.Controller(s["max_yaw"], False, s["predict"], s["delay"], s["yaw_rate"], use_side=s["side"])
     model.predictor = None                            # fresh tracker per run
     i, n, foll, inview, sum_x, flips, last_sign = 0, 0, 0, 0, 0.0, 0, 0
+    enrol, tmpl = [], None
     batt = s["battery"]
     while ok and (not s["seconds"] or i / vfps < s["seconds"]):
         if i % step == 0:
@@ -92,7 +94,20 @@ def run(video, model, s):
             ids = r.boxes.id.cpu().numpy().astype(int).tolist() if r.boxes.id is not None else [None] * len(boxes)
             mask = m05.turban_mask(v)
             scores = user_scores(mask, boxes)
-            box, state = fol.update(t, boxes, ids, m05.hybrid_user(mask, boxes), scores)
+            colour_box = m05.hybrid_user(mask, boxes)
+            if s.get("colour"):
+                if len(enrol) < 5 and len(boxes) == 1:         # like the flight: learn the clothes when she is alone
+                    c = body_crop(v, boxes[0])
+                    if c is not None:
+                        enrol.append(colour_feat(c))
+                        tmpl = np.mean(enrol, 0).astype(np.float32)
+                        if ids[0] is not None:
+                            fol.user_id = ids[0]
+                if tmpl is not None and boxes:
+                    scores = [(ts + colour_similarity(tmpl, v, b)) / 2 for ts, b in zip(scores, boxes)]
+                    kb = max(range(len(boxes)), key=lambda j: scores[j])
+                    colour_box = boxes[kb] if scores[kb] >= 0.45 else None
+            box, state = fol.update(t, boxes, ids, colour_box, scores)
             batt -= s["drain"] * dt / 60
             if batt <= 30:
                 state = "LOST"
@@ -137,6 +152,7 @@ def main():
     ap.add_argument("--predict", action="store_true")
     ap.add_argument("--no-search", action="store_true")
     ap.add_argument("--side", action="store_true")
+    ap.add_argument("--colour", action="store_true", help="learn the clothes when alone (like the flight fix)")
     ap.add_argument("--delay", type=float, default=0.5)
     ap.add_argument("--yaw-rate", type=float, default=90.0)
     ap.add_argument("--tau", type=float, default=0.3)
@@ -150,7 +166,7 @@ def main():
     a = ap.parse_args()
     import lap  # noqa: F401
     base = {k: getattr(a, k) for k in ("max_yaw", "k_yaw", "predict", "no_search", "side", "delay", "yaw_rate", "tau",
-                                         "rate_hz", "seconds", "battery", "drain", "show", "start")}
+                                         "rate_hz", "seconds", "battery", "drain", "show", "start", "colour")}
     tries = [base]
     if a.sweep:
         tries = []
@@ -165,7 +181,7 @@ def main():
         model = m05.load_model(a.model)               # fresh model = fresh tracker IDs each run
         sc = run(a.video, model, s)
         row = {"max_yaw": s["max_yaw"], "k_yaw": s["k_yaw"], "search": not s["no_search"], "predict": s["predict"],
-               "side": s["side"], **sc}
+               "side": s["side"], "colour": s.get("colour", False), **sc}
         rows.append(row)
         print("  ".join(f"{k}={v}" for k, v in row.items()), flush=True)
     path = OUT / ("twin_sweep.csv" if a.sweep else "twin_run.csv")

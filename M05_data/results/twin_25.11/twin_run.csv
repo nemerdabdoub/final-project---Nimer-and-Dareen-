@@ -1,0 +1,2 @@
+max_yaw,k_yaw,search,predict,side,colour,following_%,mean_off_centre,people_in_view_%,yaw_flips_per_min,turned_deg,frames
+0.3,0.6,True,False,False,True,82.6,0.213,99.0,9.4,-183.0,875
