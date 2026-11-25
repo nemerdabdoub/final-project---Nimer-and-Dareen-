@@ -87,7 +87,7 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
       `OPEN_TERMINAL_HERE.bat` → `git pull` → `set GPU=C:\Users\LOREN\venvs\gpu\Scripts\python.exe`
       Read §0, fill §1 roles, agree the pass lines.
       **CRITICAL:** make sure the simulator is OFF: type `set DRONE_SIM=` (empty). If a script prints `[SIM]`, it is NOT the real drone.
-      Optional 10-min rehearsal before the drone is on: `set DRONE_SIM=.._EVIDENCE6-11-22c404_recording_session1.mp4` →
+      Optional 10-min rehearsal before the drone is on: `set DRONE_SIM=..\3_EVIDENCE\2026-11-22\143404_recording_session1.mp4` →
       try `%GPU% command_delay_test.py --dry` and `%GPU% m06_follow.py --live --dry --colour` (press E) → then `set DRONE_SIM=` again.
       *You should see:* "Already up to date" (or new files); both can say the aim in one sentence.
 
