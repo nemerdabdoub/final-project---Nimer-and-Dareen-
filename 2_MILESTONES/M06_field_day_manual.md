@@ -64,6 +64,13 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
 - [ ] The **purple-red turban** · user in her usual clothes
 - [ ] Passer-by: **one red top** (filming only) + **one dark / non-red top** (closed-loop tests)
 
+## 2b. adb fix (found 25.11 14:18) — IMPORTANT
+In a fresh terminal the lab's `scrcpy.py` cannot find `adb` (`FileNotFoundError: [WinError 2]`). **Start every drone script
+through `run_with_adb.py`**, e.g. `%GPU% run_with_adb.py record_video.py 0 cross_front_LR` or
+`%GPU% run_with_adb.py m06_follow.py --live --dry`. (Or once per cmd window inside 1_CODE: `set PATH=%CD%;%PATH%`.)
+Testing alone: `%GPU% countdown.py 45 m06_follow.py --live --dry --seconds 60` = big countdown on the laptop, then the script.
+**Table tests done 25.11 14:15–14:30:** A3b tilt ✓ · A4 recording ✓ (751 frames / 30 s) · A6 live dry ✓ (yaw sign right 269/269, ~28 FPS GPU plugged).
+
 ## 3. Power rules (longer flights, clean numbers)
 - [ ] Drone **OFF** during all laptop setup; switch on only when a script is ready (it drains on the table: camera, link, fan).
 - [ ] **One battery for all table tests** (A3–A6b); full ones for flying. Land at **30%**; land between clips; record BEFORE take-off.
