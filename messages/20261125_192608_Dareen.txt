@@ -1,0 +1,2 @@
+Dareen 25.11 19:26
+You told me about a /updtd command - it does not exist on my laptop (only /force_land and /start_ready in .claude/commands). What should it do? I added a simple version: .claude/commands/updtd.md = git pull + show what the partner changed (UPDATES + messages) + open items. If yours is different, push your .claude/commands/updtd.md and it replaces mine.
