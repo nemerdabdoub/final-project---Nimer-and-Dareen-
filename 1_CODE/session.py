@@ -76,6 +76,8 @@ def main():
     ap.add_argument("--model", default="yolo11n.pt")
     ap.add_argument("--max-yaw", type=float, default=0.2)
     ap.add_argument("--auto-advance", action="store_true", help="simulator test only: SPACE pressed by itself")
+    ap.add_argument("--auto", action="store_true",
+                    help="AUTOMATIC: 10 s countdown -> take off -> climb to ~1.5 m -> TURN -> FOLLOW -> SIDE -> land")
     ap.add_argument("--fast", type=float, default=1.0, help="simulator test only: multiply step times (0.2 = 5x shorter)")
     a = ap.parse_args()
     import lap  # noqa: F401
@@ -136,6 +138,22 @@ def main():
         print(f"=== {name} finished ===")
         running = False
         step = min(step + 1, len(STEPS) - 1)
+
+    AUTO_STEPS = [i for i, st in enumerate(STEPS) if st[0] in ("TURN TEST", "FOLLOW TEST", "SIDE TEST")]
+    auto = {"phase": "countdown" if a.auto else None, "t": time.perf_counter(), "k": 0, "done": False}
+
+    def auto_bg(fn, label):
+        auto["done"] = False
+
+        def run():
+            busy["txt"] = label + " ..."
+            try:
+                r = fn()
+                busy["txt"] = f"{label}: {r}"[:60]
+            except Exception as e:
+                busy["txt"] = f"{label} failed: {e}"[:60]
+            auto["done"] = True
+        threading.Thread(target=run, daemon=True).start()
 
     print("SESSION: SPACE = start / next step, Esc = end, T = take off, L = land.")
     try:
@@ -216,13 +234,52 @@ def main():
                 while written < int(t * VIDEO_FPS) + 1:
                     writer.write(fr)
                     written += 1
+            if auto["phase"]:                                  # ---- AUTOMATIC sequence
+                el = now - auto["t"]
+                ph = auto["phase"]
+                if ph == "countdown":
+                    msg = f"AUTO: TAKE OFF IN {max(0, 10 - el):.0f} s  (Esc = cancel)"
+                    if el >= 10:
+                        events.append((round(t, 2), "AUTO take off"))
+                        auto_bg(lambda: drone.takeoff(log=print), "take off")
+                        auto.update(phase="takeoff", t=now)
+                elif ph == "takeoff":
+                    msg = "AUTO: taking off ..."
+                    if auto["done"]:
+                        auto.update(phase="climb", t=now)
+                elif ph == "climb":
+                    msg = "AUTO: climbing to ~1.5 m ..."
+                    drone.send_speeds(up=0.3)
+                    if el >= 1.5:
+                        drone.stop()
+                        auto.update(phase="gap", t=now)
+                elif ph == "gap":
+                    nxt = STEPS[AUTO_STEPS[auto["k"]]][0]
+                    msg = f"AUTO: NEXT {nxt} in {max(0, 5 - el):.0f} s - user get ready"
+                    if el >= 5:
+                        step = AUTO_STEPS[auto["k"]]
+                        start_step(step)
+                        auto.update(phase="run", t=now)
+                elif ph == "run":
+                    msg = f"AUTO: {STEPS[step][0]} running"
+                    if not running:
+                        auto["k"] += 1
+                        if auto["k"] < len(AUTO_STEPS):
+                            auto.update(phase="gap", t=now)
+                        else:
+                            events.append((round(t, 2), "AUTO land"))
+                            auto_bg(drone.land, "land")
+                            auto.update(phase="landing", t=now)
+                elif ph == "landing":
+                    msg = "AUTO: landing ..." if not auto["done"] else "AUTO: done - press Esc to save"
+                text_lines(fr, [msg], H // 2, (0, 255, 0), 1.0)
             cv2.imshow("SESSION - SPACE = next step, Esc = end, T = take off, L = land", fr)
             key = cv2.waitKey(1) & 0xFF
-            if a.auto_advance and not running and now - (step_t0 or t0) > 3 and step < len(STEPS) - 1:
+            if a.auto_advance and not a.auto and not running and now - (step_t0 or t0) > 3 and step < len(STEPS) - 1:
                 key = 32
             if key == 27:
                 break
-            if key == 32:
+            if key == 32 and not auto["phase"]:            # in AUTO mode SPACE does nothing (the sequence runs itself)
                 if running:
                     end_step()
                 elif step < len(STEPS) - 1 or name != "END":
