@@ -75,6 +75,19 @@ Try 2 (light on her face, camera higher, cloth on the table): **FOLLOWING 100%, 
 **Field lesson: sun/window BEHIND THE DRONE, never behind the user; the drone sees her whole head from slightly above.**
 **Table tests done 25.11 14:15–14:30:** A3b tilt ✓ · A4 recording ✓ (751 frames / 30 s) · A6 live dry ✓ (yaw sign right 269/269, ~28 FPS GPU plugged).
 
+## 2c. Field layout — the phone is CABLED to the laptop (one fixed BASE)
+The S10 is plugged into the laptop by USB (video + stick commands); only the drone is free (Wi-Fi to the phone).
+- **BASE** = laptop + S10 together (table / bench / bag), in the shade. **Pilot and laptop operator both stay at the base**;
+  "phone in hand" = holding the S10 at the base on its cable. Nobody walks between laptop and phone (cable!).
+- **Sun behind the base and the drone**, shining on the user's face (backlight made the turban black in A6b try 1).
+- **Drone hovers 2–4 m in front of the base, facing AWAY from it** toward the user; the user walks 3–6 m in front of the drone
+  (marks at 3 / 4 / 6 m measured from the DRONE's hover point, not from the base).
+- **Passer-by** crosses between the drone and the user (or behind her) — never between the base and the drone.
+- **60 fps phone (B3/B3b)** on a stand to the SIDE of the base, seeing the laptop screen AND the drone in one picture.
+- **Alone:** one person can be pilot + laptop operator at the base (scripts with `--auto` / `--seconds` run by themselves);
+  crossings and the closed loop still need a 2nd person (user / passer-by / finger on Esc).
+- Nice-to-have later: a 2–3 m USB cable for the S10 (more room for the pilot).
+
 ## 3. Power rules (longer flights, clean numbers)
 - [ ] Drone **OFF** during all laptop setup; switch on only when a script is ready (it drains on the table: camera, link, fan).
 - [ ] **One battery for all table tests** (A3–A6b); full ones for flying. Land at **30%**; land between clips; record BEFORE take-off.
