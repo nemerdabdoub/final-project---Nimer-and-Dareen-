@@ -95,9 +95,11 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
       *You should see:* "Already up to date" (or new files); both can say the aim in one sentence.
 
 - [ ] **A2 Watch last night's offline results (15 min) · 10:10** (drone OFF)
-      Open `3_EVIDENCE\m06_tracking\143404_recording_session1_follow.mp4` (turban only) and
-      `143404_recording_session1_colour_follow.mp4` (with `--colour`); jump to ~10 s.
-      *You should see:* turban only → the red-shirt man is "USER 0.99"; with colour → the user keeps "USER 0.71", red shirt "person 0.64".
+      Open `3_EVIDENCE\m06_tracking\143404_recording_session1_old_head35_follow.mp4` (old rule) and
+      `143404_recording_session1_follow.mp4` (NEW default: guarded switch + head 20%); jump to 7–12 s.
+      *You should see:* old → the red-shirt man becomes "USER" (0.97–1.00) while she is visible; new → the USER box stays on her,
+      the red shirt stays "person". (`…_colour_follow.mp4` = with colour: stuck 9 s at the start on the man in front, because the
+      automatic enrolment learned a merged box → enrol with E only when she is alone.)
       Write 2 lines: where does it still go wrong? **Note:** the tag = **user score** (is it OUR user, 0–1), not YOLO confidence.
 
 - [ ] **A3 Connect the drone on the table (15 min) · 10:25**
