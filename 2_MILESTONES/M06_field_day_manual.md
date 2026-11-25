@@ -87,6 +87,9 @@ The S10 is plugged into the laptop by USB (video + stick commands); only the dro
 - **Alone:** one person can be pilot + laptop operator at the base (scripts with `--auto` / `--seconds` run by themselves);
   crossings and the closed loop still need a 2nd person (user / passer-by / finger on Esc).
 - Nice-to-have later: a 2–3 m USB cable for the S10 (more room for the pilot).
+- **Speed + battery with the cable:** live is ~12% slower than offline (11n 31.7 → 27.8 FPS measured) → on battery expect
+  11n ~20, **11m ~18 FPS** (B4 decides). The laptop also charges the S10 (~5 W) → heavy work ~50–55 min from 100%.
+  **S10 at 100% before leaving; unplug it when not flying; lid closed between tests.**
 
 ## 3. Power rules (longer flights, clean numbers)
 - [ ] Drone **OFF** during all laptop setup; switch on only when a script is ready (it drains on the table: camera, link, fan).
