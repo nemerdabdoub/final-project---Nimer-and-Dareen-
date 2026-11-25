@@ -74,7 +74,26 @@ class SimDrone:
         self.heading += deg
         self.offset = min(max(0.0, self.offset + deg * self.ppd), self.W - self.vw)
 
+    # same FORCE LAND path as drone_interface.Drone, so /force_land can be rehearsed on the computer
+    _force_landed = False
+
+    def _check_force_land(self):
+        from force_land import requested, clear, report
+        if self._force_landed:
+            return True
+        if not requested():
+            return False
+        self._force_landed = True
+        clear()
+        print("\n!!! [SIM] FORCE LAND requested - releasing sticks and landing !!!", flush=True)
+        with self.lock:
+            self.cmds.append((time.perf_counter() + self.delay, 0.0))
+        report(self.land())
+        return True
+
     def send_speeds(self, forward=0.0, right=0.0, up=0.0, yaw_cw=0.0):
+        if self._check_force_land():
+            return
         t = time.perf_counter()
         with self.lock:
             self.cmds.append((t + self.delay, float(yaw_cw)))
@@ -88,6 +107,7 @@ class SimDrone:
 
     # ---- camera
     def get_frame(self):
+        self._check_force_land()
         self._advance()
         k = int((time.perf_counter() - self.t0) * self.fps) % self.n
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, k)

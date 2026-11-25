@@ -179,6 +179,8 @@ as a second characteristic that also gives the distance to the user.
   **Fix in M06:** the tracker keeps each person's ID through the crossing (Kalman motion + IoU), the turban re-confirms the
   user after it, an ID switch is allowed only with the turban seen, and while boxes overlap (IoU > ~0.3) the drone holds
   its position instead of following. We will count ID swaps on the crossing scenes as the M06 metric (not measured yet).
+- 25.11 No automatic emergency landing (only the thumb on the phone) → **FORCE LAND**: `/force_land` / `FORCE_LAND.bat` makes every running script release the sticks and run the checked 2-step landing; sim test 0 stick commands after the order (real-drone table test open).
+- 25.11 Backlight can't be fixed from a clip simulator (no sideways moves) → top-down **orbit simulator** `m07_orbit_sim.py`: orbit radius error 0.05 m, user centred ±1°, sun-fix from backlit in ~15 s (sim, V_MAX assumed).
 - 25.11 Live enrolment test: with a window behind the user the turban looked black and the user was never picked (score 0.3-0.48, no false pick); with light on her face + camera higher: FOLLOWING 100%, USER ~0.9. Rule: sun behind the drone, view from slightly above.
 
 ## 7. Teamwork and tools

@@ -25,3 +25,7 @@ START_HERE.txt
 # text-encoder weights downloaded by YOLOE / YOLO-World (600 MB)
 1_CODE/mobileclip*.ts
 1_CODE/*.ts.*
+
+# force-land flag and result (runtime only)
+1_CODE/FORCE_LAND
+1_CODE/FORCE_LAND_RESULT.txt

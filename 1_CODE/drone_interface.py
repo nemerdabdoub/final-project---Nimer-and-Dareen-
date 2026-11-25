@@ -23,6 +23,9 @@ import time
 import DJIneo
 
 
+from force_land import requested as force_land_requested, clear as force_land_clear, report as force_land_report  # noqa: E402
+
+
 class Drone:
     def __init__(self, settings_file="settings.txt", device=None):
         self._neo = DJIneo.DJIneo(device=device, settingsFile=settings_file)
@@ -283,10 +286,32 @@ class Drone:
             return popup_text + "; LANDED already (the Take Off circle is back)"
         return popup_text + "; NO LANDING STARTED within 8 s - hold Land by hand now"
 
+    # ---- FORCE LAND (Nimer 25.11): /force_land or FORCE_LAND.bat creates the file 1_CODE/FORCE_LAND. Every running script
+    # checks it here on each frame / command: sticks released, landing started, and all later stick commands are ignored.
+    _force_landed = False
+
+    def _check_force_land(self):
+        if self._force_landed:
+            return True
+        if not force_land_requested():
+            return False
+        self._force_landed = True
+        force_land_clear()
+        print("\n!!! FORCE LAND requested - releasing sticks and landing !!!", flush=True)
+        try:
+            result = self.land()
+        except Exception as e:                       # never let the emergency path crash silently
+            result = f"land() failed: {e} - HOLD LAND BY HAND NOW"
+        print(f"!!! FORCE LAND: {result}", flush=True)
+        force_land_report(result)
+        return True
+
     # ---- 3. send speeds -------------------------------------------------
     def send_speeds(self, forward=0.0, right=0.0, up=0.0, yaw_cw=0.0):
         """All values -1..1 = virtual-stick deflection (NOT m/s).
         Keep them small (0.2-0.3) in early tests."""
+        if self._check_force_land():
+            return                                   # after a force land, no stick command reaches the drone
         self._neo.move(yaw_cw, up, right, forward)   # DJIneo order: rcw, du, lr, bf
 
     def stop(self):
@@ -296,6 +321,7 @@ class Drone:
     # ---- 4. get frame ---------------------------------------------------
     def get_frame(self):
         """Latest video frame (numpy BGR image) or None if not ready."""
+        self._check_force_land()
         frame = self._neo.getFrame()
         if frame is not None:
             self._last_frame_time = time.time()
