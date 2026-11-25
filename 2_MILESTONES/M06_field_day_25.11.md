@@ -33,3 +33,15 @@ Files (laptop only, not git): `3_EVIDENCE/2026-11-25/`, `3_EVIDENCE/m06_tracking
 - Command delay with 10 presses (`--auto 10`) + 60 fps phone video; yaw rate at 0.2 / 0.4.
 - Live 11m check on battery (B4) → final model.
 - Dev: follow script records until landing (not fixed seconds); auto-copy videos to a Drive folder (needs Google Drive for Desktop); prediction for the delay.
+
+## Evening: FULL AUTOMATIC run (AUTO_TESTS.bat, 18:42, indoor hall, Dareen pilot, Nimer user)
+One double-click: countdown → **take-off by itself** → TURN 40 s → FOLLOW 60 s → SIDE 40 s → **landed by itself**. One video
+(`session_20261125_184201.mp4`, 105 MB) + CSV. Drone battery 50 → 34%. ~19 FPS live.
+| test | FOLLOWING | mean off-centre | turn direction right | forward / side used |
+|---|---|---|---|---|
+| TURN | 34% | 0.44 | 235/235 | – |
+| FOLLOW | 55% | 0.26 | 423/423 | forward in 442 frames |
+| SIDE | 33% | 0.42 | 214/214 | side in 217, forward in 116 frames |
+- Every turn in the right direction; forward and sideways commands were used. **Weak point: the user was in view only 33–55%**
+  and far off-centre (0.42–0.44) → the drone turns too slowly to keep up (max yaw 0.2, ~0.5 s delay). Next: max yaw 0.3,
+  predictor test, slower walking; check the video for when he left the picture.

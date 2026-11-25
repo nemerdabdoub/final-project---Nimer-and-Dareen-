@@ -128,6 +128,7 @@ as a second characteristic that also gives the distance to the user.
 - 25.11 Nimer's classic cues tested (live-style enrolment, 350 boxes): body colour shades AUC 0.846, body edges (HOG) 0.759, turban 0.928, **turban + colour 0.978** (CPU 0.13 ms/box); edges add nothing; optical flow = no identity cue (ego-motion / delay check only). Note `2_MILESTONES/M06_nimer_ideas_body_cues_motion_yaw_25.11.md`.
 - 25.11 Whole-pipeline speed, GPU: charger 11n 31.7 / 11m 28.8 FPS; battery 11n 23.1 / 11m 20.7 FPS (~25-30% slower); battery ~4% per 2.5 min heavy load. With the paired test -> YOLO11m chosen (pending live check).
 - 25.11 FIRST CLOSED LOOP FLOWN: yaw-only following FOLLOWING 77% / 95%, 282/282 turns in the right direction, ~20 FPS live; distance mode moved toward the user and stopped at the target size (0.47 vs 0.45); loop delay ≈ 0.5 s (command ≈ 256 ms, 2 samples).
+- 25.11 evening: FULL AUTOMATIC test run (one click): self take-off -> turn / follow (forward) / side tests -> self landing; 872 turn commands all in the right direction; user kept in view 33-55% (too slow at max yaw 0.2) -> next tuning.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
