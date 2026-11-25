@@ -108,7 +108,11 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
       *You should see:* the drone picture in a window, FPS lines, "Saved …" at the end.
       **If "Connection failed":** battery empty / drone off → swap battery. **If no picture:** DJI Fly must show the camera view.
 
-- [ ] **A3b Camera tilt (gimbal) discovery (10 min) · 10:40**
+- [x] **A3b Camera tilt (gimbal) — DONE 25.11 14:15 (Dareen + Claude):** the handle ( ^ = v ) LEFT of the live picture tilts the
+      camera; drag up = up, down = down; range **−90° … ~+50°**, **11.4 px per degree**; `1_CODE/gimbal.py` does it from the
+      laptop: `%GPU% gimbal.py to -30` → −30° exactly; `%GPU% gimbal.py level` → 0–1°. **Remove the gimbal guard first.**
+      Measured in DJI Fly's PORTRAIT screen — if the flight screen is landscape, re-check before using it.
+- [ ] ~~A3b discovery~~ (kept for reference) · 10:40
       On the phone: press and hold on the live picture ~1 s → **gimbal slider / arc**? Drag slowly up/down → does the picture
       tilt? If not: DJI Fly settings (⋯) → Control → Gimbal. **Tell Claude "ready"** with the slider visible → Claude takes ADB
       screenshots and writes `tilt_up / tilt_down / tilt_recentre`.
@@ -172,7 +176,7 @@ Laptop on battery (field case), shade. Battery at start: ____ %.
       **Tips:** say the clip name out loud at the start; ~3 clips per battery; redo a failed crossing at once.
 
 - [ ] **B2b FROM ABOVE — Gabi (≈ 40 min, ~1.5 batteries) · 14:15**
-      Drone **3.5–4 m high** (DJI Fly "H"), ~**4 m away**, camera **tilted down ~30–40°** (pilot drags the gimbal slider;
+      Drone **3.5–4 m high** (DJI Fly "H"), ~**4 m away**, camera **tilted down ~30–40°** (`%GPU% gimbal.py to -30` while hovering, or the pilot drags the handle;
       tilt ≈ atan((height − 1.7) / distance) = atan(2.3 / 4) ≈ 30°). Same start: 3 s alone facing the drone.
   - [ ] `cross_front_LR_above` · [ ] `turn_away_above` · [ ] `redshirt_side_above` · [ ] `continuous_60s_above`
       Height ____ m · tilt ____ ° · distance ____ m.
