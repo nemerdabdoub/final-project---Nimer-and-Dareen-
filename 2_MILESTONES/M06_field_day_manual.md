@@ -177,15 +177,17 @@ Laptop on battery (field case), shade. Battery at start: ____ %.
 
 - [ ] **B3 Command delay (25 min, 1 battery) · 15:10**
       Drone hovering 1.5 m, nobody near. Filmer films **laptop screen AND drone in one picture at 60 fps**.
-      `%GPU% command_delay_test.py` → **Y**, wait 3 s, **U**, wait 3 s … **10 presses** → Esc → land.
-      *You should see:* red flash → drone turns a bit later; "picture moved after … ms"; "Saved …_command_delay.csv".
+      Point the drone at a **STILL scene** (nobody walking). `%GPU% command_delay_test.py --auto 10` → it presses by itself
+      10 times, 3 s apart, right/left in turn (hands free; taps closer than 2.5 s are ignored anyway) → it ends by itself → land.
+      *You should see:* red flash → drone turns a bit later; "picture shifted −5 px after … ms" (right turn = minus, left = plus;
+      "UNEXPECTED direction" = yaw sign problem); "Saved …_command_delay.csv". Simulator check 25.11: 294 ms for a set 250 ms, direction 10/10.
       **Tip:** the phone must see the flash and the drone sharply; repeat once if not.
 
 - [ ] **B3b Yaw rate per stick — turning response (15 min, same battery) · 15:35**
       Hovering, still filming. 5 s between pulses:
-      `%GPU% command_delay_test.py --pulse 2 --deflect 0.2` → Y twice → Esc
-      `%GPU% command_delay_test.py --pulse 2 --deflect 0.3` → Y twice → Esc
-      `%GPU% command_delay_test.py --pulse 2 --deflect 0.4` → Y twice → Esc
+      `%GPU% command_delay_test.py --pulse 2 --deflect 0.2 --auto 2`
+      `%GPU% command_delay_test.py --pulse 2 --deflect 0.3 --auto 2`
+      `%GPU% command_delay_test.py --pulse 2 --deflect 0.4 --auto 2`  (each: one turn right, one left, then it ends)
       Degrees in 2 s (landmark / DJI Fly heading): 0.2 ____ ° · 0.3 ____ ° · 0.4 ____ °
       **Why:** a quadcopter turns only through the motors' small torque difference → yaw is its slowest axis; with our ~0.3 s
       delay this is what makes a turning loop wobble → these numbers set the controller gain.
