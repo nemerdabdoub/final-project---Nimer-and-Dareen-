@@ -179,6 +179,11 @@ def main():
     writer, rows, n, t_start = None, [], 0, time.perf_counter()
     counts = {"FOLLOWING": 0, "UNSURE": 0, "LOST": 0}
     fps, t_prev = 0.0, time.perf_counter()
+    try:                                                       # laptop battery in the log = clean, comparable speed results
+        import psutil
+    except ImportError:
+        psutil = None
+    batt, plugged = "", ""
     enrol = []                                                 # clothes-colour views of the user ("this is me")
     template = None
     want_enrol = False
@@ -244,8 +249,12 @@ def main():
             fps = 0.9 * fps + 0.1 / max(1e-3, now - t_prev) if n else 0.0
             t_prev = now
             counts[state] += 1
+            if psutil is not None and n % 30 == 0:
+                b = psutil.sensors_battery()
+                if b is not None:
+                    batt, plugged = b.percent, int(b.power_plugged)
             rows.append([round(t, 2), state, fol.user_id if box is not None else "", *(box or ["", "", "", ""]),
-                         yaw, fwd, round(fps, 1)])
+                         yaw, fwd, round(fps, 1), batt, plugged])
             tag = head + ("" if not a.colour else ("  + colour (enrolled)" if template is not None else
                                                    "  + colour: NOT enrolled - user alone in view, press E"))
             draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, tag, scores)
@@ -276,7 +285,8 @@ def main():
             writer.release()
     with open(OUT / f"{name}_follow.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["time_s", "state", "user_id", "x1", "y1", "x2", "y2", "yaw", "forward", "fps"])
+        w.writerow(["time_s", "state", "user_id", "x1", "y1", "x2", "y2", "yaw", "forward", "fps",
+                    "laptop_battery_pct", "plugged_in"])
         w.writerows(rows)
     tot = max(1, n)
     print(f"\n{n} frames: FOLLOWING {100 * counts['FOLLOWING'] / tot:.0f}%  UNSURE {100 * counts['UNSURE'] / tot:.0f}%  "

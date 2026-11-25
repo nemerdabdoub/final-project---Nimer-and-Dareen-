@@ -41,6 +41,26 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
 **Software (Dareen's laptop, terminal in `1_CODE`; use the GPU python:** `C:\Users\LOREN\venvs\gpu\Scripts\python.exe`, written `GPU` below)
 - [ ] scrcpy + ADB · `record_video.py` · `command_delay_test.py` · `m06_follow.py` · `m06_track.py` · `python -m pip install lap` done
 
+## Power rules (drone + laptop) — longer flights, clean numbers
+**Drone battery (Neo ≈ 18 min per battery in calm air; idle-on also drains it)**
+- [ ] Charge **the evening before / that morning**: DJI batteries can slowly discharge themselves to a storage level when
+      left for days, and the Neo drains while switched on even on the table (camera, video link, Wi-Fi to the phone, fan).
+- [ ] Do ALL laptop setup and script tests with the **drone OFF**; switch it on only when the script is ready.
+- [ ] Use **one battery for all table tests** (A3–A6b); keep the full ones for flying.
+- [ ] **Land between clips** instead of hovering while you talk; start the recording BEFORE take-off (`record_video.py` → T).
+- [ ] Plan each flight: 2–3 clips per battery, written in order (see B2). Hover/turning costs less than flying forward fast.
+- [ ] Keep batteries out of the sun and not cold (a bag in the shade); wind = shorter flights → film the important scenes first.
+- [ ] Land at **30%** (not later); recharge used batteries on the spot if a power point/power bank is there.
+
+**Laptop (clean, comparable speed results)**
+- [ ] Before measuring: close the browser, Teams, OneDrive/Google Drive sync, Windows Update (pause 1 day), the Project
+      updates panel (it git-pulls every 2 min).
+- [ ] Windows power mode **Best performance** also on battery; Lenovo **Fn+Q** = performance mode; screen brightness ~60%.
+- [ ] Laptop on a **hard surface in the shade**, lid open, vents free (it slows itself when hot: 4.6 → 2.6 GHz measured 24.11).
+- [ ] Python on the **NVIDIA GPU** (GPU env); give it 20 s warm-up before reading FPS.
+- [ ] Every speed number = **with its conditions**: plugged / battery %, model, GPU/CPU. `m06_follow.py` now logs the laptop
+      battery % and plugged-in state in every CSV row, so results stay comparable.
+
 ---
 
 ## TONIGHT — 20 min
