@@ -58,6 +58,8 @@ TARGET_H = 0.45         # wanted user height / frame height (~3-4 m away)
 H_DEAD = 0.08
 K_FWD = 1.0
 MAX_FWD = 0.15
+K_SIDE = 0.4            # SIDE mode: sideways stick per unit x error
+MAX_SIDE = 0.15         # SIDE mode: max sideways stick (slow)
 RATE = 0.05             # max change of a stick value per processed frame
 # --colour (Nimer's idea): user score = (turban + clothes colour similarity) / 2
 COMBO_MIN = 0.55        # combined score needed to (re)confirm a person as the user (first value; tune on crossing clips)
@@ -129,9 +131,9 @@ class Controller:
     turning and overshoots. The predictor subtracts the turn still 'in the pipe' (commands of the last DELAY s x yaw rate)
     from the seen error: x_pred = x_seen - (degrees turned in the last DELAY s) / (HFOV/2)."""
 
-    def __init__(self, max_yaw, use_forward, predict=False, delay=0.5, yaw_rate=90.0, hfov=118.0):
-        self.max_yaw, self.use_forward = max_yaw, use_forward
-        self.yaw = self.fwd = 0.0
+    def __init__(self, max_yaw, use_forward, predict=False, delay=0.5, yaw_rate=90.0, hfov=118.0, use_side=False):
+        self.max_yaw, self.use_forward, self.use_side = max_yaw, use_forward, use_side
+        self.yaw = self.fwd = self.side = 0.0       # side: + = slide right (SIDE mode, 25.11)
         self.predict, self.delay, self.yaw_rate, self.hfov = predict, delay, yaw_rate, hfov
         self.hist = []                                  # (time, yaw sent)
         self.t_last = None
@@ -150,20 +152,25 @@ class Controller:
 
     def step(self, box, state, W, H):
         now = time.perf_counter()
-        want_yaw = want_fwd = 0.0
+        want_yaw = want_fwd = want_side = 0.0
         if state == "FOLLOWING" and box is not None:
             x1, y1, x2, y2 = box
             x_err = ((x1 + x2) / 2 - W / 2) / (W / 2)
             if self.predict:
                 x_err -= self._in_pipe(now) / (self.hfov / 2)
             if abs(x_err) > X_DEAD:
-                want_yaw = clip(K_YAW * x_err, self.max_yaw)
+                if self.use_side:                   # SIDE mode: slide with her, turn only half as much
+                    want_side = clip(K_SIDE * x_err, MAX_SIDE)
+                    want_yaw = clip(0.5 * K_YAW * x_err, self.max_yaw)
+                else:
+                    want_yaw = clip(K_YAW * x_err, self.max_yaw)
             h_err = TARGET_H - (y2 - y1) / H
             if self.use_forward and abs(h_err) > H_DEAD:
                 want_fwd = clip(K_FWD * h_err, MAX_FWD)
         if state != "FOLLOWING":                    # safety: hover at once, no rate limit
-            self.yaw = self.fwd = 0.0
+            self.yaw = self.fwd = self.side = 0.0
         else:
+            self.side += clip(want_side - self.side, RATE)
             self.yaw += clip(want_yaw - self.yaw, RATE)
             self.fwd += clip(want_fwd - self.fwd, RATE)
         self.hist.append((now, self.yaw))
@@ -197,6 +204,7 @@ def main():
     src.add_argument("--video", help="recorded clip (offline)")
     src.add_argument("--live", action="store_true", help="live drone camera")
     ap.add_argument("--dry", action="store_true", help="live: show commands, send nothing")
+    ap.add_argument("--side", action="store_true", help="SIDE mode: also slide sideways with the user (test after FOLLOW TEST)")
     ap.add_argument("--forward", action="store_true", help="also send forward/back (distance)")
     ap.add_argument("--model", default="yolo11n.pt")
     ap.add_argument("--tracker", default="botsort")
@@ -216,7 +224,7 @@ def main():
 
     model = m05.load_model(a.model)
     m05.HEAD_PART = a.head                                     # used by the hybrid pick and the user score
-    fol, ctl = Follower(guarded=not a.old_switch), Controller(a.max_yaw, a.forward, a.predict, a.delay, a.yaw_rate)
+    fol, ctl = Follower(guarded=not a.old_switch), Controller(a.max_yaw, a.forward, a.predict, a.delay, a.yaw_rate, use_side=a.side)
     OUT.mkdir(parents=True, exist_ok=True)
     name = ((Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")) + ("_colour" if a.colour else "")
             + ("_old" if a.old_switch else "") + ("_pred" if a.predict else "") + (f"_head{int(a.head * 100)}" if a.head != HEAD_DEFAULT else ""))
@@ -235,6 +243,7 @@ def main():
         from drone_interface import Drone
         drone = Drone().__enter__()
     send = drone is not None and not a.dry
+    part, wsize = 0, None
     writer, rows, n, t_start = None, [], 0, time.perf_counter()
     counts = {"FOLLOWING": 0, "UNSURE": 0, "LOST": 0, "LOW_BATTERY": 0}
     real = drone is not None and hasattr(drone, "battery_percent") and not os.environ.get("DRONE_SIM")
@@ -321,7 +330,7 @@ def main():
             yaw, fwd = ctl.step(box, state, W, H)
             if send:
                 if state == "FOLLOWING":
-                    drone.send_speeds(forward=fwd, yaw_cw=yaw)
+                    drone.send_speeds(forward=fwd, right=ctl.side, yaw_cw=yaw)
                 else:
                     drone.stop()
             now = time.perf_counter()
@@ -337,8 +346,12 @@ def main():
             tag = head + ("" if not a.colour else ("  + colour (enrolled)" if template is not None else
                                                    "  + colour: NOT enrolled - user alone in view, press E"))
             draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, tag, scores)
+            if writer is not None and (W, H) != wsize:   # picture size changed (e.g. DJI Fly view switched): new file part
+                writer.release()
+                writer, part = None, part + 1
             if writer is None:
-                writer = cv2.VideoWriter(str(OUT / f"{name}_follow.mp4"), cv2.VideoWriter_fourcc(*"mp4v"),
+                wsize = (W, H)
+                writer = cv2.VideoWriter(str(OUT / f"{name}_follow{'' if part == 0 else f'_part{part}'}.mp4"), cv2.VideoWriter_fourcc(*"mp4v"),
                                          vfps if cap is not None else 15, (W, H))
             writer.write(fr)
             n += 1
