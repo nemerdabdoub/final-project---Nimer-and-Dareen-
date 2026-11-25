@@ -61,6 +61,14 @@ Tomorrow's step-by-step checklist: `M06_field_day_manual.md`. M06 plan after the
     - **Synthesis (synthetic data):** pasted turbans / red shirts / strollers / scooters, or simulator images, to grow training
       data for next semester's obstacle classes; always test on REAL hold-out clips.
 
+13. [ ] **Backlight / sun self-correction (Dareen's idea, 25.11)** — measured today: with a window BEHIND the user the turban
+    looked black → user score 0.30–0.48, never picked; with light on her face → USER ~0.9. Idea: the drone notices "person
+    found but turban score low + very bright background" (= backlight) and fixes it itself:
+    (a) **move around her** (orbit: yaw + sideways) until the sun is behind the drone, (b) **tilt the camera down**
+    (`gimbal.py`) so less sky is in the picture, (c) raise **exposure (EV)** in DJI Fly by ADB, (d) meanwhile keep the user
+    by the tracker + clothes colour (`--colour`). Measure: user score / % identified before vs after, on backlit clips.
+    **When:** once the closed loop does yaw + distance safely (end of M06) and sideways moves are added (M07 navigation).
+
 ## E. Measured facts to quote (with source)
 - Pipeline: video delay 256 ms (mirror hop 60 ms), detection 34 ms (11n CPU) → ~290 ms; command delay = field day.
 - Final M05 table (403 frames, hand labels): hybrid 11n 87.8% frames correct, wrong person 1.8% (3/164), 0 false alarms, 96.2% people found at following distance; 11m 89.6%, 1/164, 0.
