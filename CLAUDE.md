@@ -40,6 +40,9 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
   `1_CODE/m06_follow.py` = BoT-SORT + sticky ID + FOLLOWING/UNSURE/LOST + yaw/forward controller, `--colour` (E = "this is me");
   red shirt can steal the lock with turban only. Field-day checklist `2_MILESTONES/M06_field_day_manual.md`; all to-dos,
   research and deep dives: `2_MILESTONES/PROJECT_NOTEBOOK_todo_research_25.11.md`.
+- **25.11 field day:** first closed loop flown (yaw FOLLOWING 77-95%, all turns right way; distance stops at target), loop
+  delay ≈ 0.5 s, camera tilt coded (`gimbal.py`), adb fix `run_with_adb.py`. Results `2_MILESTONES/M06_field_day_25.11.md`.
+  Open: crossings / 60 s / from above clips, delay with 10 presses, live 11m check, prediction for the delay.
 - M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
   comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 

@@ -127,6 +127,7 @@ as a second characteristic that also gives the distance to the user.
 - 25.11 USER SCORE per box (Gabi: identity, not detection confidence): 403 frames, user median 0.85 vs others 0.000, ROC AUC 0.914, user top-scored in 147/152 frames; weak spot: far red-shirt passer-by scores 0.97-0.99 (red shirt inside the head area) and stole the lock in the follow demo -> main M06 risk; histogram `M05_data/results/user_score_25.11/`.
 - 25.11 Nimer's classic cues tested (live-style enrolment, 350 boxes): body colour shades AUC 0.846, body edges (HOG) 0.759, turban 0.928, **turban + colour 0.978** (CPU 0.13 ms/box); edges add nothing; optical flow = no identity cue (ego-motion / delay check only). Note `2_MILESTONES/M06_nimer_ideas_body_cues_motion_yaw_25.11.md`.
 - 25.11 Whole-pipeline speed, GPU: charger 11n 31.7 / 11m 28.8 FPS; battery 11n 23.1 / 11m 20.7 FPS (~25-30% slower); battery ~4% per 2.5 min heavy load. With the paired test -> YOLO11m chosen (pending live check).
+- 25.11 FIRST CLOSED LOOP FLOWN: yaw-only following FOLLOWING 77% / 95%, 282/282 turns in the right direction, ~20 FPS live; distance mode moved toward the user and stopped at the target size (0.47 vs 0.45); loop delay ≈ 0.5 s (command ≈ 256 ms, 2 samples).
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
