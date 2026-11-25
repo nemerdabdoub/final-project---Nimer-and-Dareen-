@@ -108,6 +108,8 @@ def main():
     ap.add_argument("--auto-advance", action="store_true", help="simulator test only: SPACE pressed by itself")
     ap.add_argument("--auto", action="store_true",
                     help="AUTOMATIC: 10 s countdown -> take off -> climb to ~1.5 m -> TURN -> FOLLOW -> SIDE -> land")
+    ap.add_argument("--low-battery", type=int, default=F.LOW_BATTERY, help="stop following at this drone battery %% (default 30)")
+    ap.add_argument("--only", default="", help='auto steps to run, e.g. "FOLLOW TEST,ORBIT TEST" (default: TURN, FOLLOW, SIDE, ORBIT)')
     ap.add_argument("--fast", type=float, default=1.0, help="simulator test only: multiply step times (0.2 = 5x shorter)")
     a = ap.parse_args()
     import lap  # noqa: F401
@@ -178,7 +180,8 @@ def main():
         running = False
         step = min(step + 1, len(STEPS) - 1)
 
-    AUTO_STEPS = [i for i, st in enumerate(STEPS) if st[0] in ("TURN TEST", "FOLLOW TEST", "SIDE TEST", "ORBIT TEST")]
+    wanted = [x.strip() for x in a.only.split(",") if x.strip()] or ["TURN TEST", "FOLLOW TEST", "SIDE TEST", "ORBIT TEST"]
+    AUTO_STEPS = [i for i, st in enumerate(STEPS) if st[0] in wanted]
     auto = {"phase": "countdown" if a.auto else None, "t": time.perf_counter(), "k": 0, "done": False}
 
     def auto_bg(fn, label):
@@ -217,7 +220,7 @@ def main():
                     pb = drone.battery_percent()
                     if pb is not None:
                         drone_batt = pb
-                        if pb <= F.LOW_BATTERY and not low_batt:
+                        if pb <= a.low_battery and not low_batt:
                             low_batt = True
                             print(f"  !!! DRONE BATTERY {pb}% - LAND NOW !!!")
                 except Exception:
