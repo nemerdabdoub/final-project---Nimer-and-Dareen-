@@ -19,3 +19,11 @@ Model: delay 0.5 s, turn 90 deg/s at full stick, lag 0.3 s, view 60 % of 118 deg
 not turning. Turn 0.3 vs 0.4 and the predictor change nothing; the search turn helps a little (0.28 -> 0.22).
 **Clothes learning lifts "user followed" 50 % -> 82.6 %.** Caveat: mostly one person in this clip (clothes cannot be confused);
 confirm in flight + on a crossing clip. Setting for the next flight: turn 0.3 + search + clothes learning (= AUTO_TESTS now).
+
+## Crossing clip (session 1 with the red-shirt passer-by, first 60 s), 26.11
+| clothes learning | user followed | off-centre | people in view |
+|---|---|---|---|
+| no | 62.7 % | 0.33 | 68 % |
+| yes | 64.7 % | 0.28 | 68 % |
+Small gain here (most of the missing % = nobody in view). "Followed" does not say WHO was followed: next step = compare the
+twin's locked box with the hand labels of session 1 (Nimer labelled it) to count wrong-person frames.
