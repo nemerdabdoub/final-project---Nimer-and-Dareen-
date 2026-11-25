@@ -29,6 +29,33 @@ from command_delay_test import small_grey, shift_px
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
 VIDEO_FPS = 25
+# real-time COMMANDS for the user: spoken by the laptop (Windows voice) + shown big. (seconds into the step, text)
+CUES = {
+    "TURN TEST": [(0, "Turn test. Stand still, face the drone."), (3, "Walk slowly to your left, in a curve."), (13, "Stop."),
+                  (16, "Walk slowly to your right, in a curve."), (26, "Stop."), (29, "Walk left again."), (36, "Stop.")],
+    "FOLLOW TEST": [(0, "Follow test. Walk slowly away from the drone."), (8, "Stop."), (11, "Walk slowly toward the drone."),
+                    (17, "Stop."), (20, "Walk diagonally to your left."), (28, "Stop."), (31, "Walk diagonally to your right."),
+                    (39, "Stop."), (42, "Walk anywhere, slowly."), (56, "Stop.")],
+    "SIDE TEST": [(0, "Side test. Step sideways to your left, slowly."), (8, "Stop."), (11, "Step sideways to your right."),
+                  (19, "Stop."), (22, "Left again."), (30, "Stop."), (33, "Right."), (38, "Stop.")],
+    "ORBIT TEST": [(0, "Orbit test. Stand still in the middle. Turn slowly to keep facing the drone."), (25, "Almost done.")],
+}
+
+
+def speak(text):
+    """say it out loud with the Windows voice, without blocking the program"""
+    try:
+        import subprocess
+        safe = text.replace("'", "")
+        subprocess.Popen(["powershell", "-NoProfile", "-Command",
+                          "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer)"
+                          f".Speak('{safe}')"], creationflags=0x08000000)
+    except Exception:
+        pass
+
+
+CLOSE_OTHER = 0.55       # SAFETY: another person taller than 55% of the picture = close -> no forward / sideways moves
+CLOSE_USER = 0.80        # SAFETY: the user taller than 80% of the picture = too close -> no forward / sideways moves
 ORBIT_SIDE = 0.15        # ORBIT TEST: steady sideways stick (circles around the user)
 
 # (name, mode, seconds, PILOT text, USER text)   mode: HOVER / TURN / FOLLOW / SIDE / ABOVE / DELAY / SPEED
@@ -100,6 +127,14 @@ def main():
     drone_batt, low_batt = "", False
     pulses, pend = [], None                    # automatic turns: [(t_start, yaw, seconds, label)], delay watch
     busy = {"txt": ""}
+    cue = {"said": set(), "text": "", "last_say": ""}
+
+    def say(text):
+        if text != cue["last_say"]:
+            cue["last_say"] = text
+            cue["text"] = text
+            speak(text)
+            events.append((round(time.perf_counter() - t0, 2), "SAY " + text))
 
     def bg(fn, label):
         def run():
@@ -127,6 +162,7 @@ def main():
         if mode == "SPEED":
             pulses = [(now + 2 + 5 * i, s if i % 2 == 0 else -s, 2.0, f"speed {s}") for i, s in
                       enumerate([0.2, 0.2, 0.3, 0.3, 0.4, 0.4])]
+        cue["said"] = set()
         events.append((round(now - t0, 2), f"START {name}"))
         print(f"\n=== {name} started ===")
 
@@ -193,6 +229,11 @@ def main():
                     side = ctl.side
                     if mode == "ORBIT" and state == "FOLLOWING":
                         side = ORBIT_SIDE                  # steady slide; yaw keeps her centred, fwd keeps the distance = circle
+                    near_other = any(b != box and (b[3] - b[1]) / H > CLOSE_OTHER for b in boxes)
+                    near_user = box is not None and (box[3] - box[1]) / H > CLOSE_USER
+                    if near_other or near_user:            # SAFETY: people close -> only turning on the spot is allowed
+                        fwd = side = 0.0
+                        say("Someone close. Holding position.")
                     if state == "FOLLOWING" or (state == "UNSURE" and yaw):
                         drone.send_speeds(forward=fwd if state == "FOLLOWING" else 0.0,
                                           right=side if state == "FOLLOWING" else 0.0, yaw_cw=yaw)
@@ -240,11 +281,21 @@ def main():
                 while written < int(t * VIDEO_FPS) + 1:
                     writer.write(fr)
                     written += 1
+            if running and name in CUES:                       # ---- real-time commands for the user
+                el_s = now - step_t0
+                for k_c, (at, txt) in enumerate(CUES[name]):
+                    if el_s >= at and k_c not in cue["said"]:
+                        cue["said"].add(k_c)
+                        say(txt)
+            if cue["text"]:
+                text_lines(fr, ["SAY: " + cue["text"]], 300, (0, 255, 0), 1.1)
             if auto["phase"]:                                  # ---- AUTOMATIC sequence
                 el = now - auto["t"]
                 ph = auto["phase"]
                 if ph == "countdown":
                     msg = f"AUTO: TAKE OFF IN {max(0, 10 - el):.0f} s  (Esc = cancel)"
+                    if el < 1:
+                        say("Taking off in ten seconds. Stand four meters in front of the drone.")
                     if el >= 10:
                         events.append((round(t, 2), "AUTO take off"))
                         auto_bg(lambda: drone.takeoff(log=print), "take off")
@@ -262,6 +313,8 @@ def main():
                 elif ph == "gap":
                     nxt = STEPS[AUTO_STEPS[auto["k"]]][0]
                     msg = f"AUTO: NEXT {nxt} in {max(0, 5 - el):.0f} s - user get ready"
+                    if el < 1:
+                        say(f"Next: {nxt}. Get ready.")
                     if el >= 5:
                         step = AUTO_STEPS[auto["k"]]
                         start_step(step)
@@ -275,6 +328,7 @@ def main():
                         else:
                             events.append((round(t, 2), "AUTO land"))
                             auto_bg(drone.land, "land")
+                            say("Landing. Stay back.")
                             auto.update(phase="landing", t=now)
                 elif ph == "landing":
                     msg = "AUTO: landing ..." if not auto["done"] else "AUTO: done - press Esc to save"
