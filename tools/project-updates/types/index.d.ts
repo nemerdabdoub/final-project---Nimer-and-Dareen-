@@ -82,7 +82,19 @@ export type Message = {
   text: string
 }
 
+export type ChecklistBlock = { name: string; done: number; total: number }
+
+export type Checklist = {
+  file: string            // repo-relative path
+  title: string
+  done: number
+  total: number
+  blocks: ChecklistBlock[]
+  next: string[]          // next open items, in order
+}
+
 export type Snapshot = {
+  checklist?: Checklist
   messages?: Message[]
   moodle?: Moodle
   mentor?: Mentor

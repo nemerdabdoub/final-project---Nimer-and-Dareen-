@@ -47,6 +47,9 @@ as a second characteristic that also gives the distance to the user.
 - M06 user tracking: due 7.12, not started.
 
 ## 3. Results and numbers
+- 25.11 `m06_follow.py` reproduced on a second laptop (69/10/20 %, 11.7 FPS CPU); without `--colour` the red-shirt passer-by
+  holds the USER lock 4-7 s (checked by eye). **BoT-SORT ReID (deep appearance) = no gain (5/1500 frames)**: tracker IDs were
+  right, the identity-selection rule is the weak point → enrolment embedding + learned score next (Nimer).
 - 24.11 M06 first try, YOLO11n + BoT-SORT on the same 313 session-1 frames: in view 83.5% correct / 7.2% wrong / 0 false
   picks - no gain over M05 because the colour rule overrides the track ID (red-shirt passer-by). Diagnosis → "sticky ID"
   rule to test next (Nimer).

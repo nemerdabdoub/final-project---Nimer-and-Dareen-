@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { ProcessRunResult, Register } from 'claude-code'
 
-import type { Activity, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Message, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
+import type { Activity, Checklist, Commit, FalseAlarm, LabReport, LocalFile, Mentor, Message, Moodle, MoodleEvent, PartnerFile, Snapshot } from '../types'
 import { registerImprove, startImprove } from './improve'
 
 const PANE = 'project-updates'
@@ -20,7 +20,8 @@ const FIND = [
 ].join(' ')
 let HOME = ''
 const REFRESH_MS = 5_000
-const FETCH_EVERY = 24 // fetch from GitHub every 24th refresh (2 minutes)
+const FETCH_EVERY = 24 // full auto pull/push every 24th refresh (2 minutes)
+const MSG_FETCH_EVERY = 3 // light fetch for messages every 3rd refresh (15 s)
 
 const empty: Snapshot = { commits: [], local: [], ahead: 0, behind: 0, checkedAt: '', falseAlarms: [] }
 const snapshot = atom({ plugin: 'project-updates', key: 'snapshot' } as const, empty, {
@@ -125,7 +126,7 @@ let moodleCache: Moodle | undefined
 function icalTime(v: string): number {
   const m = v.match(/(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z?))?/)
   if (!m) return 0
-  const [, y, mo, d, h = '23', mi = '59', s = '0', z] = m
+  const [, y = '0', mo = '1', d = '1', h = '23', mi = '59', s = '0', z] = m
   return z ? Date.UTC(+y, +mo - 1, +d, +h, +mi, +s) : new Date(+y, +mo - 1, +d, +h, +mi, +s).getTime()
 }
 
@@ -393,19 +394,73 @@ async function sendMessage($: any, text: string) {
   await refresh($)
 }
 
+// ---------------- live checklist (tick boxes of the current plan file) ----------------
+// Reads the first file that exists, every refresh (5 s): tick "- [ ]" -> "- [x]" in VS Code, save, the panel follows.
+const CHECKLISTS = ['2_MILESTONES/M06_field_day_manual.md', '2_MILESTONES/M06_plan_together_step_by_step.md']
+
+async function readChecklist($: any): Promise<Checklist | undefined> {
+  if (!REPO) return undefined
+  for (const rel of CHECKLISTS) {
+    let text = ''
+    try { text = String(await $.fs.read(`${REPO}\\${rel.replace(/\//g, '\\')}`)) } catch { continue }
+    const lines = text.split(/\r?\n/)
+    const title = (lines.find(l => /^\s*A?#\s/.test(l)) ?? rel).replace(/^\s*A?#\s*/, '').split('—')[0]!.trim()
+    const blocks: { name: string; done: number; total: number }[] = []
+    const next: string[] = []
+    let block = { name: 'Start', done: 0, total: 0 }
+    for (const l of lines) {
+      const h = l.match(/^##\s+(.+)/)
+      if (h) { if (block.total) blocks.push(block); block = { name: clip(h[1]!.replace(/\s*[—·-].*$/, '').trim(), 40), done: 0, total: 0 }; continue }
+      const m = l.match(/^\s*-\s\[( |x|X)\]\s+(.*)/)
+      if (!m) continue
+      block.total++
+      if (m[1] !== ' ') block.done++
+      else if (next.length < 5) next.push(clip(m[2]!.replace(/\*\*/g, '').replace(/`/g, ''), 95))
+    }
+    if (block.total) blocks.push(block)
+    const done = blocks.reduce((n, b) => n + b.done, 0)
+    const total = blocks.reduce((n, b) => n + b.total, 0)
+    if (total) return { file: rel, title, done, total, blocks, next }
+  }
+  return undefined
+}
+
+// Messages come from GitHub's copy (origin/main) AND the local folder (own messages not pushed yet), so they show
+// even when the local pull is blocked. Each file is read once and cached.
+const msgCache = new Map<string, Message>()
+
+function parseMsg(text: string): Message {
+  const [head = '', ...rest] = text.split(/\r?\n/)
+  const sp = head.indexOf(' ')
+  return { who: head.slice(0, sp), when: head.slice(sp + 1), text: rest.join(' ').trim() }
+}
+
 async function readMessages($: any): Promise<Message[]> {
   if (!REPO) return []
+  const names = new Set<string>()
+  try {
+    const t = await git($, ['ls-tree', '--name-only', 'origin/main', 'messages/'])
+    for (const p of t.stdout.split(/\r?\n/)) if (p.endsWith('.txt')) names.add(p.replace(/^messages\//, ''))
+  } catch { /* no remote copy */ }
   try {
     const all = (await $.fs.list(`${REPO}\\messages`)) as { name: string }[]
-    const names = all.map(e => e.name).filter(n => n.endsWith('.txt')).sort().reverse().slice(0, 6)
-    const out: Message[] = []
-    for (const n of names) {
-      const [head = '', ...rest] = String(await $.fs.read(`${REPO}\\messages\\${n}`)).split(/\r?\n/)
-      const sp = head.indexOf(' ')
-      out.push({ who: head.slice(0, sp), when: head.slice(sp + 1), text: rest.join(' ').trim() })
+    for (const e of all) if (e.name.endsWith('.txt')) names.add(e.name)
+  } catch { /* no local folder */ }
+  const newest = [...names].sort().reverse().slice(0, 6)
+  const out: Message[] = []
+  for (const n of newest) {
+    let m = msgCache.get(n)
+    if (!m) {
+      let text = ''
+      try { text = String(await $.fs.read(`${REPO}\\messages\\${n}`)) }
+      catch { text = (await git($, ['show', `origin/main:messages/${n}`])).stdout }
+      if (!text.trim()) continue
+      m = parseMsg(text)
+      msgCache.set(n, m)
     }
-    return out
-  } catch { return [] }
+    out.push(m)
+  }
+  return out
 }
 
 async function findTools($: any) {
@@ -425,10 +480,15 @@ async function refresh($: any) {
     try {
       await findTools($)
       if (!REPO) throw new Error('This folder is not a git repo: open the project folder in VS Code.')
-      if (tick++ % FETCH_EVERY === 0) await autoSync($)
+      if (tick % FETCH_EVERY === 0) await autoSync($)
+      // Messages fast lane: a light fetch every 15 s (3 refreshes) so a partner's message pops up within ~15 s.
+      // Faster is not safe: one fetch takes 1-2 s and GitHub rate-limits clients that ask many times a second.
+      else if (tick % MSG_FETCH_EVERY === 0) await git($, ['fetch', '--quiet', 'origin', 'main'])
+      tick++
       // Pop-ups: checks every 5 s (local, cheap), so a push made from this laptop pops up at once,
       // the partner's within 2 min (next fetch). A failed pop-up never breaks the panel.
       try { await notifyPushes($) } catch { /* ignore */ }
+      try { await writeDareenLog($) } catch { /* ignore */ }
 
       const log = await git($, [
         'log', 'origin/main', '-20', '--name-only',
@@ -470,6 +530,7 @@ async function refresh($: any) {
       const mentor = await readMentor($)
       const moodle = await readMoodle($)
       const messages = await readMessages($)
+      const checklist = await readChecklist($)
 
       // Files Dareen changed: every file in her pushed commits of the last 2 days, newest first.
       // Only pushed work is visible: unsaved or uncommitted files on her laptop never reach this one.
@@ -500,13 +561,58 @@ async function refresh($: any) {
       }
 
       await update($, snapshot, () => ({
-        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle, messages,
+        commits, local, ahead: ahead || 0, behind: behind || 0, falseAlarms, syncNote: [syncNote, popNote].filter(Boolean).join(' · '), dareenFiles, labs, mentor, moodle, messages, checklist,
         checkedAt: stamp(Date.now()),
       }))
     } catch (err) {
       await update($, snapshot, s => ({ ...s, error: String(err), checkedAt: stamp(Date.now()) }))
     }
   }
+
+// ---------------- /updfd: live chronological log of Dareen's pushes (Markdown, outside the repo) ----------------
+// %USERPROFILE%\.claude\dareen_updates_log.md, rewritten whenever GitHub has a new commit (checked every 5 s,
+// fetched every 2 min). Newest first, grouped by day, with the files each push changed and GitHub links.
+let logHead = ''
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+function logPath() { return HOME ? `${HOME}\\.claude\\dareen_updates_log.md` : '' }
+
+async function writeDareenLog($: any, force = false) {
+  const out = logPath()
+  if (!out || !REPO) return
+  const head = (await git($, ['rev-parse', 'origin/main'])).stdout.trim()
+  if (!force && head && head === logHead) return
+  const r = await git($, ['log', 'origin/main', '--author=Dareen', '-n', '300', '--name-only',
+    '--format=%x1e%h%x1f%at%x1f%s%x1f%b'])
+  const lines: string[] = [
+    '# Dareen – live updates log',
+    '',
+    `_Regenerated ${stamp(Date.now())} · newest first · from GitHub (origin/main) · open with /updfd · auto-updates on every new push_`,
+    '',
+  ]
+  let day = ''
+  let count = 0
+  for (const block of r.stdout.split('\x1e')) {
+    if (!block.trim()) continue
+    const [head2 = '', ...rest] = block.split('\n')
+    const [sha = '', at = '0', subject = '', body = ''] = head2.split('\x1f')
+    const d = new Date(Number(at) * 1000)
+    const dKey = `${two(d.getDate())}.${two(d.getMonth() + 1)}.${d.getFullYear()} (${DAYS[d.getDay()]})`
+    if (dKey !== day) { day = dKey; lines.push('', `## ${dKey}`, '') }
+    const link = GITHUB ? ` · [${sha}](${GITHUB}/commit/${sha})` : ` · ${sha}`
+    lines.push(`- **${two(d.getHours())}:${two(d.getMinutes())}** ${subject}${link}`)
+    if (body.trim()) lines.push(`  - ${clip(body.trim().replace(/\s+/g, ' '), 300)}`)
+    const files = rest.map(f => f.trim()).filter(Boolean)
+    if (files.length) {
+      const shown = files.slice(0, 8).map(f => (GITHUB ? `[${f}](${GITHUB}/blob/main/${encodeURI(f)})` : `\`${f}\``))
+      lines.push(`  - files: ${shown.join(', ')}${files.length > 8 ? ` … +${files.length - 8} more` : ''}`)
+    }
+    count++
+  }
+  if (count === 0) lines.push('_No pushes by Dareen found on GitHub._')
+  await $.fs.write(out, lines.join('\n') + '\n')
+  logHead = head
+}
 
 function openFile($: any, path: string) {
   return $.process.run(['cmd', '/c', CODE, '-r', `${REPO}\\${path.replace(/\//g, '\\')}`], {
@@ -522,6 +628,10 @@ export const register: Register = (on, options) => {
     await $.command.register({
       name: 'updates',
       description: 'Show the live project updates pane (pushes, changed files)',
+    })
+    await $.command.register({
+      name: 'updfd',
+      description: "Open Dareen's live updates log (.md, chronological, rewrites itself on every push)",
     })
     void refresh($)
     $.clock.every(REFRESH_MS, () => refresh($))
@@ -557,6 +667,16 @@ export const register: Register = (on, options) => {
     return r
   })
 
+  on('command.run', { command: 'updfd' }, async $ => {
+    await findTools($)
+    await git($, ['fetch', '--quiet'])
+    await writeDareenLog($, true)
+    const p = logPath()
+    if (!p) return { text: 'Could not find your user folder for the log.' }
+    await $.process.run(['cmd', '/c', CODE, '-r', p], { timeoutMs: 20_000 })
+    return { text: `Dareen's live log opened: ${p} (newest first; rewrites itself on every new push).` }
+  })
+
   on('command.run', { command: 'updates' }, async $ => {
     await refresh($)
     await $.ui.open({ id: PANE, title: 'Project updates' })
@@ -572,6 +692,26 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="column" gap={1}>
+        {s.checklist && (() => {
+          const c = s.checklist!
+          const pct = Math.round((100 * c.done) / c.total)
+          const bar = '█'.repeat(Math.round(pct / 5)) + '░'.repeat(20 - Math.round(pct / 5))
+          return (
+            <Box flexDirection="column">
+              <Text bold>✅ Checklist <Text dimColor>· {c.title}</Text></Text>
+              <Text color={pct === 100 ? 'success' : undefined}>{bar} {c.done}/{c.total} ({pct}%)</Text>
+              {c.blocks.map((b, i) => (
+                <Text key={'cb:' + i} dimColor={b.done === b.total}>
+                  {b.done === b.total ? '✓' : b.done > 0 ? '◐' : '○'} {b.name} <Text dimColor>{b.done}/{b.total}</Text>
+                </Text>
+              ))}
+              {c.next.length > 0 && <Text>Next:</Text>}
+              {c.next.map((t, i) => <Text key={'cn:' + i}>  {i === 0 ? '→' : '·'} {t}</Text>)}
+              <Button key="checklist-open" onPress={() => openFile($, c.file)}>open the checklist (tick boxes there, save)</Button>
+            </Box>
+          )
+        })()}
+
         {(() => {
           // Sent & received: the last pushes on GitHub, yours = sent to the partner (pop-up on their laptop),
           // theirs = received (pop-up here). Same list both laptops see, from origin/main.
