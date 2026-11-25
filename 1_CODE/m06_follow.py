@@ -17,6 +17,10 @@ Three ways to run (from 1_CODE; GPU env recommended):
   python m06_follow.py --live                       LIVE, sends YAW only (drone turns to keep the user centred)
   python m06_follow.py --live --forward             LIVE, yaw + forward/back (only after yaw-only worked)
   options: --model yolo11m.pt (default yolo11n.pt)  --tracker botsort  --max-yaw 0.25  --seconds 60
+  --colour   add the clothes colour to the user score (Nimer's idea; AUC 0.928 -> 0.978 on our frames).
+             LIVE: the user stands ALONE, close, facing the drone -> press E (a few times) = "this is me" (enrolment).
+             OFFLINE: enrols by itself on the first 5 frames with a clear turban (>= 0.8) and only one person.
+             Until enrolled it works like without --colour (turban only).
 
 SAFETY (live): drone already hovering at 1.5-2 m (take off by hand / T in record_video.py), phone in hand, DJI Fly in
 Manual Control, open space. Esc in the window or Ctrl+C = sticks released (hover). Take over with the phone any time.
@@ -29,10 +33,11 @@ import time
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import m05                                    # turban colour, head check, hand filter, CONF
-from user_score import user_scores             # identity score per box: is this OUR user? (0..1)
+from user_score import user_scores, body_crop, colour_feat, colour_similarity   # identity score per box (0..1)
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
 SWITCH_FRAMES = 3       # turban on another ID this many frames in a row (and not on ours) -> switch
@@ -47,6 +52,10 @@ H_DEAD = 0.08
 K_FWD = 1.0
 MAX_FWD = 0.15
 RATE = 0.05             # max change of a stick value per processed frame
+# --colour (Nimer's idea): user score = (turban + clothes colour similarity) / 2
+COMBO_MIN = 0.55        # combined score needed to (re)confirm a person as the user (first value; tune on crossing clips)
+ENROL_N = 5             # template = mean of up to 5 enrolment views
+ENROL_AUTO_MIN = 0.8    # offline auto-enrolment: turban score >= 0.8 AND the only person in the picture
 
 
 def clip(v, m):
@@ -142,6 +151,7 @@ def main():
     ap.add_argument("--tracker", default="botsort")
     ap.add_argument("--max-yaw", type=float, default=0.25)
     ap.add_argument("--seconds", type=float, default=0, help="stop after N s (0 = until Esc / end)")
+    ap.add_argument("--colour", action="store_true", help="user score = turban + clothes colour (enrol with E)")
     a = ap.parse_args()
     try:
         import lap  # noqa: F401
@@ -151,7 +161,7 @@ def main():
     model = m05.load_model(a.model)
     fol, ctl = Follower(), Controller(a.max_yaw, a.forward)
     OUT.mkdir(parents=True, exist_ok=True)
-    name = Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")
+    name = (Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")) + ("_colour" if a.colour else "")
     mode = "OFFLINE" if a.video else ("LIVE DRY (nothing sent)" if a.dry else "LIVE - SENDING " +
                                       ("yaw+forward" if a.forward else "yaw only"))
     head = f"M06 follow  {a.model.replace('.pt', '')} + {a.tracker} + turban   {mode}"
@@ -169,6 +179,29 @@ def main():
     writer, rows, n, t_start = None, [], 0, time.perf_counter()
     counts = {"FOLLOWING": 0, "UNSURE": 0, "LOST": 0}
     fps, t_prev = 0.0, time.perf_counter()
+    enrol = []                                                 # clothes-colour views of the user ("this is me")
+    template = None
+    want_enrol = False
+
+    def enrol_view(fr, boxes, tscores, need_alone):
+        """add one view of the user's clothes: the only person, or the clearest turban (>= 0.5)"""
+        nonlocal template
+        if not boxes:
+            return False
+        k = max(range(len(boxes)), key=lambda j: tscores[j])
+        if need_alone and (len(boxes) != 1 or tscores[k] < ENROL_AUTO_MIN):
+            return False
+        if not need_alone and len(boxes) > 1 and tscores[k] < 0.5:
+            return False
+        c = body_crop(fr, boxes[k])
+        if c is None:
+            return False
+        enrol.append(colour_feat(c))
+        del enrol[:-ENROL_N]
+        template = np.mean(enrol, 0).astype(np.float32)
+        print(f"  enrolled view {len(enrol)} (t = {t:.1f} s)")
+        return True
+
     try:
         while True:
             if cap is not None:
@@ -191,7 +224,15 @@ def main():
             ids = r.boxes.id.cpu().numpy().astype(int).tolist() if r.boxes.id is not None else [None] * len(boxes)
             mask = m05.turban_mask(fr)
             colour_box = m05.hybrid_user(mask, boxes)
-            scores = user_scores(mask, boxes)
+            scores = user_scores(mask, boxes)                  # turban score per box
+            if a.colour:
+                if want_enrol or (cap is not None and len(enrol) < ENROL_N):
+                    enrol_view(fr, boxes, scores, need_alone=cap is not None)
+                    want_enrol = False
+                if template is not None:                       # combined score decides who the user is
+                    scores = [(ts + colour_similarity(template, fr, b)) / 2 for ts, b in zip(scores, boxes)]
+                    k = max(range(len(boxes)), key=lambda j: scores[j]) if boxes else None
+                    colour_box = boxes[k] if k is not None and scores[k] >= COMBO_MIN else None
             box, state = fol.update(t, boxes, ids, colour_box)
             yaw, fwd = ctl.step(box, state, W, H)
             if send:
@@ -205,7 +246,9 @@ def main():
             counts[state] += 1
             rows.append([round(t, 2), state, fol.user_id if box is not None else "", *(box or ["", "", "", ""]),
                          yaw, fwd, round(fps, 1)])
-            draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, head, scores)
+            tag = head + ("" if not a.colour else ("  + colour (enrolled)" if template is not None else
+                                                   "  + colour: NOT enrolled - user alone in view, press E"))
+            draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, tag, scores)
             if writer is None:
                 writer = cv2.VideoWriter(str(OUT / f"{name}_follow.mp4"), cv2.VideoWriter_fourcc(*"mp4v"),
                                          vfps if cap is not None else 15, (W, H))
@@ -213,8 +256,11 @@ def main():
             n += 1
             if drone is not None:
                 cv2.imshow("M06 follow (Esc = hover + stop)", fr)
-                if cv2.waitKey(1) & 0xFF == 27:
+                key = cv2.waitKey(1) & 0xFF
+                if key == 27:
                     break
+                if key in (ord("e"), ord("E")) and a.colour:
+                    want_enrol = True
             elif n % 200 == 0:
                 print(f"  {t:5.0f} s done ...")
     except KeyboardInterrupt:

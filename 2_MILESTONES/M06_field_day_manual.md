@@ -22,6 +22,10 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
 - [x] **User score per box** (`user_score.py`, Gabi's request: identity score, not YOLO confidence): on 403 frames the user's
       median 0.85 vs others 0.000, **ROC AUC 0.914**; BUT a far red shirt scores 0.97-0.99 (red shirt in the "head" area).
       The demo boxes in `m06_follow.py` now show this score.
+- [x] **`--colour` option in `m06_follow.py`** (Nimer's idea): user score = (turban + clothes colour) / 2 after a
+      "this is me" **enrolment** (live: user alone, close, facing the drone → press **E** 3 times; offline: automatic on the
+      first clear turban frames with one person). Offline, 60 s of session 1: the red shirt **no longer steals the lock**
+      (user 0.71, red shirt 0.64 - before: red shirt "USER 0.99"); ID switches 10 → 5. Margin still small → test tomorrow.
 - [x] **`command_delay_test.py`**: red flash + stopwatch on every command; also measures the loop delay by itself.
 - [ ] Nothing of the above has touched the real drone yet → that is today.
 
@@ -48,7 +52,9 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
 - [ ] **A1 Pull + aim (10 min)** — `git pull`; read "Why" and "Ready before the day" together; agree the pass lines.
 - [ ] **A2 Look at the follow script offline (20 min)** — open `3_EVIDENCE/m06_tracking/143404_recording_session1_follow.mp4`.
       Check by eye: green box = always the user? Does the red-shirt man ever get the USER box? Do UNSURE/LOST appear when
-      she is really hidden? Write 3 lines. *You should see:* the user box stays on her through the red-shirt moment.
+      she is really hidden? Write 3 lines.
+      Then open `143404_recording_session1_colour_follow.mp4` (same clip, **--colour**) and compare at ~10 s:
+      without colour the red shirt is "USER 0.99"; with colour the user keeps the USER box. *You should see:* that difference.
 - [ ] **A3 Connect the drone indoors (15 min)** — drone on the table (not flying), S10 by USB, DJI Fly on the **camera view**,
       Manual Control. `python connection_test.py` → *you should see* the drone picture on the laptop.
 - [ ] **A4 Recording (20 min)** — `python record_video.py 0.5 indoor_test` → "Saved: … N frames", the .mp4 plays.
@@ -58,6 +64,10 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
       turban: `GPU m06_follow.py --live --dry`. Walk left / right / turn away / leave the picture.
       *You should see:* FOLLOWING + yaw sign follows you (you go right → yaw +), UNSURE then LOST when you leave,
       yaw back to 0 at once. Note the FPS for 11n: ____ ; then `--model yolo11m.pt`: FPS ____ (on charger).
+- [ ] **A6b Colour enrolment, live DRY (15 min)** — `GPU m06_follow.py --live --dry --colour`. Top line says "NOT enrolled".
+      The user stands **alone, 2–3 m, facing the camera** → press **E** 3 times → top line "enrolled", terminal "enrolled view 3".
+      Then the second person walks in front (non-red top): *you should see* the user's tag stay clearly higher (e.g. 0.8 vs 0.3)
+      and the USER box stay on her. FPS with colour: ____ (should be ~same as without).
 - [ ] **A7 Speed on charger, long run (runs while you pack, 10 min)** — `GPU m06_follow.py --video ..\3_EVIDENCE\2026-11-22\143404_recording_session1.mp4 --model yolo11m.pt --seconds 600`
       → FPS at the end of the run in the CSV (last rows): ____ .
 - [ ] **A8 T / L keys (5 min)** — only with the flight checklist; if unsure, take off and land by hand today.
@@ -70,7 +80,9 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
 
 - [ ] **B1 Setup (15 min)** — marks at 3 m / 6 m; 30 s hover test with `python record_video.py 0.5 field_test`.
 - [ ] **B2 Film the crossing scenes = the M06 test set, never tuned on (≈ 90 min, ~3 batteries)**
-      For each: `python record_video.py 0 <name>` → take off → film 60–90 s → land → Esc. Most important first:
+      For each: `python record_video.py 0 <name>` → take off → film 60–90 s → land → Esc.
+      **Start EVERY clip with 3 s of the user ALONE, close, facing the drone** (= the enrolment view for `--colour` later).
+      Most important first:
   - [ ] `cross_front_LR` — passer-by walks **in front** of the user left → right (3 times)
   - [ ] `cross_front_RL` — in front, right → left (3 times)
   - [ ] `redshirt_side` — red shirt walks **next to** the user 10 s, then away (the M05 failure)
@@ -85,12 +97,16 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
 - [ ] **B4 Live DRY on battery = the speed test on battery (20 min, 1 battery)** — drone hovering, user in front:
       `GPU m06_follow.py --live --dry --seconds 300` (11n), then `--model yolo11m.pt --seconds 300`.
       FPS 11n ____ , 11m ____ ; laptop battery ____ % → **decide the model: 11m if >= 15 FPS, else 11n** → chosen: ____
+      Then 2 min with `--colour` (press E with the user alone first): FPS ____ .
 - [ ] **B5 FIRST CLOSED LOOP: yaw only (30 min, 1 battery)** — drone hovering 1.5 m, user 4 m in front, nobody else near.
       `GPU m06_follow.py --live --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly in an arc left and right.
       *You should see:* the drone **turns** to keep her centred, stops turning in the middle (dead band), hovers when she
       hides (UNSURE / LOST). Esc at once if it turns the wrong way or keeps spinning. Repeat with a passer-by crossing
       in a **NON-red** top first. **No red shirt in the picture during closed-loop tests**: the 25.11 user-score check showed a
       far red shirt can score 0.99 and steal the lock (`M05_data/results/user_score_25.11/`). Red shirt = filming only (B2).
+- [ ] **B5b Yaw only WITH colour (20 min) — only if B5 was calm and correct** — user alone in view, press **E** 3 times, then
+      `GPU m06_follow.py --live --colour --model <chosen> --max-yaw 0.2 --seconds 60`; the passer-by (non-red) crosses
+      in front twice. *You should see:* the drone keeps turning to the USER, not to the passer-by. Write: kept / lost / swapped.
 - [ ] **B6 Yaw + distance (30 min, 1 battery) — ONLY if B5 was calm and correct** —
       `GPU m06_follow.py --live --forward --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly away / closer,
       2–3 m of space all around. *You should see:* the drone follows slowly (max stick 0.15), stops at ~3–4 m.
@@ -104,12 +120,14 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
 - [ ] **C2 Note (20 min)** — `2_MILESTONES/M06_field_day_<date>.md`: clips, delay numbers, FPS on charger vs battery,
       model chosen + why, what the closed loop did (worked / problems), safety events.
 - [ ] **C3 First look at a crossing (25 min)** — `GPU m06_follow.py --video ..\3_EVIDENCE\<today>\<…cross_front_LR>.mp4`
-      → watch: did the passer-by ever get the USER box? Count ID switches.
+      and again with `--colour` → compare the two videos: did the passer-by ever get the USER box? ID switches (printed at
+      the end): turban only ____ vs with colour ____ . Do the same on `redshirt_side`.
 - [ ] **C4 Push (10 min)** — note + UPDATES + presentation-log lines (model decision, delay, first closed loop).
 
 ## End of the day — you should have
 - [ ] M05 closed: model chosen with a paired test + live FPS on battery
-- [ ] Sticky ID + states + controller tested live: dry → yaw only → (yaw + distance)
+- [ ] Sticky ID + states + controller tested live: dry → yaw only → yaw with colour → (yaw + distance)
+- [ ] Turban only vs turban + colour compared on the new crossing clips (first look)
 - [ ] 8+ crossing clips + 60 s clip (M06 hold-out) · command-delay CSV + 60 fps video
 **Total:** A 1 h 45 + travel + B 4 h 30 + C 1 h 15 ≈ **7.5 h** (+ travel).
 

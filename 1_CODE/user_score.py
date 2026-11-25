@@ -55,3 +55,29 @@ def user_score(mask, box):
 
 def user_scores(mask, boxes):
     return [user_score(mask, b) for b in boxes]
+
+
+# ---- body colour (Nimer's idea, 25.11): clothes colour shades compared to the user's enrolled template ----
+def body_crop(img, box):
+    """the body below the head area (top 35% = head is skipped)"""
+    x1, y1, x2, y2 = [int(v) for v in box]
+    yb = y1 + int((y2 - y1) * m05.HEAD_PART)
+    c = img[max(0, yb):max(yb + 1, y2), max(0, x1):max(x1 + 1, x2)]
+    return c if c.size else None
+
+
+def colour_feat(crop):
+    """hue x saturation histogram (18 x 8) of the clothes, normalised"""
+    import cv2
+    hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+    h = cv2.calcHist([hsv], [0, 1], None, [18, 8], [0, 180, 0, 256])
+    return cv2.normalize(h, h).flatten()
+
+
+def colour_similarity(template, img, box):
+    """0..1: 1 = same clothes colours as the enrolled user (1 - Bhattacharyya distance)"""
+    import cv2
+    c = body_crop(img, box)
+    if template is None or c is None:
+        return 0.0
+    return float(1.0 - cv2.compareHist(template, colour_feat(c), cv2.HISTCMP_BHATTACHARYYA))
