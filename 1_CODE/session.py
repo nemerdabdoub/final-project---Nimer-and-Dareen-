@@ -24,7 +24,8 @@ import cv2
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import m05
 import m06_follow as F
-from user_score import user_scores
+from user_score import user_scores, body_crop, colour_feat, colour_similarity
+import numpy as np
 from command_delay_test import small_grey, shift_px
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
@@ -56,6 +57,8 @@ def speak(text):
 
 CLOSE_OTHER = 0.55       # SAFETY: another person taller than 55% of the picture = close -> no forward / sideways moves
 CLOSE_USER = 0.80        # SAFETY: the user taller than 80% of the picture = too close -> no forward / sideways moves
+COLOUR_MIN = 0.45        # with an enrolled user: (turban + clothes colour)/2 >= this = the user (clothes alone can pass when
+                         # the turban colour is not seen, e.g. under yellow indoor lamps - the 25.11 evening problem)
 ORBIT_SIDE = 0.15        # ORBIT TEST: steady sideways stick (circles around the user)
 
 # (name, mode, seconds, PILOT text, USER text)   mode: HOVER / TURN / FOLLOW / SIDE / ABOVE / DELAY / SPEED
@@ -129,6 +132,7 @@ def main():
     drone_batt, low_batt = "", False
     pulses, pend = [], None                    # automatic turns: [(t_start, yaw, seconds, label)], delay watch
     busy = {"txt": ""}
+    enrol, tmpl, want_enrol, last_e = [], {"t": None}, {"on": False}, [0.0]
     cue = {"said": set(), "text": "", "last_say": ""}
 
     def say(text):
@@ -214,7 +218,25 @@ def main():
             ids = r.boxes.id.cpu().numpy().astype(int).tolist() if r.boxes.id is not None else [None] * len(boxes)
             mask = m05.turban_mask(fr)
             scores = user_scores(mask, boxes)
-            box, state = fol.update(t, boxes, ids, m05.hybrid_user(mask, boxes), scores)
+            colour_box = m05.hybrid_user(mask, boxes)
+            if want_enrol["on"] and boxes:                     # "this is me": the only person (or the clearest turban)
+                k_e = 0 if len(boxes) == 1 else max(range(len(boxes)), key=lambda j: scores[j])
+                if len(boxes) == 1 or scores[k_e] >= 0.5:
+                    c = body_crop(fr, boxes[k_e])
+                    if c is not None:
+                        enrol.append(colour_feat(c))
+                        del enrol[:-5]
+                        tmpl["t"] = np.mean(enrol, 0).astype(np.float32)
+                        if ids[k_e] is not None:
+                            fol.user_id = ids[k_e]             # lock on this person right away
+                        events.append((round(t, 2), f"ENROL view {len(enrol)} id {ids[k_e]}"))
+                        print(f"  enrolled view {len(enrol)} (id {ids[k_e]})")
+                want_enrol["on"] = False
+            if tmpl["t"] is not None and boxes:                # combined score decides who the user is
+                scores = [(ts + colour_similarity(tmpl["t"], fr, b)) / 2 for ts, b in zip(scores, boxes)]
+                k_b = max(range(len(boxes)), key=lambda j: scores[j])
+                colour_box = boxes[k_b] if scores[k_b] >= COLOUR_MIN else None
+            box, state = fol.update(t, boxes, ids, colour_box, scores)
             if real and n % 30 == 0:
                 try:
                     pb = drone.battery_percent()
@@ -312,6 +334,14 @@ def main():
                     drone.send_speeds(up=0.3)
                     if el >= 1.5:
                         drone.stop()
+                        say("Stand alone in front of the drone, face it, stay still.")
+                        auto.update(phase="enrol", t=now)
+                elif ph == "enrol":
+                    msg = f"AUTO: learning the user's clothes ... {max(0, 6 - el):.0f} s (user alone, facing the drone)"
+                    if el >= 2 and int(el * 2) != int((el - 0.06) * 2):
+                        want_enrol["on"] = True                # one view every ~0.5 s
+                    if el >= 6:
+                        say("Got you." if enrol else "Could not learn you. Using the turban only.")
                         auto.update(phase="gap", t=now)
                 elif ph == "gap":
                     nxt = STEPS[AUTO_STEPS[auto["k"]]][0]
@@ -352,6 +382,8 @@ def main():
                         step_t0 = now
                     else:
                         start_step(step)
+            if key in (ord("e"), ord("E")) and now - last_e[0] > 1.0:
+                want_enrol["on"], last_e[0] = True, now
             if key in (ord("t"), ord("T")):
                 bg(lambda: drone.takeoff(log=print), "take off")
             if key in (ord("l"), ord("L")):
