@@ -346,6 +346,10 @@ def main():
             tag = head + ("" if not a.colour else ("  + colour (enrolled)" if template is not None else
                                                    "  + colour: NOT enrolled - user alone in view, press E"))
             draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, tag, scores)
+            if a.seconds:                                       # big countdown so everyone sees when the test ends
+                left = max(0, a.seconds - t)
+                cv2.putText(fr, f"{left:4.0f} s left", (fr.shape[1] - 330, 110), cv2.FONT_HERSHEY_SIMPLEX, 1.6, (0, 0, 0), 8)
+                cv2.putText(fr, f"{left:4.0f} s left", (fr.shape[1] - 330, 110), cv2.FONT_HERSHEY_SIMPLEX, 1.6, (0, 255, 255), 3)
             if writer is not None and (W, H) != wsize:   # picture size changed (e.g. DJI Fly view switched): new file part
                 writer.release()
                 writer, part = None, part + 1
