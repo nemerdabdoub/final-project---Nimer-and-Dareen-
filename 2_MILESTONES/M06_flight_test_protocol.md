@@ -1,5 +1,14 @@
 # Flight tests for the tracking milestone (due 7.12) — one test at a time, in order
 
+## ALL IN ONE GO (Nimer): `session.py`
+```powershell
+cd "C:\Users\LOREN\Desktop\final-project---Nimer-and-Dareen-\1_CODE"; & 'C:\Users\LOREN\venvs\gpu\Scripts\python.exe' run_with_adb.py session.py
+```
+One window, one video, one log. The screen says what the PILOT and the USER do. **SPACE = start the step / next step**
+(nothing moves before SPACE), **Esc = end + save**, T = take off, L = land.
+Order: READY → STOP → TURN → FOLLOW → SIDE → FROM ABOVE → DELAY → TURN SPEED → END.
+Simulator check 25.11: all steps ran; delay test ~300 ms for a set 250 ms.
+
 ## SIMPLE NAMES (use these)
 | # | name | what happens |
 |---|---|---|
