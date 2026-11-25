@@ -1,0 +1,2 @@
+Dareen 25.11 04:46
+Tomorrow = M05 leftovers -> controller in one day. Open 2_MILESTONES/M06_field_day_manual.md (tick boxes, ~7.5 h). New tonight: paired test 11m vs 11n p=0.016; m06_follow.py (sticky ID + states + controller, --colour = turban + clothes colour, E = this is me); user score per box (AUC 0.914, red shirt = main risk); your colour idea: turban+colour AUC 0.978; power rules; camera tilt check (A3b). PLEASE: charge all batteries tonight + bring a passer-by (red shirt for filming only).
