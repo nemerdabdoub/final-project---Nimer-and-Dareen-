@@ -1,4 +1,21 @@
-# M06 flight test protocol — one test at a time, in order (written 25.11 evening)
+# Flight tests for the tracking milestone (due 7.12) — one test at a time, in order
+
+## SIMPLE NAMES (use these)
+| # | name | what happens |
+|---|---|---|
+| 1 | **STOP TEST** | emergency land button (FORCE_LAND.bat) — table part done ✓ 25.11; real part = while hovering |
+| 2 | **TABLE TEST** | drone on the table, follow program watches, sends nothing — done ✓ 25.11 |
+| 3 | **TURN TEST** | drone in the air only TURNS to face the user |
+| 4 | **DISTANCE TEST** | user walks away / comes back, drone moves forward / back |
+| 5 | **FOLLOW TEST** | turn + distance together: drone follows the user anywhere, 60 s |
+| 6 | **SIDE TEST** | follow + sideways sliding (new mode, after FOLLOW TEST works) |
+| 7 | **CROSS TEST** | follow while someone walks in front of the user |
+| 8 | **DELAY TEST** | drone turns by itself 10 times, we measure the delay |
+| 9 | **RECORD** | just film clips for later (crossings, turn away, from above) |
+
+---
+(details below: T0 = STOP TEST, T1 = TABLE TEST, T2 = TURN TEST, T3 = DISTANCE TEST, T4 = FOLLOW TEST, T5 = CROSS TEST, T6 = DELAY TEST, T7 = RECORD)
+
 
 **Why this order:** each test adds ONE new thing, so if something goes wrong we know what caused it. Never skip ahead.
 **What the drone can do today:** TURN (yaw) to keep the user centred + move FORWARD / BACK to keep the distance (`--forward`).
