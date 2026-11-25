@@ -1,0 +1,2 @@
+Dareen 25.11 19:23
+Evening update (read UPDATES 19:30): AUTO_TESTS.bat = self take-off + TURN/FOLLOW/SIDE/ORBIT + self landing, laptop speaks the user commands, people-close safety. Fix for "person not user": drone learns the user clothes after take-off (pushed, not flown). DIGITAL TWIN 1_CODE/twin.py matches the real run (50 vs 55% followed) - sweep running to pick the best turn settings. No battery bypass - charge to 25% before flying. Simple test names: 2_MILESTONES/M06_flight_test_protocol.md
