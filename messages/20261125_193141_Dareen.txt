@@ -1,0 +1,2 @@
+Dareen 25.11 19:31
+End of day: all pushed. Flown today: first closed loop, distance test, one fully automatic run (self take-off + landing, all turns right way). Digital twin (twin.py): the problem is RECOGNITION not turning - clothes learning after take-off -> 83% user followed in the twin (confirm in flight). Next time: charge batteries, double-click AUTO_TESTS.bat. Details: UPDATES 19:30 + 19:50, M05_data/results/twin_25.11/. Thanks for today!
