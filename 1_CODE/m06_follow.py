@@ -124,15 +124,38 @@ class Follower:
 
 
 class Controller:
-    def __init__(self, max_yaw, use_forward):
+    """P controller with dead band, max and rate limit. --predict adds a SMITH PREDICTOR for the loop delay (25.11):
+    the picture we steer on is ~0.5 s old, so turns already commanded are not visible yet -> without it the drone keeps
+    turning and overshoots. The predictor subtracts the turn still 'in the pipe' (commands of the last DELAY s x yaw rate)
+    from the seen error: x_pred = x_seen - (degrees turned in the last DELAY s) / (HFOV/2)."""
+
+    def __init__(self, max_yaw, use_forward, predict=False, delay=0.5, yaw_rate=90.0, hfov=118.0):
         self.max_yaw, self.use_forward = max_yaw, use_forward
         self.yaw = self.fwd = 0.0
+        self.predict, self.delay, self.yaw_rate, self.hfov = predict, delay, yaw_rate, hfov
+        self.hist = []                                  # (time, yaw sent)
+        self.t_last = None
+
+    def _in_pipe(self, now):
+        """degrees the drone has been commanded to turn in the last `delay` seconds (not yet seen in the picture)"""
+        self.hist = [(t, y) for t, y in self.hist if now - t <= self.delay + 0.2]
+        deg, prev = 0.0, None
+        for t, y in self.hist:
+            if prev is not None and now - t <= self.delay:
+                deg += prev[1] * self.yaw_rate * (t - prev[0])
+            prev = (t, y)
+        if prev is not None:
+            deg += prev[1] * self.yaw_rate * max(0.0, now - prev[0])
+        return deg
 
     def step(self, box, state, W, H):
+        now = time.perf_counter()
         want_yaw = want_fwd = 0.0
         if state == "FOLLOWING" and box is not None:
             x1, y1, x2, y2 = box
             x_err = ((x1 + x2) / 2 - W / 2) / (W / 2)
+            if self.predict:
+                x_err -= self._in_pipe(now) / (self.hfov / 2)
             if abs(x_err) > X_DEAD:
                 want_yaw = clip(K_YAW * x_err, self.max_yaw)
             h_err = TARGET_H - (y2 - y1) / H
@@ -143,6 +166,7 @@ class Controller:
         else:
             self.yaw += clip(want_yaw - self.yaw, RATE)
             self.fwd += clip(want_fwd - self.fwd, RATE)
+        self.hist.append((now, self.yaw))
         return round(self.yaw, 3), round(self.fwd, 3)
 
 
@@ -179,6 +203,9 @@ def main():
     ap.add_argument("--max-yaw", type=float, default=0.25)
     ap.add_argument("--seconds", type=float, default=0, help="stop after N s (0 = until Esc / end)")
     ap.add_argument("--colour", action="store_true", help="user score = turban + clothes colour (enrol with E)")
+    ap.add_argument("--predict", action="store_true", help="Smith predictor for the ~0.5 s loop delay (test in the simulator first)")
+    ap.add_argument("--delay", type=float, default=0.5, help="loop delay for --predict (s; 25.11 field: ~0.5)")
+    ap.add_argument("--yaw-rate", type=float, default=90.0, help="deg/s at full yaw stick for --predict (to be measured, B3b)")
     ap.add_argument("--old-switch", action="store_true", help="old sticky rule (3 turban frames) instead of the guarded switch")
     ap.add_argument("--head", type=float, default=HEAD_DEFAULT, help="head area for the turban (0.20 default; M05 used 0.35)")
     a = ap.parse_args()
@@ -189,10 +216,10 @@ def main():
 
     model = m05.load_model(a.model)
     m05.HEAD_PART = a.head                                     # used by the hybrid pick and the user score
-    fol, ctl = Follower(guarded=not a.old_switch), Controller(a.max_yaw, a.forward)
+    fol, ctl = Follower(guarded=not a.old_switch), Controller(a.max_yaw, a.forward, a.predict, a.delay, a.yaw_rate)
     OUT.mkdir(parents=True, exist_ok=True)
     name = ((Path(a.video).stem if a.video else time.strftime("live_%Y%m%d_%H%M%S")) + ("_colour" if a.colour else "")
-            + ("_old" if a.old_switch else "") + (f"_head{int(a.head * 100)}" if a.head != HEAD_DEFAULT else ""))
+            + ("_old" if a.old_switch else "") + ("_pred" if a.predict else "") + (f"_head{int(a.head * 100)}" if a.head != HEAD_DEFAULT else ""))
     mode = "OFFLINE" if a.video else ("LIVE DRY (nothing sent)" if a.dry else "LIVE - SENDING " +
                                       ("yaw+forward" if a.forward else "yaw only"))
     head = (f"M06 follow  {a.model.replace('.pt', '')} + {a.tracker} + turban (head {a.head:.0%}"
