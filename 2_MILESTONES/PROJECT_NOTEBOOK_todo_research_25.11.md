@@ -51,7 +51,7 @@ Tomorrow's step-by-step checklist: `M06_field_day_manual.md`. M06 plan after the
 11. [ ] **End of project (work plan):** 20 runs → success rate, arrival time, minimum distance to an obstacle, track losses, latency.
 
 12. [ ] **Nimer: synthesis / emulation / simulation (open-source)** — see Claude's view 25.11:
-    - **DECIDED 25.11 (Dareen): build the emulator right after the field day** (needs the B3/B3b delay + yaw-rate numbers). Nimer's own meaning of the idea: still to write down here.
+    - **DECIDED 25.11 (Dareen): build the emulator right after the field day** (needs the B3/B3b delay + yaw-rate numbers). Nimer's meaning: **rehearse tomorrow's steps on the computer first (like a Vivado simulation before the FPGA)** → done 25.11 night: `1_CODE/sim_drone.py` + `set DRONE_SIM=<video>`; yaw loop correct in the sim (111/111). The emulator = this sim + measured delay/yaw rate + scoring.
     - **Emulator first (cheap, ~1 day, high value):** replay our recorded clips as a fake live camera; the Neo sees ~118° wide →
       crop a narrower window and SHIFT it when the controller yaws (= virtual turning), with the measured command delay + yaw
       rate (field day B3/B3b). Tune K / D / prediction safely, repeat every crossing 100x, count wrong follows. No flying.

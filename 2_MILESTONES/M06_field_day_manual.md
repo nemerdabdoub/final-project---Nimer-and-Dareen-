@@ -12,6 +12,12 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
   drone, (3) film crossing scenes at normal height AND from above (Gabi) — never tuned on, (4) measure the command delay and
   the yaw rate (the numbers the controller needs).
 - **Pass lines:** user kept >= 90% · <= 1 ID swap in 10 crossings · 0 wrong-person follows · 60 s continuous · >= 10 FPS long run (aim 15).
+- **Rehearsed on the computer first (Nimer's "simulate like Vivado" idea, 25.11 night):** `1_CODE/sim_drone.py` = a simulated
+  drone (plays a recorded clip as the camera; yaw slides the view, with delay 0.25 s and 90°/s at full stick). Every script runs
+  unchanged with `set DRONE_SIM=<video>`. Results: `m06_follow.py --live --dry` and `--live` (yaw) run without errors;
+  **yaw sign = error sign in 111/111 frames, and each turn moved the user back toward the centre** (right turn → error −0.02,
+  left turn → +0.10 in 0.6 s); `record_video.py` records (226 frames / 9 s); ~15 FPS in the sim. Not tested in the sim:
+  key presses (E, Y/U) — do those in A5/A6b.
 - **Ready from last night:** paired test (11m really better than 11n, p = 0.016) · `m06_follow.py` (BoT-SORT + sticky ID +
   states + controller + `--colour`) · `command_delay_test.py` · user score per box. **None of it has touched the real drone yet.**
 
@@ -80,6 +86,9 @@ Times: slot length + suggested clock if you start at **10:00**. Everything to re
 - [ ] **A1 Pull + agree (10 min) · 10:00**
       `OPEN_TERMINAL_HERE.bat` → `git pull` → `set GPU=C:\Users\LOREN\venvs\gpu\Scripts\python.exe`
       Read §0, fill §1 roles, agree the pass lines.
+      **CRITICAL:** make sure the simulator is OFF: type `set DRONE_SIM=` (empty). If a script prints `[SIM]`, it is NOT the real drone.
+      Optional 10-min rehearsal before the drone is on: `set DRONE_SIM=.._EVIDENCE6-11-22c404_recording_session1.mp4` →
+      try `%GPU% command_delay_test.py --dry` and `%GPU% m06_follow.py --live --dry --colour` (press E) → then `set DRONE_SIM=` again.
       *You should see:* "Already up to date" (or new files); both can say the aim in one sentence.
 
 - [ ] **A2 Watch last night's offline results (15 min) · 10:10** (drone OFF)

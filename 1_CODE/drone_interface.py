@@ -320,3 +320,10 @@ class Drone:
 
     def __exit__(self, *exc):
         self.close()
+
+
+# ---- rehearsal on the computer (Nimer's "simulate first" idea, 25.11): set DRONE_SIM=<video> -> every script gets the
+# simulated drone from sim_drone.py instead of the real one. Empty / unset = the real drone (nothing changes).
+import os as _os
+if _os.environ.get("DRONE_SIM"):
+    from sim_drone import SimDrone as Drone  # noqa: F811,E402

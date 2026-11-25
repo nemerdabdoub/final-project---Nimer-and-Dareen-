@@ -1,0 +1,2 @@
+Dareen 25.11 06:02
+Your simulate-first idea is done: 1_CODE/sim_drone.py. set DRONE_SIM=<video> and every script runs on a simulated drone. Rehearsed tomorrow: follow + yaw loop work, yaw sign correct 111/111. Tomorrow first: set DRONE_SIM= (empty) before the real drone. Checklist updated (md + Word).
