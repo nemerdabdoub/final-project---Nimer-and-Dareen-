@@ -121,6 +121,7 @@ as a second characteristic that also gives the distance to the user.
   96% big-people detection, 0% wrong, 0% false alarm, 79% frames correct** (≈ +5 ms/frame over YOLO alone).
   `M05_data/results/full_comparison_22.11/` (script `1_CODE/m05_full_table.py`). **Candidate main results slide.**
 - 25.11 Paired test (McNemar, 403 frames): hybrid YOLO11m right where 11n wrong in 7 frames, opposite 0 → p = 0.016, real but small gain (+1.7 pts); YOLO26m vs 11n p = 0.18 (could be luck). Rule: 11m if >= 15 FPS live on battery, else 11n.
+- 25.11 USER SCORE per box (Gabi: identity, not detection confidence): 403 frames, user median 0.85 vs others 0.000, ROC AUC 0.914, user top-scored in 147/152 frames; weak spot: far red-shirt passer-by scores 0.97-0.99 (red shirt inside the head area) and stole the lock in the follow demo -> main M06 risk; histogram `M05_data/results/user_score_25.11/`.
 
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about

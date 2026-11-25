@@ -19,6 +19,9 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
 - [x] **`m06_follow.py`**: tracker (BoT-SORT) + **sticky ID** (switch only after 3 turban frames on the new person) +
       **3 safety states** + **controller** (yaw from box centre, forward from box height; dead band, max stick 0.25, rate limit).
       Offline test on 60 s of session 1: FOLLOWING 69%, UNSURE 10%, LOST 20% (not checked by eye yet).
+- [x] **User score per box** (`user_score.py`, Gabi's request: identity score, not YOLO confidence): on 403 frames the user's
+      median 0.85 vs others 0.000, **ROC AUC 0.914**; BUT a far red shirt scores 0.97-0.99 (red shirt in the "head" area).
+      The demo boxes in `m06_follow.py` now show this score.
 - [x] **`command_delay_test.py`**: red flash + stopwatch on every command; also measures the loop delay by itself.
 - [ ] Nothing of the above has touched the real drone yet → that is today.
 
@@ -85,7 +88,9 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
 - [ ] **B5 FIRST CLOSED LOOP: yaw only (30 min, 1 battery)** — drone hovering 1.5 m, user 4 m in front, nobody else near.
       `GPU m06_follow.py --live --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly in an arc left and right.
       *You should see:* the drone **turns** to keep her centred, stops turning in the middle (dead band), hovers when she
-      hides (UNSURE / LOST). Esc at once if it turns the wrong way or keeps spinning. Repeat with a passer-by crossing.
+      hides (UNSURE / LOST). Esc at once if it turns the wrong way or keeps spinning. Repeat with a passer-by crossing
+      in a **NON-red** top first. **No red shirt in the picture during closed-loop tests**: the 25.11 user-score check showed a
+      far red shirt can score 0.99 and steal the lock (`M05_data/results/user_score_25.11/`). Red shirt = filming only (B2).
 - [ ] **B6 Yaw + distance (30 min, 1 battery) — ONLY if B5 was calm and correct** —
       `GPU m06_follow.py --live --forward --model <chosen> --max-yaw 0.2 --seconds 60`. User walks slowly away / closer,
       2–3 m of space all around. *You should see:* the drone follows slowly (max stick 0.15), stops at ~3–4 m.

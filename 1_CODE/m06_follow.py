@@ -32,6 +32,7 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import m05                                    # turban colour, head check, hand filter, CONF
+from user_score import user_scores             # identity score per box: is this OUR user? (0..1)
 
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "m06_tracking"
 SWITCH_FRAMES = 3       # turban on another ID this many frames in a row (and not on ours) -> switch
@@ -111,15 +112,19 @@ class Controller:
         return round(self.yaw, 3), round(self.fwd, 3)
 
 
-def draw(fr, boxes, ids, box, state, uid, yaw, fwd, fps, head):
+def draw(fr, boxes, ids, box, state, uid, yaw, fwd, fps, head, scores):
+    """Box tags show the USER SCORE (is this our user? 0..1), not YOLO's detection confidence."""
     col = {"FOLLOWING": (0, 220, 0), "UNSURE": (0, 200, 255), "LOST": (0, 0, 255)}[state]
-    for b, tid in zip(boxes, ids):
+    for b, tid, sc in zip(boxes, ids, scores):
         if b != box:
             cv2.rectangle(fr, tuple(b[:2]), tuple(b[2:]), (255, 120, 0), 2)
-            m05.label_box(fr, f"person {tid}", b[0], b[1], (255, 120, 0), 0.55)
+            m05.label_box(fr, f"person {sc:.2f}", b[0], b[1], (255, 120, 0), 0.55)
     if box is not None:
+        sc = scores[boxes.index(box)]
         cv2.rectangle(fr, tuple(box[:2]), tuple(box[2:]), col, 3)
-        m05.label_box(fr, f"USER id {uid}", box[0], box[1], col, 0.75)
+        m05.label_box(fr, f"USER {sc:.2f} (id {uid})", box[0], box[1], col, 0.75)
+    cv2.putText(fr, "tag number = user score (0 = not the user, 1 = surely the user)", (10, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     H = fr.shape[0]
     cv2.putText(fr, head, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
     cv2.putText(fr, f"{state}   yaw {yaw:+.2f}  fwd {fwd:+.2f}   {fps:4.1f} FPS", (10, H - 20),
@@ -184,7 +189,9 @@ def main():
             r = model.track(fr, persist=True, classes=[0], conf=m05.CONF, tracker=f"{a.tracker}.yaml", verbose=False)[0]
             boxes = r.boxes.xyxy.cpu().numpy().astype(int).tolist()
             ids = r.boxes.id.cpu().numpy().astype(int).tolist() if r.boxes.id is not None else [None] * len(boxes)
-            colour_box = m05.hybrid_user(m05.turban_mask(fr), boxes)
+            mask = m05.turban_mask(fr)
+            colour_box = m05.hybrid_user(mask, boxes)
+            scores = user_scores(mask, boxes)
             box, state = fol.update(t, boxes, ids, colour_box)
             yaw, fwd = ctl.step(box, state, W, H)
             if send:
@@ -198,7 +205,7 @@ def main():
             counts[state] += 1
             rows.append([round(t, 2), state, fol.user_id if box is not None else "", *(box or ["", "", "", ""]),
                          yaw, fwd, round(fps, 1)])
-            draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, head)
+            draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, head, scores)
             if writer is None:
                 writer = cv2.VideoWriter(str(OUT / f"{name}_follow.mp4"), cv2.VideoWriter_fourcc(*"mp4v"),
                                          vfps if cap is not None else 15, (W, H))
