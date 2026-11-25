@@ -116,9 +116,27 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
   - [ ] `cross_behind` — behind the user, both directions
   - [ ] `cross_close` (1 m) and `cross_far` (5 m)
   - [ ] `out_and_back` — user leaves the picture and comes back
+- [ ] **B2b FROM ABOVE — Gabi's request (≈ 40 min, ~1.5 batteries)** — same scenes, drone **higher (3.5–4 m)**, about
+      **4 m away**, camera **tilted down ~30–40°** (pilot drags the gimbal slider on the phone by hand; geometry:
+      tilt ≈ atan((height − 1.7 m) / distance) = atan(2.3 / 4) ≈ 30°). Name the clips with `_above`:
+  - [ ] `cross_front_LR_above` (3 crossings) · [ ] `turn_away_above` (turban seen from above even with her back turned?)
+  - [ ] `redshirt_side_above` · [ ] `continuous_60s_above`
+      Write the height + tilt you used: ____ m, ____ °.
+      **Why:** from above, the turban is the TOP of the head → visible from every side (turned away too) and people overlap
+      less in crossings. **Price:** she is smaller in the picture (our misses were small, far people) and YOLO learned people
+      mostly from the side. → Later we compare level vs above on the same scenes: turban seen %, user score, YOLO found %.
 - [ ] **B3 Command delay (30 min, 1 battery)** — drone hovering, second phone films **screen + drone** at **60 fps**.
       `python command_delay_test.py` → Y, wait 3 s, U, wait 3 s … **10 presses** → Esc → land.
       *You should see:* red flash → drone turns; terminal "picture moved after … ms"; "Saved …_command_delay.csv".
+- [ ] **B3b Yaw rate per stick (the drone's turning "torque" response) (15 min, same battery)** — still hovering, phone still
+      filming at 60 fps from the side. Long pulses, 5 s between them:
+      `python command_delay_test.py --pulse 2 --deflect 0.2` → Y 2 times · then `--deflect 0.3` → Y 2 times · `--deflect 0.4` → Y 2 times.
+      Write how far it turned each time (a landmark in the DJI Fly view, or the compass/heading if DJI Fly shows it):
+      0.2: ____ ° · 0.3: ____ ° · 0.4: ____ ° (in 2 s).
+      **Why:** a quadcopter turns (yaw) only by the small torque difference between its motors → yaw is its slowest axis:
+      it needs time to speed up and to stop. Together with the ~0.3 s video delay this is what makes a turning loop wobble.
+      These numbers give: degrees per second per stick value + how long it takes to start/stop → we set K (and the D term /
+      prediction) from measurements, not by guessing. From the videos we also read: rise time, overshoot, settling time.
 - [ ] **B4 Live DRY on battery = the speed test on battery (20 min, 1 battery)** — drone hovering, user in front:
       `GPU m06_follow.py --live --dry --seconds 300` (11n), then `--model yolo11m.pt --seconds 300`.
       FPS 11n ____ , 11m ____ ; laptop battery ____ % → **decide the model: 11m if >= 15 FPS, else 11n** → chosen: ____
@@ -153,8 +171,10 @@ Fly at **1.5–2 m height**, user **3–6 m** away. Laptop **on battery** (field
 - [ ] M05 closed: model chosen with a paired test + live FPS on battery
 - [ ] Sticky ID + states + controller tested live: dry → yaw only → yaw with colour → (yaw + distance)
 - [ ] Turban only vs turban + colour compared on the new crossing clips (first look)
-- [ ] 8+ crossing clips + 60 s clip (M06 hold-out) · command-delay CSV + 60 fps video
-**Total:** A 1 h 45 + travel + B 4 h 30 + C 1 h 15 ≈ **7.5 h** (+ travel).
+- [ ] 8+ crossing clips + 60 s clip (M06 hold-out) + 4 clips FROM ABOVE (Gabi)
+- [ ] Yaw rate per stick (0.2 / 0.3 / 0.4) + command delay · command-delay CSV + 60 fps video
+**Total:** A 1 h 45 + travel + B ~5 h 15 (with B2b from above + B3b yaw rate) + C 1 h 15 ≈ **8 h** (+ travel).
+**If short on time / batteries, drop in this order:** B6 (distance) → B5b → `cross_far` / `out_and_back` → B2b red shirt above.
 
 **Left for the computer (≈ 8 h, any time before 7.12):** label the crossing clips with IDs in CVAT (4 h) → measure M05 vs
 M06 on them: % user kept, ID swaps, recovery, IDF1/HOTA with TrackEval (2.5 h) → count the delay in the 60 fps video (1 h) →
