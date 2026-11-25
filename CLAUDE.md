@@ -43,6 +43,11 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
 - **25.11 field day:** first closed loop flown (yaw FOLLOWING 77-95%, all turns right way; distance stops at target), loop
   delay ≈ 0.5 s, camera tilt coded (`gimbal.py`), adb fix `run_with_adb.py`. Results `2_MILESTONES/M06_field_day_25.11.md`.
   Open: crossings / 60 s / from above clips, delay with 10 presses, live 11m check, prediction for the delay.
+- **25.11 evening:** `AUTO_TESTS.bat` = self take-off → TURN/FOLLOW/SIDE/ORBIT → self landing (laptop speaks user commands,
+  people-close safety, battery stop 30 %); full auto run flown (all turns right way, user followed 33–55 %). DIGITAL TWIN
+  `1_CODE/twin.py` (validated 50 vs 55 %): recognition, not turning, is the bottleneck; clothes learning → 82.6 % (twin, to confirm
+  in flight). No DJI battery-protection bypass (decided). Simple test names + protocol: `2_MILESTONES/M06_flight_test_protocol.md`.
+  Next: charge, fly AUTO_TESTS with clothes learning; crossings / 60 s / from above clips; delay test ×10.
 - M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
   comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 
