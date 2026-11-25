@@ -50,6 +50,16 @@ Tomorrow's step-by-step checklist: `M06_field_day_manual.md`. M06 plan after the
 10. [ ] **Low light** (work plan, by 8.3.27): a real dusk flight instead of the ×0.35 brightness stand-in.
 11. [ ] **End of project (work plan):** 20 runs → success rate, arrival time, minimum distance to an obstacle, track losses, latency.
 
+12. [ ] **Nimer: synthesis / emulation / simulation (open-source)** — see Claude's view 25.11:
+    - **Emulator first (cheap, ~1 day, high value):** replay our recorded clips as a fake live camera; the Neo sees ~118° wide →
+      crop a narrower window and SHIFT it when the controller yaws (= virtual turning), with the measured command delay + yaw
+      rate (field day B3/B3b). Tune K / D / prediction safely, repeat every crossing 100x, count wrong follows. No flying.
+    - **3D simulator (open source: Gazebo + PX4 SITL, Webots; AirSim is archived):** a drone with a camera + a person model with
+      a red turban; repeatable crossings and the 20-run end test. Days of setup; the Neo's real dynamics are unknown → only after the emulator.
+    - **DJI Simulator in DJI Fly:** stick practice only — no real people in its camera view, so not for our vision tests.
+    - **Synthesis (synthetic data):** pasted turbans / red shirts / strollers / scooters, or simulator images, to grow training
+      data for next semester's obstacle classes; always test on REAL hold-out clips.
+
 ## E. Measured facts to quote (with source)
 - Pipeline: video delay 256 ms (mirror hop 60 ms), detection 34 ms (11n CPU) → ~290 ms; command delay = field day.
 - Final M05 table (403 frames, hand labels): hybrid 11n 87.8% frames correct, wrong person 1.8% (3/164), 0 false alarms, 96.2% people found at following distance; 11m 89.6%, 1/164, 0.
