@@ -28,6 +28,7 @@ Output: 3_EVIDENCE/m06_tracking/<name>_follow.mp4 (+ _follow.csv: time, state, u
 """
 import argparse
 import csv
+import os
 import sys
 import time
 from pathlib import Path
@@ -45,6 +46,7 @@ SWITCH_FRAMES = 3       # (old rule, --old-switch) turban on another ID this man
 SWITCH_SECONDS = 1.0    # the other person must look like the user for 1 s in a row ...
 KEEP_MIN = 0.30         # ... AND our current user must look unlike the user (smoothed score < 0.30) or be out of view ...
 SWITCH_MARGIN = 0.30    # ... AND the other must score clearly higher (by 0.30). Never switch while she is visible and scoring.
+LOW_BATTERY = 30        # drone battery % (read from the DJI Fly ring): at or below -> stop following, hover, "LAND NOW"
 HEAD_DEFAULT = 0.20     # head area = top 20% of the box (anatomy: head ~1/8 of the body + turban); M05 used 35%
 START_FRAMES = 2        # turban on the same ID this many frames in a row -> first lock
 LOST_AFTER = 2.0        # s without the user -> LOST
@@ -146,7 +148,7 @@ class Controller:
 
 def draw(fr, boxes, ids, box, state, uid, yaw, fwd, fps, head, scores):
     """Box tags show the USER SCORE (is this our user? 0..1), not YOLO's detection confidence."""
-    col = {"FOLLOWING": (0, 220, 0), "UNSURE": (0, 200, 255), "LOST": (0, 0, 255)}[state]
+    col = {"FOLLOWING": (0, 220, 0), "UNSURE": (0, 200, 255), "LOST": (0, 0, 255), "LOW_BATTERY": (0, 0, 255)}[state]
     for b, tid, sc in zip(boxes, ids, scores):
         if b != box:
             cv2.rectangle(fr, tuple(b[:2]), tuple(b[2:]), (255, 120, 0), 2)
@@ -159,6 +161,8 @@ def draw(fr, boxes, ids, box, state, uid, yaw, fwd, fps, head, scores):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     H = fr.shape[0]
     cv2.putText(fr, head, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    if state == "LOW_BATTERY":
+        cv2.putText(fr, "DRONE BATTERY LOW - LAND NOW", (40, fr.shape[0] // 2), cv2.FONT_HERSHEY_SIMPLEX, 1.6, (0, 0, 255), 4)
     cv2.putText(fr, f"{state}   yaw {yaw:+.2f}  fwd {fwd:+.2f}   {fps:4.1f} FPS", (10, H - 20),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, col, 2)
 
@@ -205,7 +209,9 @@ def main():
         drone = Drone().__enter__()
     send = drone is not None and not a.dry
     writer, rows, n, t_start = None, [], 0, time.perf_counter()
-    counts = {"FOLLOWING": 0, "UNSURE": 0, "LOST": 0}
+    counts = {"FOLLOWING": 0, "UNSURE": 0, "LOST": 0, "LOW_BATTERY": 0}
+    real = drone is not None and hasattr(drone, "battery_percent") and not os.environ.get("DRONE_SIM")
+    drone_batt, low_batt, was_airborne, landed_at = "", False, False, None
     fps, t_prev = 0.0, time.perf_counter()
     try:                                                       # laptop battery in the log = clean, comparable speed results
         import psutil
@@ -268,6 +274,23 @@ def main():
                     k = max(range(len(boxes)), key=lambda j: scores[j]) if boxes else None
                     colour_box = boxes[k] if k is not None and scores[k] >= COMBO_MIN else None
             box, state = fol.update(t, boxes, ids, colour_box, scores)
+            if real and n % 30 == 0:                          # ~once a second: drone battery + landed? (screen reads, ms)
+                try:
+                    pb = drone.battery_percent()
+                    if pb is not None:
+                        drone_batt = pb
+                        if pb <= LOW_BATTERY and not low_batt:
+                            low_batt = True
+                            print(f"  !!! DRONE BATTERY {pb}% - following stopped, hovering. LAND NOW (by hand). !!!")
+                    air = drone.in_flight_ui()
+                    if air:
+                        was_airborne = True
+                    elif was_airborne and drone.on_ground_ready():
+                        landed_at = t                             # landed -> stop (record "until landing")
+                except Exception:
+                    pass
+            if low_batt:
+                state = "LOW_BATTERY"                             # never follow on a low battery
             yaw, fwd = ctl.step(box, state, W, H)
             if send:
                 if state == "FOLLOWING":
@@ -283,7 +306,7 @@ def main():
                 if b is not None:
                     batt, plugged = b.percent, int(b.power_plugged)
             rows.append([round(t, 2), state, fol.user_id if box is not None else "", *(box or ["", "", "", ""]),
-                         yaw, fwd, round(fps, 1), batt, plugged])
+                         yaw, fwd, round(fps, 1), batt, plugged, drone_batt])
             tag = head + ("" if not a.colour else ("  + colour (enrolled)" if template is not None else
                                                    "  + colour: NOT enrolled - user alone in view, press E"))
             draw(fr, boxes, ids, box, state, fol.user_id, yaw, fwd, fps, tag, scores)
@@ -292,6 +315,9 @@ def main():
                                          vfps if cap is not None else 15, (W, H))
             writer.write(fr)
             n += 1
+            if landed_at is not None:
+                print(f"  landed (DJI Fly shows Take Off again) at {landed_at:.0f} s - recording stopped.")
+                break
             if drone is not None:
                 cv2.imshow("M06 follow (Esc = hover + stop)", fr)
                 key = cv2.waitKey(1) & 0xFF
@@ -315,7 +341,7 @@ def main():
     with open(OUT / f"{name}_follow.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["time_s", "state", "user_id", "x1", "y1", "x2", "y2", "yaw", "forward", "fps",
-                    "laptop_battery_pct", "plugged_in"])
+                    "laptop_battery_pct", "plugged_in", "drone_battery_pct"])
         w.writerows(rows)
     tot = max(1, n)
     print(f"\n{n} frames: FOLLOWING {100 * counts['FOLLOWING'] / tot:.0f}%  UNSURE {100 * counts['UNSURE'] / tot:.0f}%  "
