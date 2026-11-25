@@ -30,6 +30,7 @@ later: **CVAT** (labelling with IDs), **TrackEval** (IDF1 / HOTA), Ultralytics t
 ---
 
 ## 3. THE DAY (tomorrow, Wednesday) — 6–8 h, drone first
+**Detailed tick-box manual with commands and times: `M06_field_day_manual.md` (use that one on the day).**
 ### Block A — at the laptop, before leaving (≈ 1.5 h)
 - [ ] A1 `git pull`, read this plan together; agree the pass lines above (15 min)
 - [ ] A2 Charge check: all drone batteries, phone, laptop 100% (5 min)
@@ -55,10 +56,8 @@ Fly at following height **1.5–2 m, 3–6 m from the user**. Each clip 60–90 
   - [ ] **60 s continuous** clip, user walks normally (req. 4)
 - [ ] B3 **Command delay** (≈ 40 min): drone hovering, the second phone films the laptop screen + the drone at 60 fps;
       press the key 10 times (yaw left/right) with pauses → later we count frames from "sent" to "drone moves"
-- [ ] B4 **Speed on battery, live** (≈ 20 min, runs during B2): laptop unplugged, `m06_track.py` live on the mirror for
-      10+ min; log FPS over time and battery % at start/end (11n, then 11m if time)
-- [ ] B5 *If time and calm:* **yaw-only test** — the drone only turns toward the user's box (simple rule: box centre left →
-      turn left), Ctrl+C ready, 1–2 short tries (30 min). Skip if anything feels unsafe.
+- [ ] B4 Laptop battery % at start and end of the field time (the long speed test on battery is done at home, no drone needed)
+- (moved to later: yaw-only follow test — needs the controller first)
 - [ ] B6 Write the filming note on the phone right away: clip name, scene, time, light, who wore what (10 min)
 
 ### Block C — back at the laptop, same day (≈ 1–1.5 h)
