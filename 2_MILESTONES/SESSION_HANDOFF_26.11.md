@@ -22,7 +22,7 @@
 - User score AUC 0.914 (turban), 0.978 (+clothes). Guarded switch: red shirt never USER on session 1.
 - Flights: all turns in the right direction; distance stops at target; full automatic run flown; loop delay ≈ 0.5 s (2 samples).
 - Twin validated (50 vs 55 % followed). **Bottleneck = recognising the user, not turning.** Clothes learning 50 → 82.6 % (twin,
-  walk clip); crossing clip 62.7 → 64.7 %. Right/wrong-person check vs session-1 labels: was running at handoff (see `twin_25.11/`).
+  walk clip); crossing clip 62.7 → 64.7 %. Right/wrong vs session-1 labels: user-in-view right 68 → 71 %, wrong 2.4 %, 0 false picks (clothes add little outdoors).
 
 ## Decisions
 - Keep turn 0.3 + search turn; predictor OFF (no gain); 640 px; YOLO11n default in flights (11m candidate).

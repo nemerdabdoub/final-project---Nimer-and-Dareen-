@@ -27,3 +27,11 @@ confirm in flight + on a crossing clip. Setting for the next flight: turn 0.3 + 
 | yes | 64.7 % | 0.28 | 68 % |
 Small gain here (most of the missing % = nobody in view). "Followed" does not say WHO was followed: next step = compare the
 twin's locked box with the hand labels of session 1 (Nimer labelled it) to count wrong-person frames.
+
+## Right / wrong person vs Nimer's hand labels — whole session 1 clip (151 labelled frames), 26.11
+| clothes learning | right | wrong person | missed (in view) | user outside view | correct "nobody" | false pick |
+|---|---|---|---|---|---|---|
+| no | 28 | 1 | 12 | 12 | 98 | 0 |
+| yes | 29 | 1 | 11 | 12 | 98 | 0 |
+User in view: right 68 % → 71 %, wrong 2.4 %, 0 false picks in 98 empty frames. Outdoors the turban is visible, so clothes
+learning adds little here; its big gain (50 → 83 %) was on the indoor clip where the turban colour was not seen.
