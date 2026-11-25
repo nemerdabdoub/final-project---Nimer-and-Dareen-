@@ -57,6 +57,11 @@ to keep the user in the picture), plus film the M06 test set.** Only labelling +
       without colour the red shirt is "USER 0.99"; with colour the user keeps the USER box. *You should see:* that difference.
 - [ ] **A3 Connect the drone indoors (15 min)** — drone on the table (not flying), S10 by USB, DJI Fly on the **camera view**,
       Manual Control. `python connection_test.py` → *you should see* the drone picture on the laptop.
+- [ ] **A3b Camera tilt (gimbal) discovery (10 min)** — drone on the table, DJI Fly on the camera view. On the phone:
+      press and hold on the live picture ~1 s → does a gimbal slider/arc appear? Drag it up/down → does the picture tilt?
+      If not: Settings (⋯) → Control → Gimbal. Tell Claude "ready" with the slider visible → Claude takes ADB screenshots
+      for the exact positions and writes `tilt_up / tilt_down / tilt_recentre` (why: our lowest user scores = her head cut
+      off at the top; tilting keeps the turban in view). Write the angle range the app shows: ____ .
 - [ ] **A4 Recording (20 min)** — `python record_video.py 0.5 indoor_test` → "Saved: … N frames", the .mp4 plays.
       If "No frames were received": DJI Fly not on camera view / adb PATH → fix. **Backup:** record on the drone (DJI Fly button).
 - [ ] **A5 Delay script dry (10 min)** — `python command_delay_test.py --dry`, press Y / U → red flash, "Saved …_dry.csv".
