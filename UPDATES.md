@@ -822,3 +822,32 @@ Open: paired test, long-run speed on charger + battery (tasks A1-A2 above), Nime
     (82% false alarms), YOLO alone 58%, hybrid 96-97% with 0 false alarms.
 - Still open for M05: Nimer corrects 71 frames (`to_label_Nimer`), Dareen corrects 81. All 152 corrected `.txt`
   files go into `3_EVIDENCE/m05_user_detection/labels/`, then `python m05.py run` gives the real tables.
+25.11 20:20 Dareen to Nimer: Android emulator idea for DJI app
+
+Dareen here. I had an idea to explore using an Android emulator (like in Android Studio) to run the DJI Fly app, instead of a physical phone. Potential benefits:
+
++ More portable - not tied to one phone
++ Easier to replicate setup 
++ Automation/scripting possibilities
++ No need to dedicate a physical device
+
+Some drawbacks to consider:
+
+- Performance overhead, could be slower
+- DJI app compatibility with emulators unclear
+- Some features may need phone hardware
+- Extra emulator setup/config
+
+Claude suggested spending a day to attempt a proof-of-concept, while still progressing the main project on the current phone setup (treat emulation as a parallel thread to explore, not all-or-nothing).
+
+What do you think? If we can get stable video and commands via emulator, it could make the system more robust long-term. But I don't want to jeopardize the core project. I'm leaning towards a 1-day R&D sprint if you're open to it. But if you think it's too much of a distraction or risk right now, I'm okay deferring the idea.
+
+Let me know your thoughts! And if you have any experience with Android emulators, would love your input.
+
+Cheers,
+Dareen
+
+Next: Decide whether to spend a day exploring Android emulator for DJI Fly app. Key factors:
+- Likelihood of getting stable emulator video/command flow 
+- Impact of 1-day R&D sprint on core project progress
+- Long-term benefits if successful (portability, automation)
