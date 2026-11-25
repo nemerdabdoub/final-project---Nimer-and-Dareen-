@@ -35,6 +35,11 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
 - **New clips 22.11 (bikes, Med Faculty) tested:** hybrid 83/88 right (5 wrong = man in red shirt), 0 false alarms; YOLO-World/YOLOE
   checked for scooters/strollers = not usable as is. `2_MILESTONES/M05_newclips_bikes_openvocab_22.11.md`. Test set hand-labelled (Dareen, 23.11). **Final all-videos table (403 frames, hand labels): hybrid YOLO11n 1.8% wrong, 0 false alarms,
   87.8% correct, 96.2% detection at following distance → YOLO11n confirmed** (note §7).
+- **25.11 (night):** paired test 11m vs 11n p = 0.016 (11m really better, +1.7 pts) → rule: 11m if >= 15 FPS live on battery,
+  else 11n (decided on the field day). User score per box (identity, Gabi): AUC 0.914, turban + clothes colour 0.978 (Nimer's idea).
+  `1_CODE/m06_follow.py` = BoT-SORT + sticky ID + FOLLOWING/UNSURE/LOST + yaw/forward controller, `--colour` (E = "this is me");
+  red shirt can steal the lock with turban only. Field-day checklist `2_MILESTONES/M06_field_day_manual.md`; all to-dos,
+  research and deep dives: `2_MILESTONES/PROJECT_NOTEBOOK_todo_research_25.11.md`.
 - M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
   comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 
