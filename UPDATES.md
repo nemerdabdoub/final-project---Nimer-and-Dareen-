@@ -1,4 +1,6 @@
 # Updates log (newest first)
+**LATEST PUSHES:** Dareen 26.11 04:00 – twin accuracy sweep + all 6 trackers + YOLO26 vs hand labels (YOLO11m/26m 78–80 % vs 11n 71 %; trackers tied, keep BoT-SORT) · Dareen 26.11 01:25 – twin vs hand labels · Dareen 26.11 01:24 – session handoff note · Nimer 25.11 16:40 – orbit simulator. **Next:** fly AUTO_TESTS on YOLO11m (≥ 80 % FOLLOWING) + film crossing clips (3 people).
+
 **>>> DAREEN'S OPEN TASKS - ONE LIST (updated 24.11, 02:30). Tick [x] when done. <<<**
 Model decision now: **M05 delivered 23.11 = hybrid YOLO11n + turban. Proposal 24.11 = hybrid YOLO11m** (final only if Nimer agrees AND field speed holds).
 
@@ -28,6 +30,10 @@ D. M06 tracking (due 7.12) - task list in `2_MILESTONES/mentor_plan.md`; first s
 
 FYI: Windows power mode on charger was set to "Best performance" (24.11). Mentor coach panel hidden this session (files kept; "open the mentor panel").
 
+
+**Dareen 26.11 (twin vs hand labels: accuracy sweep, 6 trackers, YOLO26):** session 1 (41 user-in-view frames) + hold-out session 2 (7).
+Right % when she is in view: YOLO11n 71 %, YOLO26n 73 %, **YOLO11m 78 %, YOLO26m 80 %**; hold-out 11n 5/7, 11m 6/7; **0 false picks in 239 empty frames**.
+Clothes threshold 0.40/0.50 and a wider turban range: no effect (dropped). 6 trackers with 11m: 73–78 %, 1–2 wrong frames → tied; keep BoT-SORT (1 wrong, camera-motion compensation). → By our rule (≥ 15 FPS on battery) flights should use YOLO11m. New `twin.py` options: --model --imgsz --turban --clothes-thr --tracker --sweep-acc --sweep-trackers (counts lock ID changes). Also: clothes are re-learned every take-off (other day/clothes OK); open: no-turban run, crossing clips. Note + to-do till 7.12: `2_MILESTONES/M06_twin_accuracy_and_trackers_26.11.md`. **Nimer: OK to switch AUTO_TESTS to YOLO11m?**
 
 **NEW for both (Nimer 24.11): message box in the Project updates panel.** At the top: "💬 Message Dareen" (on Dareen's
 laptop "💬 Message Nimer"). Type, press Enter → the message is saved as one small file in `messages/`, committed alone

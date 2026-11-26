@@ -1,0 +1,7 @@
+tracker,model,imgsz,turban,clothes_thr,max_yaw,k_yaw,search,predict,side,colour,following_%,mean_off_centre,people_in_view_%,yaw_flips_per_min,turned_deg,lock_changes,frames,right,wrong,missed,user_outside_view,ok_none,false_pick,right_%_in_view
+botsort,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,22.3,0.308,41.7,4.2,139.0,10,3751,32,1,8,12,98,0,78.0
+bytetrack,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,21.9,0.315,39.7,4.2,141.0,11,3751,31,2,8,12,98,0,75.6
+ocsort,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,22.7,0.323,40.0,4.2,171.0,9,3751,32,2,7,12,98,0,78.0
+deepocsort,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,22.7,0.323,40.9,4.2,171.0,9,3751,32,2,7,12,98,0,78.0
+fasttrack,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,21.9,0.315,39.8,4.2,141.0,11,3751,31,2,8,12,98,0,75.6
+tracktrack,yolo11m.pt,640,default,0.45,0.3,0.6,True,False,False,True,21.9,0.308,43.4,4.2,151.0,10,3751,30,1,10,12,98,0,73.2

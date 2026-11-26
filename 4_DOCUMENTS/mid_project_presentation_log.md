@@ -131,6 +131,8 @@ as a second characteristic that also gives the distance to the user.
 - 25.11 evening: FULL AUTOMATIC test run (one click): self take-off -> turn / follow (forward) / side tests -> self landing; 872 turn commands all in the right direction; user kept in view 33-55% (too slow at max yaw 0.2) -> next tuning.
 - 25.11 DIGITAL TWIN (twin.py, model from field measurements, validated 50 vs 55 % followed): sweep shows recognition, not turning speed, limits following; clothes learning raises user-followed 50 -> 82.6 %; predictor and faster turning add nothing.
 
+- 26.11: digital twin vs hand labels — right % when the user is in view: YOLO11n 71 %, YOLO11m 78 %, YOLO26m 80 % (hold-out 5/7 vs 6/7), 0 false picks / 239; 6 trackers tied (73–78 %), BoT-SORT kept (fewest wrong). `2_MILESTONES/M06_twin_accuracy_and_trackers_26.11.md`
+
 ## 4. Method and decisions (the "why")
 - 22.11 M05 data: 4 clips from 20.11 (3 with the actor in a purple-red turban, 1 without, for false alarms), about
   1 frame/s, 152 frames, classes `user` and `person`, brightness 1.0 and 0.35 (low-light stand-in).

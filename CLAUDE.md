@@ -48,6 +48,9 @@ Drone: DJI Neo, controlled from the PC by mirroring the DJI Fly app on an Androi
   `1_CODE/twin.py` (validated 50 vs 55 %): recognition, not turning, is the bottleneck; clothes learning → 82.6 % (twin, to confirm
   in flight). No DJI battery-protection bypass (decided). Simple test names + protocol: `2_MILESTONES/M06_flight_test_protocol.md`.
   Next: charge, fly AUTO_TESTS with clothes learning; crossings / 60 s / from above clips; delay test ×10.
+- **26.11 (night):** twin scored against hand labels (session 1 + hold-out session 2): YOLO11m/26m 78–80 % right when in view vs
+  11n 71 %, 0 false picks / 239; colour range / clothes threshold no effect; 6 trackers tied → keep BoT-SORT. Flights should
+  move to YOLO11m (rule met: 18–21 FPS on battery) — to confirm with Nimer. `2_MILESTONES/M06_twin_accuracy_and_trackers_26.11.md`.
 - M06 user tracking — due 7.12. Started 22.11: `1_CODE/m06_track.py` (YOLO11n + ByteTrack/BoT-SORT + turban, old-vs-new
   comparison, dry-run distance controller). New footage 22.11 (Med Faculty, bikes): `2_MILESTONES/filming_22.11_bikes_med_faculty.md`.
 

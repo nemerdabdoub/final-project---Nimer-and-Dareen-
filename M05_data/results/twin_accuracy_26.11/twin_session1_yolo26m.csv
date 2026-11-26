@@ -1,0 +1,2 @@
+tracker,model,imgsz,turban,clothes_thr,max_yaw,k_yaw,search,predict,side,colour,following_%,mean_off_centre,people_in_view_%,yaw_flips_per_min,turned_deg,lock_changes,frames,right,wrong,missed,user_outside_view,ok_none,false_pick,right_%_in_view
+botsort,yolo26m.pt,640,default,0.45,0.3,0.6,True,False,False,True,24.6,0.296,50.4,4.6,150.0,10,3751,35,1,8,9,98,0,79.5

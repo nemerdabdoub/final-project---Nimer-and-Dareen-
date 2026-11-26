@@ -15,6 +15,7 @@ with a Kalman-based tracker, a distance controller, tracker comparison on labell
 | Loop delay | ≈ 0.5 s total (command ≈ 256 ms) — 2 samples | field day note |
 | Digital twin | model from field measurements; validated (50 vs 55 % followed); recognition is the bottleneck; clothes learning 50 → 82.6 % | `twin_25.11/twin_results.md` |
 | Twin on the crossing clip (session 1, red shirt) | followed 62.7 % → 64.7 % with clothes learning (people in view only 68 %) — small gain; the twin cannot yet say WHO was followed (needs labels) | `twin_25.11/` |
+| Twin vs hand labels (26.11) | right when in view: 11n 71 %, **11m 78 %**, 26m 80 %; hold-out 6/7 (11m); 0 false picks / 239; 6 trackers tied 73–78 %, BoT-SORT fewest wrong | `M06_twin_accuracy_and_trackers_26.11.md` |
 | YOLOE / YOLO-World | not usable as is for strollers/scooters (boxed bikes as "stroller") → train later | `M05_newclips_bikes_openvocab_22.11.md` |
 
 ## Pass lines vs status

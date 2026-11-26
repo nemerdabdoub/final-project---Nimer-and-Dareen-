@@ -15,6 +15,9 @@ Score per run: % of frames FOLLOWING (user locked), mean |off-centre|, oscillati
 
   python twin.py --video ..\\3_EVIDENCE\\2026-11-25\\164955_recording_walk_60s.mp4 --max-yaw 0.3
   python twin.py --video ... --sweep          (tries several settings, prints a table, saves twin_results.csv)
+  python twin.py --video ... --labels ..\\M05_data\\test_22.11\\labels --seconds 0 --sweep-acc   (accuracy sweep, 26.11)
+  python twin.py --video ... --labels ... --seconds 0 --colour --sweep-trackers   (all 6 trackers vs hand labels)
+  options: --model yolo11m.pt  --imgsz 800  --turban wide  --clothes-thr 0.40  --colour
   options: --k-yaw 0.6  --predict  --no-search  --side  --delay 0.5  --yaw-rate 90  --tau 0.3  --seconds 60  --show
 Limits (honest): people in the clip do not react to the drone; sideways / forward motion is only approximated; numbers
 are for comparing settings, not exact predictions. Validate: same settings as a real run -> similar "in view %".
@@ -34,6 +37,9 @@ from user_score import user_scores, body_crop, colour_feat, colour_similarity
 import numpy as np
 
 HFOV, VIEW = 118.0, 0.60
+TURBAN_RANGES = {"default": [((165, 110, 70), (179, 255, 255))],
+                 # 26.11: measured on session 1 (tuning clip): head covering hue 168-187 (wraps to 0-7)
+                 "wide": [((165, 110, 70), (179, 255, 255)), ((0, 110, 70), (7, 255, 255))]}
 OUT = Path(__file__).resolve().parent.parent / "3_EVIDENCE" / "twin"
 
 
@@ -79,6 +85,8 @@ def run(video, model, s):
     F.K_YAW = s["k_yaw"]
     F.SEARCH_YAW = 0.0 if s["no_search"] else 0.15
     m05.HEAD_PART = F.HEAD_DEFAULT
+    m05.TURBAN_HSV = TURBAN_RANGES[s.get("turban", "default")]
+    thr = s.get("clothes_thr", 0.45)
     fol = F.Follower()
     ctl = F.Controller(s["max_yaw"], False, s["predict"], s["delay"], s["yaw_rate"], use_side=s["side"])
     model.predictor = None                            # fresh tracker per run
@@ -86,11 +94,13 @@ def run(video, model, s):
     enrol, tmpl = [], None
     log = []                                              # (frame index, window offset, window width, locked box)
     batt = s["battery"]
+    lock_changes, prev_id = 0, None                       # times the locked user ID changes to another ID
     while ok and (not s["seconds"] or i / vfps < s["seconds"]):
         if i % step == 0:
             t = i / vfps
             v = neo.view(fr)
-            r = model.track(v, persist=True, classes=[0], conf=m05.CONF, tracker="botsort.yaml", verbose=False)[0]
+            r = model.track(v, persist=True, classes=[0], conf=m05.CONF, tracker=f"{s.get('tracker', 'botsort')}.yaml", verbose=False,
+                            imgsz=s.get("imgsz", 640))[0]
             boxes = r.boxes.xyxy.cpu().numpy().astype(int).tolist()
             ids = r.boxes.id.cpu().numpy().astype(int).tolist() if r.boxes.id is not None else [None] * len(boxes)
             mask = m05.turban_mask(v)
@@ -107,8 +117,12 @@ def run(video, model, s):
                 if tmpl is not None and boxes:
                     scores = [(ts + colour_similarity(tmpl, v, b)) / 2 for ts, b in zip(scores, boxes)]
                     kb = max(range(len(boxes)), key=lambda j: scores[j])
-                    colour_box = boxes[kb] if scores[kb] >= 0.45 else None
+                    colour_box = boxes[kb] if scores[kb] >= thr else None
             box, state = fol.update(t, boxes, ids, colour_box, scores)
+            if fol.user_id is not None:
+                if prev_id is not None and fol.user_id != prev_id:
+                    lock_changes += 1
+                prev_id = fol.user_id
             batt -= s["drain"] * dt / 60
             if batt <= 30:
                 state = "LOST"
@@ -142,7 +156,7 @@ def run(video, model, s):
     mins = max(1e-6, n * dt / 60)
     return {"following_%": round(100 * foll / max(1, n), 1), "mean_off_centre": round(sum_x / max(1, foll), 3),
             "people_in_view_%": round(100 * inview / max(1, n), 1), "yaw_flips_per_min": round(flips / mins, 1),
-            "turned_deg": round(neo.heading, 0), "frames": n, "_log": log, "_W": W}
+            "turned_deg": round(neo.heading, 0), "lock_changes": lock_changes, "frames": n, "_log": log, "_W": W}
 
 
 def check_labels(log, W, video, labels):
@@ -196,12 +210,20 @@ def main():
     ap.add_argument("--battery", type=float, default=100)
     ap.add_argument("--drain", type=float, default=5.0, help="battery %% per minute")
     ap.add_argument("--sweep", action="store_true")
+    ap.add_argument("--imgsz", type=int, default=640)
+    ap.add_argument("--turban", default="default", choices=list(TURBAN_RANGES))
+    ap.add_argument("--clothes-thr", type=float, default=0.45)
+    ap.add_argument("--sweep-acc", action="store_true", help="accuracy sweep: model, picture size, turban range, clothes threshold")
+    ap.add_argument("--tracker", default="botsort", help="botsort bytetrack ocsort deepocsort fasttrack tracktrack")
+    ap.add_argument("--sweep-trackers", action="store_true", help="all 6 Ultralytics trackers with the other settings fixed")
+    ap.add_argument("--out", default="", help="CSV name in 3_EVIDENCE/twin")
     ap.add_argument("--labels", default="", help="hand-label folder (YOLO txt) -> count right / wrong person")
     ap.add_argument("--show", action="store_true")
     a = ap.parse_args()
     import lap  # noqa: F401
     base = {k: getattr(a, k) for k in ("max_yaw", "k_yaw", "predict", "no_search", "side", "delay", "yaw_rate", "tau",
-                                         "rate_hz", "seconds", "battery", "drain", "show", "start", "colour")}
+                                         "rate_hz", "seconds", "battery", "drain", "show", "start", "colour",
+                                         "imgsz", "turban", "clothes_thr", "model", "tracker")}
     tries = [base]
     if a.sweep:
         tries = []
@@ -210,19 +232,32 @@ def main():
                 tries.append(dict(base, max_yaw=my, no_search=not search, predict=False, show=False))
         tries.append(dict(base, max_yaw=0.3, no_search=False, predict=True, show=False))
         tries.append(dict(base, max_yaw=0.4, no_search=False, predict=True, show=False))
+    if a.sweep_trackers:
+        tries = [dict(base, show=False, tracker=t) for t in
+                 ("botsort", "bytetrack", "ocsort", "deepocsort", "fasttrack", "tracktrack")]
+    if a.sweep_acc:                                   # one change at a time from the flight setting, then combinations
+        b = dict(base, show=False)
+        tries = [dict(b, colour=False), dict(b, colour=True)]
+        tries += [dict(b, colour=True, clothes_thr=t) for t in (0.40, 0.50)]
+        tries += [dict(b, colour=True, turban="wide"), dict(b, colour=True, imgsz=800)]
+        tries += [dict(b, colour=True, model="yolo11m.pt"), dict(b, colour=False, model="yolo11m.pt")]
     OUT.mkdir(parents=True, exist_ok=True)
     rows = []
     for s in tries:
-        model = m05.load_model(a.model)               # fresh model = fresh tracker IDs each run
+        model = m05.load_model(s["model"])               # fresh model = fresh tracker IDs each run
         sc = run(a.video, model, s)
-        row = {"max_yaw": s["max_yaw"], "k_yaw": s["k_yaw"], "search": not s["no_search"], "predict": s["predict"],
+        row = {"tracker": s["tracker"], "model": s["model"], "imgsz": s["imgsz"], "turban": s["turban"], "clothes_thr": s["clothes_thr"],
+               "max_yaw": s["max_yaw"], "k_yaw": s["k_yaw"], "search": not s["no_search"], "predict": s["predict"],
                "side": s["side"], "colour": s.get("colour", False), **sc}
         log, Wd = row.pop("_log"), row.pop("_W")
         if a.labels:
             row.update(check_labels(log, Wd, a.video, a.labels))
+        if a.labels:
+            inv = row["right"] + row["wrong"] + row["missed"]
+            row["right_%_in_view"] = round(100 * row["right"] / max(1, inv), 1)
         rows.append(row)
         print("  ".join(f"{k}={v}" for k, v in row.items()), flush=True)
-    path = OUT / ("twin_sweep.csv" if a.sweep else "twin_run.csv")
+    path = OUT / (a.out or ("twin_sweep.csv" if (a.sweep or a.sweep_acc or a.sweep_trackers) else "twin_run.csv"))
     with open(path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
